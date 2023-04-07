@@ -1,12 +1,12 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import Home from './screens/Home';
+import Electricprice from '../components/Electricprice';
 
-export default class App extends React.Component {
+export default class Home extends React.Component {
   render() {
     return (
       <View>
-        <Home />
+        <Electricprice />
       </View>
     );
   }
