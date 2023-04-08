@@ -8,7 +8,7 @@ const Electricprice = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <View>
       <TouchableOpacity onPress={onPressButton}>
         <Image
           source={{ uri: 'https://ik.imagekit.io/ajdfkwyt/hva-koster-strommen/elpriser-tillhandahalls-av-elprisetjustnu_ttNExOIU_.png' }}
@@ -18,14 +18,5 @@ const Electricprice = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 400,
-  },
-});
 
 export default Electricprice;
