@@ -31,8 +31,8 @@ const CalendarScreen = () => {
     try {
       const docRef = await addDoc(collection(db, "time"), {
         date: selectedDate,
-        startTime: startTime,
-        endTime: endTime,
+        startTime: startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        endTime: endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       });
       console.log("Document written with ID: ", docRef.id);
 
