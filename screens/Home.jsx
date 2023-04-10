@@ -19,6 +19,10 @@ export default class Home extends React.Component {
     this.setState({ fontLoaded: true });
   }
 
+  handleAddLaundryPress = () => {
+    this.props.navigation.navigate('Calendar');
+  }
+
   render() {
     if (!this.state.fontLoaded) {
       return <View />;
@@ -30,7 +34,7 @@ export default class Home extends React.Component {
           <Electricprice />
           <View style={styles.buttonContainer}>
             <View style={styles.button}>
-              <Add_laundry />
+              <Add_laundry onPress={this.handleAddLaundryPress} />
             </View>
             <View style={styles.button}>
               <Remove_laundry />
@@ -62,15 +66,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 600,
+    marginTop: 50,
   },
   buttonContainer: {
-    marginTop: 100,
+    marginTop: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
   button: {
-    marginTop: 70,
+    marginTop: 10,
   },
   titleContainer: {
     position: 'absolute',

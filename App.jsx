@@ -1,13 +1,13 @@
 import React from 'react';
-import { View, Text } from 'react-native';
-import Home from './screens/Home';
+import { NavigationContainer } from '@react-navigation/native';
+import Navigator from './appNavigator/Navigator';
 
 export default class App extends React.Component {
   render() {
     return (
-      <View>
-        <Home />
-      </View>
+      <NavigationContainer>
+        <Navigator />
+      </NavigationContainer>
     );
   }
 }
