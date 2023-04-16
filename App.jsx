@@ -1,13 +1,13 @@
 import React from 'react';
-import { View } from 'react-native';
-import Electricprice from './components/Electricprice';
+import { NavigationContainer } from '@react-navigation/native';
+import Navigator from './appNavigator/Navigator';
 
-function App() {
-  return (
-    <View>
-      <Electricprice/>
-    </View>
-  );
+export default class App extends React.Component {
+  render() {
+    return (
+      <NavigationContainer>
+        <Navigator />
+      </NavigationContainer>
+    );
+  }
 }
-
-export default App;
