@@ -20,6 +20,10 @@ const Navigator = () => {
       />
     </Stack.Navigator>
   );
+
+
+
+  
 };
 
 export default Navigator;

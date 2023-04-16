@@ -82,10 +82,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     height: 100,
     marginBottom: 100,
+    
   },
   timePickerWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
+    width: 100,
   },
   timePickerLabel: {
     fontSize: 22,
@@ -96,11 +98,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 25,
+    width: 100,
   },
   saveButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginHorizontal: 50,
+    marginHorizontal: 60,
     marginBottom: 80,
   },
 });

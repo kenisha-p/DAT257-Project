@@ -33,7 +33,7 @@ const TimePicker = ({ onChange, date }) => {
   return (
     <View>
       <TouchableOpacity onPress={handleShowPicker}>
-        <Text style={styles.timePickerText}>{date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+      <Text style={styles.timePickerText}>{date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })}</Text>
       </TouchableOpacity>
       {showPicker && (
         <View style={styles.timePickerSpinnerContainer}>
@@ -42,6 +42,9 @@ const TimePicker = ({ onChange, date }) => {
             mode="time"
             display="spinner"
             onChange={handleSelectTime}
+            // Tillagt nedan för att ta bort "em" och "pm"
+            // Från tidsvisningen i spinner-komponenten
+            options={{ showTimeZonePicker: false }}
           />
         </View>
       )}
