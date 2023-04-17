@@ -16,7 +16,7 @@ const Navigator = () => {
       <Stack.Screen
         name="Calendar"
         component={Calendar}
-        options={{ title: 'Lägg in tvätt' }}
+        options={{ title: 'Add laundry' }}
       />
     </Stack.Navigator>
   );
