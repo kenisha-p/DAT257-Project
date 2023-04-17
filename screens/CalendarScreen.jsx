@@ -1,42 +1,32 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import Calendar from "../components/CalendarComponent";
-import TimePicker from "../components/SelectTimeComponent";
 import SaveButton from "../components/add_time";
 import { collection, addDoc } from "firebase/firestore";
 import db from "../config";
+const timeSlots = [
+  { start: 8, end: 11 },
+  { start: 11, end: 14 },
+  { start: 14, end: 17 },
+  { start: 17, end: 20 },
+];
 const CalendarScreen = () => {
   const [selectedDate, setSelectedDate] = useState(null);
-  const [startTime, setStartTime] = useState(new Date());
-  const [endTime, setEndTime] = useState(new Date());
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const handleSelectDate = (date) => {
     setSelectedDate(date);
   };
-  const handleSelectStartTime = (time) => {
-    const startHour = time.getHours();
-    if (startHour < 8 || startHour >= 11) {
-      alert("Please select a valid start time between 8am and 11am.");
-      return;
-    }
-    setStartTime(time);
-  };
-  const handleSelectEndTime = (time) => {
-    const endHour = time.getHours();
-    if (endHour <= 8 || endHour > 11) {
-      alert("Please select a valid end time between 9am and 12pm.");
-      return;
-    }
-    setEndTime(time);
+  const handleSelectTimeSlot = (timeSlot) => {
+    setSelectedTimeSlot(timeSlot);
   };
   const saveTime = async (date) => {
     console.log(`Selected Date: ${date}`);
-    console.log(`Start Time: ${startTime.toLocaleTimeString()}`);
-    console.log(`End Time: ${endTime.toLocaleTimeString()}`);
+    console.log(`Selected Time Slot: ${selectedTimeSlot.start}-${selectedTimeSlot.end}`);
     try {
       const docRef = await addDoc(collection(db, "time"), {
         date: selectedDate,
-        startTime: startTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        endTime: endTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        startTime: selectedTimeSlot.start,
+        endTime: selectedTimeSlot.end,
       });
       console.log("Document written with ID: ", docRef.id);
     } catch (error) {
@@ -48,20 +38,20 @@ const CalendarScreen = () => {
       <View style={styles.calendarContainer}>
         <Calendar onSelectDate={handleSelectDate} />
       </View>
-      <View style={styles.timePickersContainer}>
-        <View style={styles.timePickerWrapper}>
-          <Text style={styles.timePickerLabel}>Starttid</Text>
-          <View style={styles.timePickerContainer}>
-            <TimePicker onChange={handleSelectStartTime} date={startTime} />
-          </View>
-        </View>
-        <View style={{ width: 80 }} />
-        <View style={styles.timePickerWrapper}>
-          <Text style={styles.timePickerLabel}>Sluttid</Text>
-          <View style={styles.timePickerContainer}>
-            <TimePicker onChange={handleSelectEndTime} date={endTime} />
-          </View>
-        </View>
+      <View style={styles.timeSlotsContainer}>
+        {timeSlots.map((timeSlot, index) => (
+          <TouchableOpacity
+            key={index}
+            style={[
+              styles.timeSlotWrapper,
+              selectedTimeSlot === timeSlot && styles.selectedTimeSlot,
+            ]}
+            onPress={() => handleSelectTimeSlot(timeSlot)}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.timeSlotText}>{`${timeSlot.start}-${timeSlot.end}`}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
       <View style={styles.saveButton}>
         <SaveButton onPress={() => saveTime(selectedDate)} />
@@ -77,28 +67,29 @@ const styles = StyleSheet.create({
   calendarContainer: {
     flex: 1,
   },
-  timePickersContainer: {
+  timeSlotsContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     height: 100,
     marginBottom: 100,
   },
-  timePickerWrapper: {
+  timeSlotWrapper: {
     alignItems: "center",
     justifyContent: "center",
     width: 100,
+    height: 80,
+    marginHorizontal: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#ccc",
   },
-  timePickerLabel: {
+  selectedTimeSlot: {
+    backgroundColor: "#3c3",
+  },
+  timeSlotText: {
     fontSize: 22,
     fontWeight: "bold",
-    marginBottom:100,
-  },
-  timePickerContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 25,
-    width: 100,
   },
   saveButton: {
     alignItems: "center",
