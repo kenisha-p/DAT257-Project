@@ -48,7 +48,7 @@ const CalendarScreen = () => {
       </View>
       <View style={styles.timePickersContainer}>
         <View style={styles.timePickerWrapper}>
-          <Text style={styles.timePickerLabel}>Starttid</Text>
+          <Text style={styles.timePickerLabel}>Start time</Text>
           <View style={styles.timePickerContainer}>
             <TimePicker onChange={handleSelectStartTime} date={startTime} />
           </View>

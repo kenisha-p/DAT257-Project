@@ -10,11 +10,18 @@ const CalendarComponent = ({ onSelectDate }) => {
     onSelectDate(date.dateString); // Skicka tillbaka det valda datumet till CalendarScreen
   };
 
+  const markedDates = {
+    '2023-04-15': { marked: true, dotColor: 'green' },
+    '2023-04-20': { marked: true, dotColor: 'blue' },
+    '2023-04-25': { marked: true, dotColor: 'red' },
+    [selectedDate]: { selected: true },
+  };
+
   return (
     <View style={styles.container}>
       <Calendar
         onDayPress={handleSelectDate}
-        markedDates={{ [selectedDate]: { selected: true } }}
+        markedDates={markedDates}
         theme={{
           calendarBackground: '#ffffff',
           todayTextColor: '#3452A2',
