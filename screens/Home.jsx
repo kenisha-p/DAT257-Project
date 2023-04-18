@@ -23,6 +23,9 @@ export default class Home extends React.Component {
     this.props.navigation.navigate('Calendar');
   }
 
+  handleRemoveLaundryPress = () => {
+    this.props.navigation.navigate('Overview');
+  }
   render() {
     if (!this.state.fontLoaded) {
       return <View />;
@@ -37,7 +40,7 @@ export default class Home extends React.Component {
               <Add_laundry onPress={this.handleAddLaundryPress} />
             </View>
             <View style={styles.button}>
-              <Remove_laundry />
+              <Remove_laundry onPress={this.handleRemoveLaundryPress}/>
             </View>
             <View style={styles.button}>
               <Usage />
