@@ -10,7 +10,7 @@ const timeSlots = [
   { start: 8, end: 11 },
   { start: 11, end: 14 },
   { start: 14, end: 17 },
-  { start: 17, end: 20 },
+  { start: 17, end: 19 },
 ];
 const CalendarScreen = () => {
   const [selectedDate, setSelectedDate] = useState(null);
