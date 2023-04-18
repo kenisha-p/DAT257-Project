@@ -38,6 +38,17 @@ const CalendarScreen = () => {
       <View style={styles.calendarContainer}>
         <Calendar onSelectDate={handleSelectDate} />
       </View>
+  
+      <View style={styles.textContainer}>
+        <View style={styles.timeText}>
+          <Text style={{ fontSize: 20 }}>Time</Text>
+        </View>
+        <View style={styles.priceText}>
+          <Text style={{ fontSize: 20 }}>Total cost</Text>
+        </View>
+        
+      </View>
+  
       <View style={styles.timeSlotsContainer}>
         {timeSlots.map((timeSlot, index) => (
           <TouchableOpacity
@@ -53,49 +64,77 @@ const CalendarScreen = () => {
           </TouchableOpacity>
         ))}
       </View>
+  
       <View style={styles.saveButton}>
         <SaveButton onPress={() => saveTime(selectedDate)} />
       </View>
     </View>
   );
+  
 };
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
+    flex: 5,
+    backgroundColor: "#ffffff",
   },
   calendarContainer: {
     flex: 1,
   },
-  timeSlotsContainer: {
+  textContainer: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    paddingBottom: 10,
+  },
+  timeText: {
+    alignItems: "center",
+    paddingRight: 60,
+  },
+  priceText: { 
+    flex: 1,
+    flexDirection: "row", 
+    alignItems: "center", 
+    paddingRight: 110,
+    justifyContent: 'center',
+  },
+  bookText: {
+    
+
+  },
+  timeSlotsContainer: {
+    flexDirection: "column",
+    alignItems: "right",
     justifyContent: "center",
-    height: 100,
-    marginBottom: 100,
+    height: 200,
+    marginBottom: 65,
+    backgroundColor: "#ffffff",
+    paddingHorizontal: 330,
+    paddingBottom: 0, // add some space between time slots and text views
   },
   timeSlotWrapper: {
     alignItems: "center",
     justifyContent: "center",
-    width: 100,
-    height: 80,
-    marginHorizontal: 10,
-    borderRadius: 10,
+    width: 55,
+    height: 55,
+    borderRadius: 55 / 2,
     borderWidth: 1,
     borderColor: "#ccc",
+    marginTop: 8, // add margin between buttons
   },
   selectedTimeSlot: {
-    backgroundColor: "#3c3",
+    backgroundColor: "#ccc",
   },
   timeSlotText: {
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: "bold",
   },
   saveButton: {
     alignItems: "center",
     justifyContent: "center",
-    marginHorizontal: 60,
+    marginHorizontal: 22,
     marginBottom: 80,
   },
 });
+
 export default CalendarScreen;
