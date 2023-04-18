@@ -4,6 +4,8 @@ import Calendar from "../components/CalendarComponent";
 import SaveButton from "../components/add_time";
 import { collection, addDoc } from "firebase/firestore";
 import db from "../config";
+import axios from 'axios';
+
 const timeSlots = [
   { start: 8, end: 11 },
   { start: 11, end: 14 },
@@ -33,6 +35,18 @@ const CalendarScreen = () => {
       console.error("Error adding document: ", error);
     }
   };
+  async function fetchElectricityPrices() {
+    try {
+      const response = await axios.get('https://www.elprisetjustnu.se/api/v1/prices/2023/04-18_SE3.json');
+      console.log(response.data);
+    } catch (error) {
+      console.error('Error fetching electricity prices: ', error);
+    }
+  }
+
+  fetchElectricityPrices();
+
+
   return (
     <View style={styles.container}>
       <View style={styles.calendarContainer}>

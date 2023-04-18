@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@react-navigation/stack": "^6.3.16",
+    "axios": "^1.3.5",
     "expo": "~48.0.10",
     "expo-status-bar": "~1.4.4",
     "firebase": "^9.19.1",
