@@ -23,7 +23,7 @@ const Navigator = () => {
       <Stack.Screen
         name="Overview"
         component={Overview}
-        options={{ title: 'Booking overview' }}
+        options={{ title: 'Your booked times' }}
       />
 
     </Stack.Navigator>

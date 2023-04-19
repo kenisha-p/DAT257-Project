@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Remove_bottom from '../components/Remove_bottom';
 import Remove_Rectangle from '../components/Remove_Rectangle';
+import { collection, deleteDoc } from "firebase/firestore"; 
+import db from '../config';
 
 const Overview = () => {
   return (
