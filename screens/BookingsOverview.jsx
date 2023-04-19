@@ -74,8 +74,8 @@ const styles = StyleSheet.create({
   Remove_Rectangle: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginHorizontal: 100,
-    marginBottom: 10,
+    marginHorizontal: 115,
+    marginBottom: 30,
   }
 });
 
