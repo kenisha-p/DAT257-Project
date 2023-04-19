@@ -6,12 +6,16 @@ import { collection, addDoc } from "firebase/firestore";
 import db from "../config";
 import axios from 'axios';
 
+
+//The available timeSLots which are displayed in the application. 
 const timeSlots = [
   { start: 8, end: 11 },
   { start: 11, end: 14 },
   { start: 14, end: 17 },
   { start: 17, end: 19 },
 ];
+
+//This function returns the UI for the calendar and handles the selection of date
 const CalendarScreen = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
@@ -21,8 +25,11 @@ const CalendarScreen = () => {
   const handleSelectTimeSlot = (timeSlot) => {
     setSelectedTimeSlot(timeSlot);
   };
+
+// This function saves the selected date and time slot to the Firestore database
   const saveTime = async (date) => {
     console.log(`Selected Date: ${date}`);
+
     console.log(`Selected Time Slot: ${selectedTimeSlot.start}-${selectedTimeSlot.end}`);
     try {
       const docRef = await addDoc(collection(db, "time"), {
@@ -35,18 +42,32 @@ const CalendarScreen = () => {
       console.error("Error adding document: ", error);
     }
   };
-  async function fetchElectricityPrices() {
-    try {
-      const response = await axios.get('https://www.elprisetjustnu.se/api/v1/prices/2023/04-18_SE3.json');
-      console.log(response.data);
-    } catch (error) {
-      console.error('Error fetching electricity prices: ', error);
-    }
-  }
 
+//Get from API. 
+async function fetchElectricityPrices() {
+  try {
+    const today = new Date();
+    
+    // formattedDate gets put into the 'axios.get' request to retrieve the current day's electricity prices 
+    const formattedDate = `${today.getFullYear()}/${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
+    
+    // Send a GET request to the API endpoint with the formatted date
+    const response = await axios.get(`https://www.elprisetjustnu.se/api/v1/prices/${formattedDate}_SE3.json`);
+    
+    //At this stage, data from API only is printed in console.
+    console.log(response.data);
+  } catch (error) {
+    console.error('Error fetching electricity prices: ', error);
+  }
+}
+
+  //Calls the function which displays the API
   fetchElectricityPrices();
 
 
+  
+//Render for the UI or "View". Handles the textbars for "Time" and "Total cost". Handles as well the (sort of) 
+//radio buttons which the user is to press for booking. 
   return (
     <View style={styles.container}>
       <View style={styles.calendarContainer}>
@@ -60,7 +81,9 @@ const CalendarScreen = () => {
         <View style={styles.priceText}>
           <Text style={{ fontSize: 20 }}>Total cost</Text>
         </View>
-        
+        <View style={styles.bookText}>
+          <Text style={{ fontSize: 20 }}>Book</Text>
+        </View>
       </View>
   
       <View style={styles.timeSlotsContainer}>
@@ -99,31 +122,28 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 20,
-    paddingBottom: 10,
+    paddingBottom: 30,
   },
-  timeText: {
+  timeText: {},
+  priceText: {
+    flex: 2,
     alignItems: "center",
-    paddingRight: 60,
-  },
-  priceText: { 
-    flex: 1,
-    flexDirection: "row", 
-    alignItems: "center", 
-    paddingRight: 110,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   bookText: {
-    
-
+    flex: 0,
+    alignItems: "flex-end",
+    justifyContent: "flex-end",
+    paddingRight: 20,
   },
   timeSlotsContainer: {
     flexDirection: "column",
-    alignItems: "right",
+    alignItems: "flex-end",
     justifyContent: "center",
     height: 200,
-    marginBottom: 65,
+    marginBottom: 50,
     backgroundColor: "#ffffff",
-    paddingHorizontal: 330,
+    paddingHorizontal: 28,
     paddingBottom: 0, // add some space between time slots and text views
   },
   timeSlotWrapper: {
@@ -134,7 +154,7 @@ const styles = StyleSheet.create({
     borderRadius: 55 / 2,
     borderWidth: 1,
     borderColor: "#ccc",
-    marginTop: 8, // add margin between buttons
+    marginTop: 8,
   },
   selectedTimeSlot: {
     backgroundColor: "#ccc",
@@ -150,5 +170,6 @@ const styles = StyleSheet.create({
     marginBottom: 80,
   },
 });
+
 
 export default CalendarScreen;
