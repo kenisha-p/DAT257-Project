@@ -12,13 +12,16 @@ const CalendarComponent = ({ onSelectDate }) => {
 
 const tomorrow = new Date();
 tomorrow.setDate(tomorrow.getDate() + 1);
+const today = new Date();
+today.setDate(today.getDate());
 
   const markedDates = {
     //'2023-04-15': { marked: true, dotColor: 'green' },
     //'2023-04-20': { marked: true, dotColor: 'blue' },
     //'2023-04-25': { marked: true, dotColor: 'red' },
     [selectedDate]: { selected: true },
-    [tomorrow.toISOString().slice(0, 10)]: { marked: true, dotColor: 'purple' },
+    [tomorrow.toISOString().slice(0, 10)]: { marked: true, dotColor: 'green' },
+    [today.toISOString().slice(0, 10)]: { marked: true, dotColor: 'green' },
   };
 
   return (
