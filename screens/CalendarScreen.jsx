@@ -5,6 +5,7 @@ import SaveButton from "../components/add_time";
 import { collection, addDoc } from "firebase/firestore";
 import db from "../config";
 import axios from 'axios';
+import AddButton from "../components/AddButton";
 
 
 
@@ -89,17 +90,21 @@ async function fetchElectricityPrices() {
       </View>
       <View style={styles.listan}>
         <Text style={[styles.item, { textAlign: 'left' }]}>08:00-11:00</Text>
+        <AddButton onPress={() => {}} />
       </View>
       <View style={styles.listan}>
         <Text style={[styles.item, { textAlign: 'left' }]}>11:00-14:00</Text>
+        <AddButton onPress={() => {}} />
       </View>
       <View style={styles.listan}>
         <Text style={[styles.item, { textAlign: 'left' }]}>14:00-17:00</Text>
+        <AddButton onPress={() => {}} />
       </View>
       <View style={styles.listan}>
         <Text style={[styles.item, { textAlign: 'left' }]}>17:00-20:00</Text>
+        <AddButton onPress={() => {}} />
       </View>
-    
+  
   
       <View style={styles.saveButton}>
         <SaveButton onPress={() => saveTime(selectedDate)} />
