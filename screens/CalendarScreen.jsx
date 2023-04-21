@@ -9,13 +9,14 @@ import axios from 'axios';
 
 
 
+
 //The available timeSLots which are displayed in the application. 
-const timeSlots = [
+/*const timeSlots = [
   { start: 8, end: 11 },
   { start: 11, end: 14 },
   { start: 14, end: 17 },
   { start: 17, end: 19 },
-];
+];*/
 
 //This function returns the UI for the calendar and handles the selection of date
 const CalendarScreen = () => {
@@ -75,7 +76,8 @@ async function fetchElectricityPrices() {
     const today = new Date();
     
     // formattedDate gets put into the 'axios.get' request to retrieve the current day's electricity prices 
-    const formattedDate = `${today.getFullYear()}/${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
+    const formattedDate = `${today.getFullYear()}/${(today.getMonth() + 1).toString().padStart(2, '0')}-${
+      today.getDate().toString().padStart(2, '0')}`;
     
     // Send a GET request to the API endpoint with the formatted date
     const response = await axios.get(`https://www.elprisetjustnu.se/api/v1/prices/${formattedDate}_SE3.json`);
@@ -130,23 +132,21 @@ async function fetchElectricityPrices() {
           <Text style={{ fontSize: 20 }}>Book</Text>
         </View>
       </View>
-      <View style={styles.timeSlotsContainer}>
-        {timeSlots.map((timeSlot, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[
-              styles.timeSlotWrapper,
-              selectedTimeSlot === timeSlot && styles.selectedTimeSlot,
-            ]}
-            onPress={() => handleSelectTimeSlot(timeSlot)}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.timeSlotText}>{`${timeSlot.start}-${timeSlot.end}`}</Text>
-          </TouchableOpacity>
-        ))}
+      <View style={styles.listan}>
+        <Text style={[styles.item, { textAlign: 'left' }]}>08:00-11:00</Text>
+      </View>
+      <View style={styles.listan}>
+        <Text style={[styles.item, { textAlign: 'left' }]}>11:00-14:00</Text>
+      </View>
+      <View style={styles.listan}>
+        <Text style={[styles.item, { textAlign: 'left' }]}>14:00-17:00</Text>
+      </View>
+      <View style={styles.listan}>
+        <Text style={[styles.item, { textAlign: 'left' }]}>17:00-20:00</Text>
       </View>
   
 
+    
   
       <View style={styles.saveButton}>
         <SaveButton onPress={() => saveTime(selectedDate)} />
@@ -180,7 +180,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 30,
   },
-  timeText: {},
+  timeText: {
+    flex: 0,
+    alignItems: "left",
+    justifyContent: "flex-end",
+    paddingLeft: 15,
+  },
   priceText: {
     flex: 2,
     alignItems: "center",
@@ -188,11 +193,11 @@ const styles = StyleSheet.create({
   },
   bookText: {
     flex: 0,
-    alignItems: "flex-end",
+    alignItems: "right",
     justifyContent: "flex-end",
-    paddingRight: 20,
+    paddingRight: 15,
   },
-  timeSlotsContainer: {
+  /*timeSlotsContainer: {
     flexDirection: "column",
     alignItems: "flex-end",
     justifyContent: "center",
@@ -201,8 +206,20 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
     paddingHorizontal: 28,
     paddingBottom: 0, // add some space between time slots and text views
+  },*/
+  listan: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    paddingVertical: 12,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#ffffff',
+    backgroundColor: '#e6e6e6',
+    marginHorizontal: 10,
+    marginBottom: 10,
   },
-  timeSlotWrapper: {
+  /*timeSlotWrapper: {
     alignItems: "center",
     justifyContent: "center",
     width: 55,
@@ -218,7 +235,7 @@ const styles = StyleSheet.create({
   timeSlotText: {
     fontSize: 18,
     fontWeight: "bold",
-  },
+  },*/
   saveButton: {
     alignItems: "center",
     justifyContent: "center",
