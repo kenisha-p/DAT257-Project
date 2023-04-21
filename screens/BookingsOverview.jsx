@@ -1,9 +1,50 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Remove_bottom from '../components/Remove_bottom';
-import Remove_Rectangle from '../components/Remove_Rectangle';
+import BookedTimes from '../components/BookedTimes';
+import RemoveRectangle from '../components/Remove_Rectangle';
+import { collection, getDocs, onSnapshot, deleteDoc } from 'firebase/firestore';
+import db from '../config';
 
 const Overview = () => {
+  const [data, setData] = useState([]);
+  const collectionRef = collection(db, 'mycollection');
+
+  useEffect(() => {
+    const getData = async () => {
+      const querySnapshot = await getDocs(collectionRef);
+      const docsData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        date: doc.data().date,
+        startTime: doc.data().startTime,
+        endTime: doc.data().endTime,
+      }));
+      setData(docsData);
+    };
+    getData();
+
+    // Set up a listener to listen for changes to the "mycollection" collection
+    const unsubscribe = onSnapshot(collectionRef, (querySnapshot) => {
+      const docsData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        date: doc.data().date,
+        startTime: doc.data().startTime,
+        endTime: doc.data().endTime,
+      }));
+      setData(docsData);
+    });
+
+    // To stop listening for changes, call the unsubscribe function
+    return () => unsubscribe();
+  }, []);
+
+  const handleRemove = async (id) => {
+    try {
+      await deleteDoc(collectionRef, id);
+    } catch (error) {
+      console.log('Error deleting document:', error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -11,23 +52,18 @@ const Overview = () => {
         <Text style={[styles.headerText, { textAlign: 'right' }]}>Time</Text>
         <Text style={[styles.headerText, { textAlign: 'right' }]}>Remove</Text>
       </View>
-      <View style={styles.list}>
-        <Text style={[styles.item, { textAlign: 'left' }]}>Monday</Text>
-        <Text style={[styles.item, { textAlign: 'left' }]}>10:00 AM</Text>
-        <Remove_bottom onPress={() => {}} />
-      </View>
-      <View style={styles.list}>
-        <Text style={[styles.item, { textAlign: 'left' }]}>Tuesday</Text>
-        <Text style={[styles.item, { textAlign: 'left' }]}>11:30 AM</Text>
-        <Remove_bottom onPress={() => {}} />
-      </View>
-      <View style={styles.list}>
-        <Text style={[styles.item, { textAlign: 'left' }]}>Wednesday</Text>
-        <Text style={[styles.item, { textAlign: 'left' }]}>2:45 PM</Text>
-        <Remove_bottom onPress={() => {}} />
-      </View>
+      {data.map((item) => (
+        <BookedTimes
+          key={item.id}
+          id={item.id}
+          date={item.date}
+          startTime={item.startTime}
+          endTime={item.endTime}
+          onRemove={() => handleRemove(item.id)}
+        />
+      ))}
       <View style={[styles.Remove_Rectangle, { position: 'absolute', bottom: 0 }]}>
-        <Remove_Rectangle onPress={() => {}} />
+        <RemoveRectangle onPress={() => {}} />
       </View>
     </View>
   );
@@ -44,7 +80,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 10,
     paddingVertical: 20,
-    
   },
   headerText: {
     fontSize: 15,
@@ -53,30 +88,12 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 20,
   },
-  list: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#ffffff',
-    backgroundColor: '#e6e6e6',
-    marginHorizontal: 40,
-    marginBottom: 10,
-  },
-  
-  item: {
-    fontSize: 15,
-    flex: 1,
-    marginHorizontal: 10,
-  },
   Remove_Rectangle: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginHorizontal: 100,
-    marginBottom: 10,
-  }
+    marginHorizontal: 115,
+    marginBottom: 30,
+  },
 });
 
 export default Overview;
