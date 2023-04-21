@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import { useEffect } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import Calendar from "../components/CalendarComponent";
 import SaveButton from "../components/add_time";
 import { collection, addDoc } from "firebase/firestore";
 import db from "../config";
 import axios from 'axios';
+
 
 
 //The available timeSLots which are displayed in the application. 
@@ -67,39 +69,45 @@ const CalendarScreen = () => {
     return outputDict;
   }
   
-  async function asynchronousFunction() {
-    try {
-      const today = new Date();
-
-      // formattedDate gets put into the 'axios.get' request to retrieve the current day's electricity prices 
-      const formattedDate = `${today.getFullYear()}/${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
-
-      // Send a GET request to the API endpoint with the formatted date
-      const response = await axios.get(`https://www.elprisetjustnu.se/api/v1/prices/${formattedDate}_SE3.json`);
-
-      console.log("under fetch");
-      console.log(response)
-      return response;
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  }
-
-  function fetchElectricityPrices() {
-    let SEKValuesFinal = {}; // declare SEKValuesFinal with let keyword
-    const response = asynchronousFunction();
-
-    console.log("efter fetch");
-    console.log(response.data);
+//Get from API. 
+async function fetchElectricityPrices() {
+  try {
+    const today = new Date();
+    
+    // formattedDate gets put into the 'axios.get' request to retrieve the current day's electricity prices 
+    const formattedDate = `${today.getFullYear()}/${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
+    
+    // Send a GET request to the API endpoint with the formatted date
+    const response = await axios.get(`https://www.elprisetjustnu.se/api/v1/prices/${formattedDate}_SE3.json`);
+    
     //At this stage, data from API only is printed in console.
-    SEKValuesFinal = getSEKValues(response.data);   
-    return SEKValuesFinal; // return the value from the function
-  }
+    console.log("response.data");
+    console.log(response.data);
 
-  const sekValuesFinal = fetchElectricityPrices();
+
+    SEKvalue = getSEKValues(response.data)
+    console.log("sekvalues");
+    console.log(SEKvalue);
+
+  } catch (error) {
+    console.error('Error fetching electricity prices: ', error);
+  }
+  return SEKvalue;
+}
+
+  const [sekValuesFinal, setSekValuesFinal] = useState(null);
+  //Calls the function which displays the API
+
+  useEffect(() => {
+    async function getData() {
+      const sekValuesFinal = await fetchElectricityPrices();
+      setSekValuesFinal(sekValuesFinal);
+    }
+    getData();
+  }, []);
 
   console.log ("SEKvaluesfinal");
-  console.log (SEKvaluesfinal);
+  console.log (sekValuesFinal);
   
   
 //Render for the UI or "View". Handles the textbars for "Time" and "Total cost". Handles as well the (sort of) 
@@ -109,36 +117,19 @@ const CalendarScreen = () => {
       <View style={styles.calendarContainer}>
         <Calendar onSelectDate={handleSelectDate} />
       </View>
-
-
-      <View style={styles.textContainer}>
-      {Object.keys(sekValuesFinal).map((key) => (
-        <View key={key} style={styles.textItem}>
-          <Text style={{ fontSize: 20 }}>{key}</Text>
-          <Text style={{ fontSize: 16, color: '#888' }}>{sekValuesFinal[key]}</Text>
-        </View>
-      ))}
-    </View>
   
 
       <View style={styles.textContainer}>
         <View style={styles.timeText}>
           <Text style={{ fontSize: 20 }}>Times</Text>
-          <Text style={{ fontSize: 16, color: '#888' }}>{}</Text>
         </View>
         <View style={styles.priceText}>
           <Text style={{ fontSize: 20 }}>Total cost</Text>
-          <Text style={{ fontSize: 16, color: '#888' }}>Enter the total cost:</Text>
         </View>
         <View style={styles.bookText}>
           <Text style={{ fontSize: 20 }}>Book</Text>
-          <Text style={{ fontSize: 16, color: '#888' }}>Click to book:</Text>
         </View>
       </View>
-
-      
-
-  
       <View style={styles.timeSlotsContainer}>
         {timeSlots.map((timeSlot, index) => (
           <TouchableOpacity
@@ -155,9 +146,21 @@ const CalendarScreen = () => {
         ))}
       </View>
   
+
+  
       <View style={styles.saveButton}>
         <SaveButton onPress={() => saveTime(selectedDate)} />
       </View>
+
+      <View style={styles.textContainer}>
+      {Object.keys(sekValuesFinal).map((key) => (
+        <View key={key} style={styles.textItem}>
+          <Text style={{ fontSize: 20 }}>{key}</Text>
+          <Text style={{ fontSize: 16, color: '#888' }}>{sekValuesFinal[key]}</Text>
+        </View>
+      ))}
+    </View>
+
     </View>
   );
   
