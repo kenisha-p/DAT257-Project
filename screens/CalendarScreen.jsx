@@ -1,65 +1,166 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
-import Calendar from '../components/CalendarComponent';
-import TimePicker from '../components/SelectTimeComponent';
-import SaveButton from '../components/add_time';
-import { collection, addDoc } from "firebase/firestore"; 
-import db from '../config';
+import React, { useState, useEffect } from "react";
+import { View, StyleSheet, Text } from "react-native";
+import Calendar from "../components/CalendarComponent";
+import SaveButton from "../components/add_time";
+import { collection, addDoc } from "firebase/firestore";
+import db from "../config";
+import axios from "axios";
+import AddButton from "../components/AddButton";
 
 const CalendarScreen = () => {
   const [selectedDate, setSelectedDate] = useState(null);
-  const [startTime, setStartTime] = useState(new Date());
-  const [endTime, setEndTime] = useState(new Date());
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
+  const [todaysDate, setTodaysDate] = useState("");
 
   const handleSelectDate = (date) => {
     setSelectedDate(date);
+    setSelectedTimeSlot(null); // clear selected timeslot when date is changed
   };
 
-  const handleSelectStartTime = (time) => {
-    setStartTime(time);
+  const handleSelectTimeSlot = (timeSlot) => {
+    setSelectedTimeSlot(timeSlot);
   };
 
-  const handleSelectEndTime = (time) => {
-    setEndTime(time);
-  };
-
-  const saveTime = async (date) => {
-    console.log(`Selected Date: ${date}`);
-    console.log(`Start Time: ${startTime.toLocaleTimeString()}`);
-    console.log(`End Time: ${endTime.toLocaleTimeString()}`);
-
+  const saveTime = async () => {
     try {
       const docRef = await addDoc(collection(db, "time"), {
         date: selectedDate,
-        startTime: startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        endTime: endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        startTime: selectedTimeSlot.start,
+        endTime: selectedTimeSlot.end,
+        price: selectedTimeSlot.price,
       });
       console.log("Document written with ID: ", docRef.id);
-
     } catch (error) {
-      console.error('Error adding document: ', error);
+      console.error("Error adding document: ", error);
     }
   };
+
+  const [cost8_11, setCost8_11] = useState(0);
+  const [cost12_15, setCost12_15] = useState(0);
+  const [cost16_19, setCost16_19] = useState(0);
+
+  useEffect(() => {
+    const fetchElectricityPrices = async () => {
+      try {
+        const today = new Date();
+        setTodaysDate(today.toISOString().slice(0, 10)); // set todaysDate as a string in YYYY-MM-DD format
+
+        const formattedDate = `${today.getFullYear()}/${
+          (today.getMonth() + 1).toString().padStart(2, "0")
+        }-${today.getDate().toString().padStart(2, "0")}`;
+
+        const response = await axios.get(
+          `https://www.elprisetjustnu.se/api/v1/prices/${formattedDate}_SE3.json`
+        );
+
+        setCost8_11(
+          (
+            (response.data[9].SEK_per_kWh +
+              response.data[10].SEK_per_kWh +
+              response.data[11].SEK_per_kWh) *
+            3
+          ).toFixed(1)
+        );
+
+        setCost12_15(
+          (
+            (response.data[13].SEK_per_kWh +
+              response.data[14].SEK_per_kWh +
+              response.data[15].SEK_per_kWh) *
+            3
+          ).toFixed(1)
+        );
+
+        setCost16_19(
+          (
+            (response.data[17].SEK_per_kWh +
+              response.data[18].SEK_per_kWh +
+              response.data[19].SEK_per_kWh) *
+            3
+          ).toFixed(1)
+        );
+      } catch (error) {
+        console.error("Error fetching electricity prices: ", error);
+      }
+    };
+    fetchElectricityPrices();
+  }, []);
 
   return (
     <View style={styles.container}>
       <View style={styles.calendarContainer}>
         <Calendar onSelectDate={handleSelectDate} />
       </View>
-      <View style={styles.timePickersContainer}>
-        <View style={styles.timePickerWrapper}>
-          <Text style={styles.timePickerLabel}>Starttid</Text>
-          <View style={styles.timePickerContainer}>
-            <TimePicker onChange={handleSelectStartTime} date={startTime} />
-          </View>
+      <View style={styles.textContainer}>
+        <View style={styles.timeText}>
+          <Text style={{ fontSize: 20 }}>Time</Text>
         </View>
-        <View style={{ width: 80 }} />
-        <View style={styles.timePickerWrapper}>
-          <Text style={styles.timePickerLabel}>Sluttid</Text>
-          <View style={styles.timePickerContainer}>
-            <TimePicker onChange={handleSelectEndTime} date={endTime} />
-          </View>
+        <View style={styles.priceText}>
+          <Text style={{ fontSize: 20 }}>Total cost</Text>
         </View>
+        <View style={styles.bookText}>
+          <Text style={{ fontSize: 20 }}>Book</Text>
+        </View>
+      </View>
+      <View style={styles.listan}>
+        <Text style={[styles.item, { textAlign: 'left' }]}>08:00-11:00</Text>
+        {selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
+        <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>{`${cost8_11} kr`}</Text>
+        ) : (
+        <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>Hög</Text>
+        )}
+        <AddButton
+          onPress={() =>
+            handleSelectTimeSlot({
+              start: '08:00',
+              end: '11:00',
+              price:
+                selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
+                  ? `${cost8_11} kr`
+                  : 'Hög',
+            })
+          }
+        />
+      </View>
+      <View style={styles.listan}>
+        <Text style={[styles.item, { textAlign: 'left' }]}>12:00-15:00</Text>
+         {selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
+          <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>{`${cost12_15} kr`}</Text>
+        ) : (
+          <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>Medium</Text>
+        )}
+        <AddButton
+          onPress={() =>
+            handleSelectTimeSlot({
+              start: '12:00',
+              end: '15:00',
+              price:
+                selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
+                  ? `${cost12_15} kr`
+                  : 'Hög',
+            })
+          }
+        />
+      </View>
+      <View style={styles.listan}>
+        <Text style={[styles.item, { textAlign: 'left' }]}>16:00-19:00</Text>
+        {selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
+          <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>{`${cost12_15} kr`}</Text>
+        ) : (
+          <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>Hög</Text>
+        )}
+        <AddButton
+          onPress={() =>
+            handleSelectTimeSlot({
+              start: '16:00',
+              end: '19:00',
+              price:
+                selectedDate && todaysDate === selectedDate.toISOString().slice(0, 10)
+                  ? `${cost16_19} kr`
+                  : 'Hög',
+            })
+          }
+        />
       </View>
       <View style={styles.saveButton}>
         <SaveButton onPress={() => saveTime(selectedDate)} />
@@ -68,44 +169,85 @@ const CalendarScreen = () => {
   );
 };
 
+
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
+    flex: 5,
+    backgroundColor: "#ffffff",
   },
   calendarContainer: {
     flex: 1,
   },
-  timePickersContainer: {
+  textContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    paddingBottom: 5,
+  },
+  timeText: {
+    flex: 0,
+    alignItems: "left",
+    justifyContent: "flex-end",
+    paddingLeft: 15,
+  },
+  priceText: {
+    flex: 2,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  bookText: {
+    flex: 0,
+    alignItems: "right",
+    justifyContent: "flex-end",
+    paddingRight: 15,
+  },
+  /*timeSlotsContainer: {
+    flexDirection: "column",
+    alignItems: "flex-end",
+    justifyContent: "center",
+    height: 200,
+    marginBottom: 50,
+    backgroundColor: "#ffffff",
+    paddingHorizontal: 28,
+    paddingBottom: 0, // add some space between time slots and text views
+  },*/
+  listan: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 100,
-    marginBottom: 100,
-    
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    paddingVertical: 12,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#ffffff',
+    backgroundColor: '#e6e6e6',
+    marginHorizontal: 10,
+    marginBottom: 10,
   },
-  timePickerWrapper: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 100,
+  /*timeSlotWrapper: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 55,
+    height: 55,
+    borderRadius: 55 / 2,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    marginTop: 8,
   },
-  timePickerLabel: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 5,
+  selectedTimeSlot: {
+    backgroundColor: "#ccc",
   },
-  timePickerContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 25,
-    width: 100,
-  },
+  timeSlotText: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },*/
   saveButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: 60,
+    alignItems: "center",
+    justifyContent: "center",
+    marginHorizontal: 22,
     marginBottom: 80,
   },
 });
+
 
 export default CalendarScreen;
