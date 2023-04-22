@@ -1,41 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Remove_bottom from '../components/Remove_bottom';
 import Remove_Rectangle from '../components/Remove_Rectangle';
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
-import db from "../config";
 
 const Overview = () => {
-  const [times, setTimes] = useState([]);
-  const [timeToRemove, setTimeToRemove] = useState(null);
-
-  useEffect(() => {
-    async function getData() {
-      const querySnapshot = await getDocs(collection(db, "time"));
-      const timesArray = [];
-      querySnapshot.forEach((doc) => {
-        timesArray.push({ id: doc.id, ...doc.data() }); // Added id property to each time object
-      });
-      setTimes(timesArray);
-    }
-    getData();
-  }, []);
-
-  const handleSelectTime = (id) => {
-    setTimeToRemove(id);
-  };
-
-  const handleRemoveTime = async () => {
-    if (!timeToRemove) return;
-    try {
-      await deleteDoc(doc(db, "time", timeToRemove));
-      setTimes((prevTimes) => prevTimes.filter((time) => time.id !== timeToRemove));
-      setTimeToRemove(null);
-    } catch (error) {
-      console.error("Error removing time: ", error);
-    }
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -43,18 +11,24 @@ const Overview = () => {
         <Text style={[styles.headerText, { textAlign: 'right' }]}>Time</Text>
         <Text style={[styles.headerText, { textAlign: 'right' }]}>Remove</Text>
       </View>
-      {times.map((time) => (
-        <View style={styles.list} key={time.id}>
-          <Text style={[styles.item, { textAlign: 'left' }]}>{time.date}</Text>
-          <Text style={[styles.item, { textAlign: 'left' }]}>{`${time.startTime}-${time.endTime}`}</Text>
-          <Remove_bottom onPress={() => handleSelectTime(time.id)} />
-        </View>
-      ))}
-      {timeToRemove && (
-        <View style={[styles.Remove_Rectangle, { position: 'absolute', bottom: 0 }]}>
-          <Remove_Rectangle onPress={handleRemoveTime} timeId={timeToRemove} />
-        </View>
-      )}
+      <View style={styles.list}>
+        <Text style={[styles.item, { textAlign: 'left' }]}>Monday</Text>
+        <Text style={[styles.item, { textAlign: 'left' }]}>10:00 AM</Text>
+        <Remove_bottom onPress={() => {}} />
+      </View>
+      <View style={styles.list}>
+        <Text style={[styles.item, { textAlign: 'left' }]}>Tuesday</Text>
+        <Text style={[styles.item, { textAlign: 'left' }]}>11:30 AM</Text>
+        <Remove_bottom onPress={() => {}} />
+      </View>
+      <View style={styles.list}>
+        <Text style={[styles.item, { textAlign: 'left' }]}>Wednesday</Text>
+        <Text style={[styles.item, { textAlign: 'left' }]}>2:45 PM</Text>
+        <Remove_bottom onPress={() => {}} />
+      </View>
+      <View style={[styles.Remove_Rectangle, { position: 'absolute', bottom: 0 }]}>
+        <Remove_Rectangle onPress={() => {}} />
+      </View>
     </View>
   );
 };
@@ -101,7 +75,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 100,
-    marginBottom: ,
+    marginBottom: 10,
   }
 });
 
