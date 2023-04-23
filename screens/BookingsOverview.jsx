@@ -1,9 +1,53 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Remove_bottom from '../components/Remove_bottom';
 import Remove_Rectangle from '../components/Remove_Rectangle';
+import RemoveAlert from '../components/RemoveAlert';
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import db from "../config";
 
 const Overview = () => {
+  const [times, setTimes] = useState([]);
+  const [timeToRemove, setTimeToRemove] = useState(null);
+  const [showRemoveAlert, setShowRemoveAlert] = useState(false);
+
+  // Go thru the database, push all the enteties to an array and add and id to every property
+  useEffect(() => {
+    async function getData() {
+      const querySnapshot = await getDocs(collection(db, "time"));
+      const timesArray = [];
+      querySnapshot.forEach((doc) => {
+        timesArray.push({ id: doc.id, ...doc.data() }); // Added id property to each time object
+      });
+      setTimes(timesArray);
+    }
+    getData();
+  }, []);
+
+  const handleSelectTime = (id) => {
+    setTimeToRemove(id);
+  };
+
+  const handleRemoveTime = async () => {
+    if (!timeToRemove) {
+      console.log("No time to remove selected");
+      return;
+    }
+    try {
+      await deleteDoc(doc(db, "time", timeToRemove));
+      setTimes((prevTimes) => prevTimes.filter((time) => time.id !== timeToRemove));
+      setTimeToRemove(null);
+      setShowRemoveAlert(false); // Hide the remove alert after removing the time
+    } catch (error) {
+      console.error("Error removing time: ", error);
+    }
+  };  
+
+  const confirmRemoveTime = () => {
+    console.log("Confirming removal of time with id:", timeToRemove);
+    setShowRemoveAlert(true);
+  };
+  
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -11,27 +55,33 @@ const Overview = () => {
         <Text style={[styles.headerText, { textAlign: 'right' }]}>Time</Text>
         <Text style={[styles.headerText, { textAlign: 'right' }]}>Remove</Text>
       </View>
-      <View style={styles.list}>
-        <Text style={[styles.item, { textAlign: 'left' }]}>Monday</Text>
-        <Text style={[styles.item, { textAlign: 'left' }]}>10:00 AM</Text>
-        <Remove_bottom onPress={() => {}} />
-      </View>
-      <View style={styles.list}>
-        <Text style={[styles.item, { textAlign: 'left' }]}>Tuesday</Text>
-        <Text style={[styles.item, { textAlign: 'left' }]}>11:30 AM</Text>
-        <Remove_bottom onPress={() => {}} />
-      </View>
-      <View style={styles.list}>
-        <Text style={[styles.item, { textAlign: 'left' }]}>Wednesday</Text>
-        <Text style={[styles.item, { textAlign: 'left' }]}>2:45 PM</Text>
-        <Remove_bottom onPress={() => {}} />
-      </View>
-      <View style={[styles.Remove_Rectangle, { position: 'absolute', bottom: 0 }]}>
-        <Remove_Rectangle onPress={() => {}} />
-      </View>
+      {times.map((time) => (
+        <View style={styles.list} key={time.id}>
+          <Text style={[styles.item, { textAlign: 'left' }]}>{time.date}</Text>
+          <Text style={[styles.item, { textAlign: 'left' }]}>{`${time.startTime}-${time.endTime}`}</Text>
+          <Remove_bottom onPress={() => handleSelectTime(time.id)} />
+        </View>
+      ))}
+      {timeToRemove && (
+        <View style={[styles.Remove_Rectangle, { position: 'absolute', bottom: 0 }]}>
+          <Remove_Rectangle onPress={confirmRemoveTime} timeId={timeToRemove} />
+        </View>
+      )}
+      {showRemoveAlert && (
+        <RemoveAlert
+          visible={true}
+          onCancel={() => {
+            setShowRemoveAlert(false);
+            setTimeToRemove(null);
+          }}
+          onConfirm={handleRemoveTime}
+        />
+      )}
     </View>
   );
 };
+
+
 
 const styles = StyleSheet.create({
   container: {
@@ -75,7 +125,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 100,
-    marginBottom: 10,
+    marginBottom:100,
   }
 });
 

@@ -20,8 +20,8 @@ today.setDate(today.getDate());
     //'2023-04-20': { marked: true, dotColor: 'blue' },
     //'2023-04-25': { marked: true, dotColor: 'red' },
     [selectedDate]: { selected: true },
-    [tomorrow.toISOString().slice(0, 10)]: { marked: true, dotColor: 'green' },
-    [today.toISOString().slice(0, 10)]: { marked: true, dotColor: 'green' },
+    //[tomorrow.toISOString().slice(0, 10)]: { marked: true, dotColor: 'green' },
+    //[today.toISOString().slice(0, 10)]: { marked: true, dotColor: 'green' },
   };
 
   return (
