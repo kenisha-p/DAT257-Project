@@ -5,7 +5,7 @@ const MyButton = ({ onPress }) => {
   return (
     <TouchableOpacity onPress={onPress}>
       <Image
-        source={require('../assets/remove.png')}
+        source={require('../assets/Booked_times.png')}
       />
     </TouchableOpacity>
   );

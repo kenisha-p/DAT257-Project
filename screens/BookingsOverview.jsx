@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Remove_bottom from '../components/Remove_bottom';
 import Remove_Rectangle from '../components/Remove_Rectangle';
+import RemoveAlert from '../components/RemoveAlert';
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import db from "../config";
 
 const Overview = () => {
   const [times, setTimes] = useState([]);
   const [timeToRemove, setTimeToRemove] = useState(null);
+  const [showRemoveAlert, setShowRemoveAlert] = useState(false);
 
+  // Go thru the database, push all the enteties to an array and add and id to every property
   useEffect(() => {
     async function getData() {
       const querySnapshot = await getDocs(collection(db, "time"));
@@ -26,16 +29,25 @@ const Overview = () => {
   };
 
   const handleRemoveTime = async () => {
-    if (!timeToRemove) return;
+    if (!timeToRemove) {
+      console.log("No time to remove selected");
+      return;
+    }
     try {
       await deleteDoc(doc(db, "time", timeToRemove));
       setTimes((prevTimes) => prevTimes.filter((time) => time.id !== timeToRemove));
       setTimeToRemove(null);
+      setShowRemoveAlert(false); // Hide the remove alert after removing the time
     } catch (error) {
       console.error("Error removing time: ", error);
     }
-  };
+  };  
 
+  const confirmRemoveTime = () => {
+    console.log("Confirming removal of time with id:", timeToRemove);
+    setShowRemoveAlert(true);
+  };
+  
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -52,12 +64,24 @@ const Overview = () => {
       ))}
       {timeToRemove && (
         <View style={[styles.Remove_Rectangle, { position: 'absolute', bottom: 0 }]}>
-          <Remove_Rectangle onPress={handleRemoveTime} timeId={timeToRemove} />
+          <Remove_Rectangle onPress={confirmRemoveTime} timeId={timeToRemove} />
         </View>
+      )}
+      {showRemoveAlert && (
+        <RemoveAlert
+          visible={true}
+          onCancel={() => {
+            setShowRemoveAlert(false);
+            setTimeToRemove(null);
+          }}
+          onConfirm={handleRemoveTime}
+        />
       )}
     </View>
   );
 };
+
+
 
 const styles = StyleSheet.create({
   container: {
@@ -101,6 +125,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 100,
+    marginBottom:100,
   }
 });
 

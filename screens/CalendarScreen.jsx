@@ -115,9 +115,9 @@ const CalendarScreen = () => {
               start: '08:00',
               end: '11:00',
               price:
-                selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
-                  ? `${cost8_11} kr`
-                  : 'Hög',
+              selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
+              ? Number(cost8_11)
+              : 'Hög',
             })
           }
         />
@@ -136,7 +136,7 @@ const CalendarScreen = () => {
               end: '15:00',
               price:
                 selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
-                  ? `${cost12_15} kr`
+                ? Number(cost8_11)
                   : 'Hög',
             })
           }
@@ -156,7 +156,7 @@ const CalendarScreen = () => {
               end: '19:00',
               price:
                 selectedDate && todaysDate === selectedDate.toISOString().slice(0, 10)
-                  ? `${cost16_19} kr`
+                ? Number(cost8_11)
                   : 'Hög',
             })
           }
