@@ -11,6 +11,7 @@ const CalendarScreen = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [todaysDate, setTodaysDate] = useState("");
+  const [price, setPrice] = useState(0);
 
   const handleSelectDate = (date) => {
     setSelectedDate(date);
@@ -19,21 +20,22 @@ const CalendarScreen = () => {
 
   const handleSelectTimeSlot = (timeSlot) => {
     setSelectedTimeSlot(timeSlot);
+    setPrice(timeSlot.price)
   };
 
-  const saveTime = async () => {
-    try {
-      const docRef = await addDoc(collection(db, "time"), {
-        date: selectedDate, 
-        startTime: selectedTimeSlot.start,
-        endTime: selectedTimeSlot.end,
-        price: selectedTimeSlot.price,
-      });
-      console.log("Document written with ID: ", docRef.id);
-    } catch (error) {
-      console.error("Error adding document: ", error);
-    }
-  };
+ const saveTime = async () => {
+  try {
+    const docRef = await addDoc(collection(db, "time"), {
+      date: selectedDate, 
+      startTime: selectedTimeSlot.start,
+      endTime: selectedTimeSlot.end,
+      price: selectedTimeSlot.price, // change to price state
+    });
+    console.log("Document written with ID: ", docRef.id);
+  } catch (error) {
+    console.error("Error adding document: ", error);
+  }
+};
 
   const [cost8_11, setCost8_11] = useState(0);
   const [cost12_15, setCost12_15] = useState(0);
