@@ -8,7 +8,7 @@ import axios from "axios";
 import AddButton from "../components/AddButton";
 
 const CalendarScreen = () => {
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [todaysDate, setTodaysDate] = useState("");
 
