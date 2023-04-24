@@ -24,7 +24,7 @@ const CalendarScreen = () => {
   const saveTime = async () => {
     try {
       const docRef = await addDoc(collection(db, "time"), {
-        date: selectedDate,
+        date: selectedDate, 
         startTime: selectedTimeSlot.start,
         endTime: selectedTimeSlot.end,
         price: selectedTimeSlot.price,
@@ -42,35 +42,48 @@ const CalendarScreen = () => {
   useEffect(() => {
     const fetchElectricityPrices = async () => {
       try {
-        const today = new Date();
+        
+        const today = new Date(selectedDate);
         setTodaysDate(today.toISOString().slice(0, 10)); // set todaysDate as a string in YYYY-MM-DD format
-
+  
         const formattedDate = `${today.getFullYear()}/${
           (today.getMonth() + 1).toString().padStart(2, "0")
         }-${today.getDate().toString().padStart(2, "0")}`;
-
+  
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const isTomorrowAfter3pm = (tomorrow.getHours() >= 15);
+  
+        if(today > tomorrow || (today.getTime() === tomorrow.getTime() && !isTomorrowAfter3pm)){
+          console.log(`Electricity prices not available for ${selectedDate}`);
+          setCost8_11("N/A");
+          setCost12_15("N/A");
+          setCost16_19("N/A");
+          return;
+        }
+  
         const response = await axios.get(
           `https://www.elprisetjustnu.se/api/v1/prices/${formattedDate}_SE3.json`
         );
-
+  
         setCost8_11(
           (
-            (response.data[9].SEK_per_kWh +
+            (response.data[9].SEK_per_kWh  +
               response.data[10].SEK_per_kWh +
               response.data[11].SEK_per_kWh) *
             3
           ).toFixed(1)
         );
-
+  
         setCost12_15(
           (
-            (response.data[13].SEK_per_kWh +
+            (response.data[13].SEK_per_kWh  +
               response.data[14].SEK_per_kWh +
               response.data[15].SEK_per_kWh) *
             3
           ).toFixed(1)
         );
-
+  
         setCost16_19(
           (
             (response.data[17].SEK_per_kWh +
@@ -83,8 +96,14 @@ const CalendarScreen = () => {
         console.error("Error fetching electricity prices: ", error);
       }
     };
+  
     fetchElectricityPrices();
-  }, []);
+  }, [selectedDate]);
+  
+  
+  
+ 
+  
 
   return (
     <View style={styles.container}>
@@ -107,7 +126,7 @@ const CalendarScreen = () => {
         {selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
         <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>{`${cost8_11} kr`}</Text>
         ) : (
-        <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>Hög</Text>
+        <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>N/A kr</Text>
         )}
         <AddButton
           onPress={() =>
@@ -116,8 +135,8 @@ const CalendarScreen = () => {
               end: '11:00',
               price:
               selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
-              ? Number(cost8_11)
-              : 'Hög',
+            //  ? Number(cost8_11)
+            //  : 'High',
             })
           }
         />
@@ -127,7 +146,7 @@ const CalendarScreen = () => {
          {selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
           <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>{`${cost12_15} kr`}</Text>
         ) : (
-          <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>Medium</Text>
+          <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>N/A kr</Text>
         )}
         <AddButton
           onPress={() =>
@@ -136,8 +155,8 @@ const CalendarScreen = () => {
               end: '15:00',
               price:
                 selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
-                ? Number(cost12_15)
-                  : 'Hög',
+              //  ? Number(cost12_15)
+                //  : 'Medium',
             })
           }
         />
@@ -145,9 +164,9 @@ const CalendarScreen = () => {
       <View style={styles.listan}>
         <Text style={[styles.item, { textAlign: 'left' }]}>16:00-19:00</Text>
         {selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
-          <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>{`${cost12_15} kr`}</Text>
+          <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>{`${cost16_19} kr`}</Text>
         ) : (
-          <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>Hög</Text>
+          <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>N/A kr</Text>
         )}
         <AddButton
           onPress={() =>
@@ -155,9 +174,9 @@ const CalendarScreen = () => {
               start: '16:00',
               end: '19:00',
               price:
-                selectedDate && todaysDate === selectedDate.toISOString().slice(0, 10)
-                ? Number(cost16_19)
-                  : 'Hög',
+                selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
+              //  ? Number(cost16_19)
+              //    : 'High',
             })
           }
         />
@@ -251,3 +270,4 @@ const styles = StyleSheet.create({
 
 
 export default CalendarScreen;
+
