@@ -1,9 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import Calendar from "../components/CalendarComponent";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, query, where, getDocs } from 'firebase/firestore';
 import db from "../config";
 import axios from "axios";
+
+
+
+
+// Initialize Firebase
+const firebaseConfig = {
+  // Your Firebase project config
+};
+
+
+
+
 
 const UsageDaily = () => {
   const [selectedDate, setSelectedDate] = useState('');
@@ -12,11 +24,38 @@ const UsageDaily = () => {
   const [electricCost, setElectricCost] = useState(0);
   const [waterUsage, setWaterUsage] = useState(0);
 
-  const handleSelectDate = (date) => {
-    setSelectedDate(date);
-    // Do something with the selected date
+  
+
+  const getBookingInfo = async (selectedDate) => {
+    const bookingsRef = db.collection('time');
+    const querySnapshot = await bookingsRef.where('date', '==', selectedDate).get();
+    
+    const bookings = [];
+    querySnapshot.forEach((doc) => {
+      bookings.push(doc.data());
+    });
+  
+    return bookings;
   };
   
+  const handleSelectDate = async (date) => {
+    setSelectedDate(date);
+  
+    const timeRef = collection(db, 'time');
+    const q = query(timeRef, where('date', '==', date));
+    const querySnapshot = await getDocs(q);
+    
+    if (!querySnapshot.empty) {
+      const totalPrice = querySnapshot.docs.reduce((total, doc) => total + doc.data().price, 0); //calculates the total cost of one day
+      const avgPrice = totalPrice / querySnapshot.size;
+      setAvgPrice(avgPrice.toFixed(2));
+      //setElectricCost(totalPrice);
+    } else {
+      setAvgPrice(0);
+    }
+  };
+
+
   return (
     <View style={styles.container}>
       <View style={styles.calendarContainer}>
@@ -96,5 +135,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold', // Make text bold
   },
 });
-
 export default UsageDaily;
