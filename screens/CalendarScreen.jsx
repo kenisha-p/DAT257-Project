@@ -18,6 +18,8 @@ const CalendarScreen = () => {
     setSelectedTimeSlot(null); // clear selected timeslot when date is changed
   };
 
+//TESTA ATT ÄNDRA OM SÅ MYCKET SOM MÖJLIGT FRÅN MAIN BRANCH FÖR ATT FÅ TILL ETT TILLSTÅND DÄR DEN FAKTISKT SKICKAR IN RÄTT VÄRDE. YOU GOT THIS
+
   const handleSelectTimeSlot = (timeSlot) => {
     setSelectedTimeSlot(timeSlot);
     setPrice(timeSlot.price)
