@@ -73,13 +73,14 @@ const styles = StyleSheet.create({
   },
   leftLabelContainer: {
     alignItems: 'flex-start',
-    marginRight: 20,
+    marginRight: 10,
   },
   leftLabel: {
     color: '#ffffff',
     fontWeight: 'bold',
     fontSize: 16,
-    marginBottom: 30,
+    marginBottom: 20,
+    marginTop: 20
   },
   rightLabelContainer: {
     alignItems: 'flex-end',
@@ -87,7 +88,8 @@ const styles = StyleSheet.create({
   rightLabel: {
     color: '#ffffff',
     fontSize: 16,
-    marginBottom: 30,
+    marginBottom: 20,
+    marginTop: 20
   },
   selectedDateText: {
     fontSize: 16, // Change font size as needed
