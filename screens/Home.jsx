@@ -26,6 +26,11 @@ export default class Home extends React.Component {
   handleRemoveLaundryPress = () => {
     this.props.navigation.navigate('Overview');
   }
+
+  handleDailyUsagePress = () => {
+    this.props.navigation.navigate('UsageDaily');
+  }
+
   render() {
     if (!this.state.fontLoaded) {
       return <View />;
@@ -34,7 +39,7 @@ export default class Home extends React.Component {
     return (
       <View style={styles.container}>
         <View style={styles.titleContainer}>
-          <Text style={styles.title}>LanudryBuddy</Text>
+          <Text style={styles.title}>LaundryBuddy</Text>
         </View>
         <View style={styles.picture}>
           <Image source={require('../assets/Picture.png')} />
@@ -49,7 +54,7 @@ export default class Home extends React.Component {
               <Remove_laundry onPress={this.handleRemoveLaundryPress} />
             </View>
             <View style={styles.button}>
-              <Usage />
+              <Usage onPress={this.handleDailyUsagePress} />
             </View>
           </View>
         </View>
