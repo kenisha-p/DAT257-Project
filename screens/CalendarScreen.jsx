@@ -11,7 +11,7 @@ const CalendarScreen = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [todaysDate, setTodaysDate] = useState("");
-  const [price, setPrice] = useState(0);
+  const [price, setPrice] = useState(null);
 
   const handleSelectDate = (date) => {
     setSelectedDate(date);
@@ -23,19 +23,20 @@ const CalendarScreen = () => {
     setPrice(timeSlot.price)
   };
 
- const saveTime = async () => {
-  try {
-    const docRef = await addDoc(collection(db, "time"), {
-      date: selectedDate, 
-      startTime: selectedTimeSlot.start,
-      endTime: selectedTimeSlot.end,
-      price: selectedTimeSlot.price, // change to price state
-    });
-    console.log("Document written with ID: ", docRef.id);
-  } catch (error) {
-    console.error("Error adding document: ", error);
-  }
-};
+  const saveTime = async () => {
+    try {
+      const docRef = await addDoc(collection(db, "time"), {
+        date: selectedDate, 
+        startTime: selectedTimeSlot.start,
+        endTime: selectedTimeSlot.end,
+        price: price,
+      });
+      console.log("Document written with ID: ", docRef.id);
+    } catch (error) {
+      console.error("Error adding document: ", error);
+    }
+  };
+  
 
   const [cost8_11, setCost8_11] = useState(0);
   const [cost12_15, setCost12_15] = useState(0);
@@ -44,7 +45,6 @@ const CalendarScreen = () => {
   useEffect(() => {
     const fetchElectricityPrices = async () => {
       try {
-        
         const today = new Date(selectedDate);
         setTodaysDate(today.toISOString().slice(0, 10)); // set todaysDate as a string in YYYY-MM-DD format
   
@@ -54,9 +54,18 @@ const CalendarScreen = () => {
   
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
-        const isTomorrowAfter3pm = (tomorrow.getHours() >= 15);
   
-        if(today > tomorrow || (today.getTime() === tomorrow.getTime() && !isTomorrowAfter3pm)){
+        // Check if tomorrow is today
+        if (today.getFullYear() === tomorrow.getFullYear() && today.getMonth() === tomorrow.getMonth() && today.getDate() === tomorrow.getDate()) {
+          // Check if it is before 3 pm
+          if (tomorrow.getHours() <= 15) {
+            console.log(`Electricity prices not available for ${selectedDate}`);
+            setCost8_11("N/A");
+            setCost12_15("N/A");
+            setCost16_19("N/A");
+            return;
+          }
+        } else if (today > tomorrow) {
           console.log(`Electricity prices not available for ${selectedDate}`);
           setCost8_11("N/A");
           setCost12_15("N/A");
@@ -70,7 +79,7 @@ const CalendarScreen = () => {
   
         setCost8_11(
           (
-            (response.data[9].SEK_per_kWh  +
+            (response.data[9].SEK_per_kWh +
               response.data[10].SEK_per_kWh +
               response.data[11].SEK_per_kWh) *
             3
@@ -79,7 +88,7 @@ const CalendarScreen = () => {
   
         setCost12_15(
           (
-            (response.data[13].SEK_per_kWh  +
+            (response.data[13].SEK_per_kWh +
               response.data[14].SEK_per_kWh +
               response.data[15].SEK_per_kWh) *
             3
@@ -101,6 +110,7 @@ const CalendarScreen = () => {
   
     fetchElectricityPrices();
   }, [selectedDate]);
+  
   
   
   
