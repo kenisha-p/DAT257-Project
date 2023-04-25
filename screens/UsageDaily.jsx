@@ -53,6 +53,23 @@ const UsageDaily = () => {
     } else {
       setAvgPrice(0);
     }
+
+    if (!querySnapshot.empty) {
+        const totalPrice = querySnapshot.docs.reduce((total, doc) => total + doc.data().price, 0); //calculates the total cost of one day
+        setElectricCost(totalPrice);
+      } else {
+        setElectricCost(0);
+      }
+
+      if (!querySnapshot.empty) {
+        const numBookings = querySnapshot.docs.length;
+        setNumWashes(numBookings);
+        setWaterUsage(numBookings*50 + ' litres') //how much water does a washer user per hour??
+      } else {
+        setNumWashes(0);
+        setWaterUsage(0)
+      }
+
   };
 
 
