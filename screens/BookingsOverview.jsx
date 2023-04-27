@@ -20,17 +20,13 @@ const Overview = () => {
         timesArray.push({ id: doc.id, ...doc.data() }); // Added id property to each time object
       });
 
-      setTimes(timesArray);
-
-      const sortedTimes = [...times].sort((a, b) => {
-        const dateComparison = a.date.localeCompare(b.date);
-        if (dateComparison !== 0) {
-          return dateComparison;
-        } else {
-          return a.time.localeCompare(b.time);
-        }
+      timesArray.sort((a, b) => {
+        const dateA = new Date(a.date + "T" + a.startTime);
+        const dateB = new Date(b.date + "T" + b.startTime);
+        return dateA - dateB;
       });
-      setTimes(sortedTimes);
+
+      setTimes(timesArray);
     }
     getData();
   }, []);
