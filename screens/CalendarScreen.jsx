@@ -6,11 +6,13 @@ import { collection, addDoc } from "firebase/firestore";
 import db from "../config";
 import axios from "axios";
 import AddButton from "../components/AddButton";
+import ConfirmBooking from "../components/ConfirmBooking";
 
 const CalendarScreen = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [todaysDate, setTodaysDate] = useState("");
+  const [showConfirmationAlert, setShowConfirmationAlert] = useState(false);
 
   const handleSelectDate = (date) => {
     setSelectedDate(date);
@@ -45,9 +47,9 @@ const CalendarScreen = () => {
         const today = new Date();
         setTodaysDate(today.toISOString().slice(0, 10)); // set todaysDate as a string in YYYY-MM-DD format
 
-        const formattedDate = `${today.getFullYear()}/${
-          (today.getMonth() + 1).toString().padStart(2, "0")
-        }-${today.getDate().toString().padStart(2, "0")}`;
+        const formattedDate = `${today.getFullYear()}/${(today.getMonth() + 1)
+          .toString()
+          .padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}`;
 
         const response = await axios.get(
           `https://www.elprisetjustnu.se/api/v1/prices/${formattedDate}_SE3.json`
@@ -86,6 +88,11 @@ const CalendarScreen = () => {
     fetchElectricityPrices();
   }, []);
 
+  const confirmBooking = () => {
+    console.log("Confirming booking with id:", timeToRemove);
+    setShowRemoveAlert(true);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.calendarContainer}>
@@ -103,61 +110,79 @@ const CalendarScreen = () => {
         </View>
       </View>
       <View style={styles.listan}>
-        <Text style={[styles.item, { textAlign: 'left' }]}>08:00-11:00</Text>
-        {selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
-        <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>{`${cost8_11} kr`}</Text>
+        <Text style={[styles.item, { textAlign: "left" }]}>08:00-11:00</Text>
+        {selectedDate &&
+        todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
+          <Text
+            style={[styles.item, { textAlign: "center", marginRight: 50 }]}
+          >{`${cost8_11} kr`}</Text>
         ) : (
-        <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>Hög</Text>
+          <Text style={[styles.item, { textAlign: "center", marginRight: 50 }]}>
+            Hög
+          </Text>
         )}
         <AddButton
           onPress={() =>
             handleSelectTimeSlot({
-              start: '08:00',
-              end: '11:00',
+              start: "08:00",
+              end: "11:00",
               price:
-              selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
-              ? Number(cost8_11)
-              : 'Hög',
+                selectedDate &&
+                todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
+                  ? Number(cost8_11)
+                  : "Hög",
             })
           }
         />
       </View>
       <View style={styles.listan}>
-        <Text style={[styles.item, { textAlign: 'left' }]}>12:00-15:00</Text>
-         {selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
-          <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>{`${cost12_15} kr`}</Text>
+        <Text style={[styles.item, { textAlign: "left" }]}>12:00-15:00</Text>
+        {selectedDate &&
+        todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
+          <Text
+            style={[styles.item, { textAlign: "center", marginRight: 50 }]}
+          >{`${cost12_15} kr`}</Text>
         ) : (
-          <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>Medium</Text>
+          <Text style={[styles.item, { textAlign: "center", marginRight: 50 }]}>
+            Medium
+          </Text>
         )}
         <AddButton
           onPress={() =>
             handleSelectTimeSlot({
-              start: '12:00',
-              end: '15:00',
+              start: "12:00",
+              end: "15:00",
               price:
-                selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
-                ? Number(cost12_15)
-                  : 'Hög',
+                selectedDate &&
+                todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
+                  ? Number(cost12_15)
+                  : "Hög",
             })
           }
         />
       </View>
       <View style={styles.listan}>
-        <Text style={[styles.item, { textAlign: 'left' }]}>16:00-19:00</Text>
-        {selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
-          <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>{`${cost12_15} kr`}</Text>
+        <Text style={[styles.item, { textAlign: "left" }]}>16:00-19:00</Text>
+        {selectedDate &&
+        todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
+          <Text
+            style={[styles.item, { textAlign: "center", marginRight: 50 }]}
+          >{`${cost12_15} kr`}</Text>
         ) : (
-          <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>Hög</Text>
+          <Text style={[styles.item, { textAlign: "center", marginRight: 50 }]}>
+            Hög
+          </Text>
         )}
         <AddButton
           onPress={() =>
             handleSelectTimeSlot({
-              start: '16:00',
-              end: '19:00',
+              start: "16:00",
+              end: "19:00",
               price:
-                selectedDate && todaysDate === selectedDate.toISOString().slice(0, 10)
-                ? Number(cost16_19)
-                  : 'Hög',
+                selectedDate &&
+                todaysDate === selectedDate.toISOString().slice(0, 10)
+                  ? Number(cost16_19)
+                  : "Hög",
             })
           }
         />
@@ -168,7 +193,6 @@ const CalendarScreen = () => {
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -213,14 +237,14 @@ const styles = StyleSheet.create({
     paddingBottom: 0, // add some space between time slots and text views
   },*/
   listan: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     paddingHorizontal: 10,
     paddingVertical: 12,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#ffffff',
-    backgroundColor: '#e6e6e6',
+    borderColor: "#ffffff",
+    backgroundColor: "#e6e6e6",
     marginHorizontal: 10,
     marginBottom: 10,
   },
@@ -248,6 +272,5 @@ const styles = StyleSheet.create({
     marginBottom: 80,
   },
 });
-
 
 export default CalendarScreen;
