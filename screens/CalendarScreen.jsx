@@ -9,7 +9,7 @@ import AddButton from "../components/AddButton";
 import ConfirmBooking from "../components/ConfirmBooking";
 
 const CalendarScreen = () => {
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [todaysDate, setTodaysDate] = useState("");
   const [showConfirmationAlert, setShowConfirmationAlert] = useState(false);
@@ -44,7 +44,19 @@ const CalendarScreen = () => {
   useEffect(() => {
     const fetchElectricityPrices = async () => {
       try {
-        const today = new Date();
+        const today = new Date(selectedDate);
+
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        // Check if selected date is in the future
+        if (today > new Date()) {
+          console.log(
+            "Selected date is in the future, skipping electricity prices fetch"
+          );
+          return;
+        }
+
         setTodaysDate(today.toISOString().slice(0, 10)); // set todaysDate as a string in YYYY-MM-DD format
 
         const formattedDate = `${today.getFullYear()}/${(today.getMonth() + 1)
@@ -86,7 +98,7 @@ const CalendarScreen = () => {
       }
     };
     fetchElectricityPrices();
-  }, []);
+  }, [selectedDate]);
 
   const confirmBooking = () => {
     console.log("Confirming booking with id:", timeToRemove);
@@ -118,7 +130,7 @@ const CalendarScreen = () => {
           >{`${cost8_11} kr`}</Text>
         ) : (
           <Text style={[styles.item, { textAlign: "center", marginRight: 50 }]}>
-            Hög
+            N/A
           </Text>
         )}
         <AddButton
@@ -144,7 +156,7 @@ const CalendarScreen = () => {
           >{`${cost12_15} kr`}</Text>
         ) : (
           <Text style={[styles.item, { textAlign: "center", marginRight: 50 }]}>
-            Medium
+            N/A
           </Text>
         )}
         <AddButton
@@ -167,10 +179,10 @@ const CalendarScreen = () => {
         todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
           <Text
             style={[styles.item, { textAlign: "center", marginRight: 50 }]}
-          >{`${cost12_15} kr`}</Text>
+          >{`${cost16_19} kr`}</Text>
         ) : (
           <Text style={[styles.item, { textAlign: "center", marginRight: 50 }]}>
-            Hög
+            N/A
           </Text>
         )}
         <AddButton
@@ -180,7 +192,7 @@ const CalendarScreen = () => {
               end: "19:00",
               price:
                 selectedDate &&
-                todaysDate === selectedDate.toISOString().slice(0, 10)
+                todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
                   ? Number(cost16_19)
                   : "Hög",
             })
