@@ -8,7 +8,7 @@ import axios from "axios";
 import AddButton from "../components/AddButton";
 
 const CalendarScreen = () => {
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [todaysDate, setTodaysDate] = useState("");
 
@@ -42,17 +42,30 @@ const CalendarScreen = () => {
   useEffect(() => {
     const fetchElectricityPrices = async () => {
       try {
-        const today = new Date();
+        const today = new Date(selectedDate);
+      
+const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        // Check if selected date is in the future
+        if (today > new Date() ) {
+          console.log("Selected date is in the future, skipping electricity prices fetch");
+          return;
+        }
+
         setTodaysDate(today.toISOString().slice(0, 10)); // set todaysDate as a string in YYYY-MM-DD format
+    
+        
+       
 
         const formattedDate = `${today.getFullYear()}/${
           (today.getMonth() + 1).toString().padStart(2, "0")
         }-${today.getDate().toString().padStart(2, "0")}`;
-
+    
         const response = await axios.get(
           `https://www.elprisetjustnu.se/api/v1/prices/${formattedDate}_SE3.json`
         );
-
+    
         setCost8_11(
           (
             (response.data[9].SEK_per_kWh +
@@ -61,7 +74,7 @@ const CalendarScreen = () => {
             3
           ).toFixed(1)
         );
-
+    
         setCost12_15(
           (
             (response.data[13].SEK_per_kWh +
@@ -70,7 +83,7 @@ const CalendarScreen = () => {
             3
           ).toFixed(1)
         );
-
+    
         setCost16_19(
           (
             (response.data[17].SEK_per_kWh +
@@ -84,7 +97,7 @@ const CalendarScreen = () => {
       }
     };
     fetchElectricityPrices();
-  }, []);
+  }, [selectedDate]);
 
   return (
     <View style={styles.container}>
@@ -107,7 +120,7 @@ const CalendarScreen = () => {
         {selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
         <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>{`${cost8_11} kr`}</Text>
         ) : (
-        <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>Hög</Text>
+        <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>N/A</Text>
         )}
         <AddButton
           onPress={() =>
@@ -127,7 +140,7 @@ const CalendarScreen = () => {
          {selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
           <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>{`${cost12_15} kr`}</Text>
         ) : (
-          <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>Medium</Text>
+          <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>N/A</Text>
         )}
         <AddButton
           onPress={() =>
@@ -145,9 +158,9 @@ const CalendarScreen = () => {
       <View style={styles.listan}>
         <Text style={[styles.item, { textAlign: 'left' }]}>16:00-19:00</Text>
         {selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
-          <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>{`${cost12_15} kr`}</Text>
+          <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>{`${cost16_19} kr`}</Text>
         ) : (
-          <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>Hög</Text>
+          <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>N/A</Text>
         )}
         <AddButton
           onPress={() =>
@@ -155,8 +168,8 @@ const CalendarScreen = () => {
               start: '16:00',
               end: '19:00',
               price:
-                selectedDate && todaysDate === selectedDate.toISOString().slice(0, 10)
-                ? Number(cost16_19)
+              selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
+              ? Number(cost16_19)
                   : 'Hög',
             })
           }
