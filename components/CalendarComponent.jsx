@@ -36,6 +36,7 @@ today.setDate(today.getDate());
           arrowColor: '#3452A2',
           monthTextColor: '#3452A2',
         }}
+        firstDay={1}
       />
     </View>
   );

@@ -64,11 +64,11 @@ const UsageDaily = () => {
   return (
     <View style={styles.container}>
       <View style={styles.calendarContainer}>
-        <Calendar onSelectDate={handleSelectDate} />
+        <Calendar
+         onSelectDate={handleSelectDate}/>
       </View>
       <View style={styles.contentContainer}>
         <Text style={styles.selectedDateText}>Your usage on: {selectedDate}</Text>
-        {/* Add additional content here */}
         <View style={styles.blueSquare}>
           <View style={styles.leftLabelContainer}>
             <Text style={styles.leftLabel}>Number of washes:</Text>
