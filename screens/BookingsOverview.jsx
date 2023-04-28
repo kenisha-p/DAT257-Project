@@ -19,13 +19,6 @@ const Overview = () => {
       querySnapshot.forEach((doc) => {
         timesArray.push({ id: doc.id, ...doc.data() }); // Added id property to each time object
       });
-      
-      timesArray.sort((a, b) => {
-        const dateA = new Date(a.date + "T" + a.startTime);
-        const dateB = new Date(b.date + "T" + b.startTime);
-        return dateB - dateA;
-      });
-
       setTimes(timesArray);
     }
     getData();
