@@ -11,8 +11,9 @@ import ConfirmBooking from "../components/ConfirmBooking";
 const CalendarScreen = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
+  const [timeToBook, setTimeToBook] = useState(null);
   const [todaysDate, setTodaysDate] = useState("");
-  const [showConfirmationAlert, setShowConfirmationAlert] = useState(false);
+  const [confirmationAlert, setConfirmationAlert] = useState(false);
 
   const handleSelectDate = (date) => {
     setSelectedDate(date);
@@ -101,8 +102,8 @@ const CalendarScreen = () => {
   }, [selectedDate]);
 
   const confirmBooking = () => {
-    console.log("Confirming booking with id:", timeToRemove);
-    setShowRemoveAlert(true);
+    console.log("Confirming booking");
+    setConfirmationAlert(true);
   };
 
   return (
@@ -200,7 +201,18 @@ const CalendarScreen = () => {
         />
       </View>
       <View style={styles.saveButton}>
-        <SaveButton onPress={() => saveTime(selectedDate)} />
+        <SaveButton onPress={() => confirmBooking} />
+        {confirmationAlert && (
+          <ConfirmBooking
+            visible={true}
+            onCancel={() => {
+              setConfirmationAlert(false);
+              setSelectedTimeSlot(null);
+              setSelectedDate(null);
+            }}
+            onConfirm={saveTime(selectedDate)}
+          />
+        )}
       </View>
     </View>
   );
