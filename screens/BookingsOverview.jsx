@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import Remove_bottom from '../components/Remove_bottom';
 import Remove_Rectangle from '../components/Remove_Rectangle';
 import RemoveAlert from '../components/RemoveAlert';
@@ -55,6 +55,7 @@ const Overview = () => {
         <Text style={[styles.headerText, { textAlign: 'right' }]}>Time</Text>
         <Text style={[styles.headerText, { textAlign: 'right' }]}>Remove</Text>
       </View>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
       {times.map((time) => (
         <View style={styles.list} key={time.id}>
           <Text style={[styles.item, { textAlign: 'left' }]}>{time.date}</Text>
@@ -62,6 +63,7 @@ const Overview = () => {
           <Remove_bottom onPress={() => handleSelectTime(time.id)} />
         </View>
       ))}
+      </ScrollView>
       {timeToRemove && (
         <View style={[styles.Remove_Rectangle, { position: 'absolute', bottom: 0 }]}>
           <Remove_Rectangle onPress={confirmRemoveTime} timeId={timeToRemove} />
@@ -86,8 +88,15 @@ const Overview = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    height: '100%',
     backgroundColor: '#ffffff',
   },
+
+  scrollContainer: {
+    paddingVertical: 20,
+    paddingHorizontal: 10,
+  },
+
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
