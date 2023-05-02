@@ -11,34 +11,29 @@ const CalendarScreen = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [todaysDate, setTodaysDate] = useState("");
-  const [price, setPrice] = useState(null);
 
   const handleSelectDate = (date) => {
     setSelectedDate(date);
     setSelectedTimeSlot(null); // clear selected timeslot when date is changed
   };
 
-//TESTA ATT ÄNDRA OM SÅ MYCKET SOM MÖJLIGT FRÅN MAIN BRANCH FÖR ATT FÅ TILL ETT TILLSTÅND DÄR DEN FAKTISKT SKICKAR IN RÄTT VÄRDE. YOU GOT THIS
-
   const handleSelectTimeSlot = (timeSlot) => {
     setSelectedTimeSlot(timeSlot);
-    setPrice(timeSlot.price)
   };
 
   const saveTime = async () => {
     try {
       const docRef = await addDoc(collection(db, "time"), {
-        date: selectedDate, 
+        date: selectedDate,
         startTime: selectedTimeSlot.start,
         endTime: selectedTimeSlot.end,
-        price: price,
+        price: selectedTimeSlot.price,
       });
       console.log("Document written with ID: ", docRef.id);
     } catch (error) {
       console.error("Error adding document: ", error);
     }
   };
-  
 
   const [cost8_11, setCost8_11] = useState(0);
   const [cost12_15, setCost12_15] = useState(0);
@@ -48,37 +43,29 @@ const CalendarScreen = () => {
     const fetchElectricityPrices = async () => {
       try {
         const today = new Date(selectedDate);
+      
+const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        // Check if selected date is in the future
+        if (today > new Date() ) {
+          console.log("Selected date is in the future, skipping electricity prices fetch");
+          return;
+        }
+
         setTodaysDate(today.toISOString().slice(0, 10)); // set todaysDate as a string in YYYY-MM-DD format
-  
+    
+        
+       
+
         const formattedDate = `${today.getFullYear()}/${
           (today.getMonth() + 1).toString().padStart(2, "0")
         }-${today.getDate().toString().padStart(2, "0")}`;
-  
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-  
-        // Check if tomorrow is today
-        if (today.getFullYear() === tomorrow.getFullYear() && today.getMonth() === tomorrow.getMonth() && today.getDate() === tomorrow.getDate()) {
-          // Check if it is before 3 pm
-          if (tomorrow.getHours() <= 15) {
-            console.log(`Electricity prices not available for ${selectedDate}`);
-            setCost8_11("N/A");
-            setCost12_15("N/A");
-            setCost16_19("N/A");
-            return;
-          }
-        } else if (today > tomorrow) {
-          console.log(`Electricity prices not available for ${selectedDate}`);
-          setCost8_11("N/A");
-          setCost12_15("N/A");
-          setCost16_19("N/A");
-          return;
-        }
-  
+    
         const response = await axios.get(
           `https://www.elprisetjustnu.se/api/v1/prices/${formattedDate}_SE3.json`
         );
-  
+    
         setCost8_11(
           (
             (response.data[9].SEK_per_kWh +
@@ -87,7 +74,7 @@ const CalendarScreen = () => {
             3
           ).toFixed(1)
         );
-  
+    
         setCost12_15(
           (
             (response.data[13].SEK_per_kWh +
@@ -96,7 +83,7 @@ const CalendarScreen = () => {
             3
           ).toFixed(1)
         );
-  
+    
         setCost16_19(
           (
             (response.data[17].SEK_per_kWh +
@@ -109,15 +96,8 @@ const CalendarScreen = () => {
         console.error("Error fetching electricity prices: ", error);
       }
     };
-  
     fetchElectricityPrices();
   }, [selectedDate]);
-  
-  
-  
-  
- 
-  
 
   return (
     <View style={styles.container}>
@@ -140,7 +120,7 @@ const CalendarScreen = () => {
         {selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
         <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>{`${cost8_11} kr`}</Text>
         ) : (
-        <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>N/A kr</Text>
+        <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>N/A</Text>
         )}
         <AddButton
           onPress={() =>
@@ -149,8 +129,8 @@ const CalendarScreen = () => {
               end: '11:00',
               price:
               selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
-            //  ? Number(cost8_11)
-            //  : 'High',
+              ? Number(cost8_11)
+              : 'Hög',
             })
           }
         />
@@ -160,7 +140,7 @@ const CalendarScreen = () => {
          {selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
           <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>{`${cost12_15} kr`}</Text>
         ) : (
-          <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>N/A kr</Text>
+          <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>N/A</Text>
         )}
         <AddButton
           onPress={() =>
@@ -169,8 +149,8 @@ const CalendarScreen = () => {
               end: '15:00',
               price:
                 selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
-              //  ? Number(cost12_15)
-                //  : 'Medium',
+                ? Number(cost12_15)
+                  : 'Hög',
             })
           }
         />
@@ -180,7 +160,7 @@ const CalendarScreen = () => {
         {selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
           <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>{`${cost16_19} kr`}</Text>
         ) : (
-          <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>N/A kr</Text>
+          <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>N/A</Text>
         )}
         <AddButton
           onPress={() =>
@@ -188,9 +168,9 @@ const CalendarScreen = () => {
               start: '16:00',
               end: '19:00',
               price:
-                selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
-              //  ? Number(cost16_19)
-              //    : 'High',
+              selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
+              ? Number(cost16_19)
+                  : 'Hög',
             })
           }
         />
