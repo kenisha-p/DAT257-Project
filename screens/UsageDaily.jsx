@@ -13,6 +13,8 @@ const UsageDaily = () => {
   const [electricCost, setElectricCost] = useState(0);
   const [waterUsage, setWaterUsage] = useState(0);
 
+  const BLUE_BAR_HEIGHT = 50;
+
   
 
   const getBookingInfo = async (selectedDate) => {
@@ -63,6 +65,14 @@ const UsageDaily = () => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.blueBarContainer}>
+        <View style={styles.blueBarLeft}>
+          <Text style={styles.blueBarText}>Monthly</Text>
+        </View>
+        <View style={styles.blueBarRight}>
+          <Text style={styles.blueBarText}>Daily</Text>
+        </View>
+      </View>
       <View style={styles.calendarContainer}>
         <Calendar
          onSelectDate={handleSelectDate}/>
@@ -138,6 +148,29 @@ const styles = StyleSheet.create({
   selectedDateText: {
     fontSize: 16, // Change font size as needed
     fontWeight: 'bold', // Make text bold
+  },
+  blueBarContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#3452A2',
+    height: 50,
+    paddingHorizontal: 20,
+  },
+  blueBarLeft: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  blueBarRight: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  blueBarText: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 export default UsageDaily;
