@@ -4,6 +4,7 @@ import Calendar from "../components/CalendarComponent";
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import db from "../config";
 import axios from "axios";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 
 const UsageDaily = () => {
@@ -12,6 +13,8 @@ const UsageDaily = () => {
   const [avgPrice, setAvgPrice] = useState(0);
   const [electricCost, setElectricCost] = useState(0);
   const [waterUsage, setWaterUsage] = useState(0);
+
+  const BLUE_BAR_HEIGHT = 50;
 
   
 
@@ -60,9 +63,26 @@ const UsageDaily = () => {
 
   };
 
+  const handleBlueBarPress = () => {
+    console.log('Blue Bar pressed');
+    // Add your code to handle the press event here
+  };
+
+
 
   return (
-    <View style={styles.container}>
+   <View style={styles.container}>
+      <TouchableOpacity onPress= {handleBlueBarPress}>
+        <View style={styles.blueBarContainer}>
+          <View style={styles.blueBarLeft}>
+            <Text style={styles.blueBarText}>Monthly</Text>
+          </View>
+          <View style={styles.whiteLine}/>
+          <View style={styles.blueBarRight}>
+            <Text style={styles.blueBarText}>Daily</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
       <View style={styles.calendarContainer}>
         <Calendar
          onSelectDate={handleSelectDate}/>
@@ -138,6 +158,32 @@ const styles = StyleSheet.create({
   selectedDateText: {
     fontSize: 16, // Change font size as needed
     fontWeight: 'bold', // Make text bold
+  },
+  blueBarContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#3452A2',
+    height: 50,
+    paddingHorizontal: 20,
+  },
+  blueBarLeft: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRightColor: '#ffffff',
+    borderRightWidth: 2,
+    height: '100%',
+  },
+  blueBarRight: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  blueBarText: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 export default UsageDaily;
