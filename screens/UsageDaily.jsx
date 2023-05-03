@@ -4,6 +4,7 @@ import Calendar from "../components/CalendarComponent";
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import db from "../config";
 import axios from "axios";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 
 const UsageDaily = () => {
@@ -62,17 +63,26 @@ const UsageDaily = () => {
 
   };
 
+  const handleBlueBarPress = () => {
+    console.log('Blue Bar pressed');
+    // Add your code to handle the press event here
+  };
+
+
 
   return (
-    <View style={styles.container}>
-      <View style={styles.blueBarContainer}>
-        <View style={styles.blueBarLeft}>
-          <Text style={styles.blueBarText}>Monthly</Text>
+   <View style={styles.container}>
+      <TouchableOpacity onPress= {handleBlueBarPress}>
+        <View style={styles.blueBarContainer}>
+          <View style={styles.blueBarLeft}>
+            <Text style={styles.blueBarText}>Monthly</Text>
+          </View>
+          <View style={styles.whiteLine}/>
+          <View style={styles.blueBarRight}>
+            <Text style={styles.blueBarText}>Daily</Text>
+          </View>
         </View>
-        <View style={styles.blueBarRight}>
-          <Text style={styles.blueBarText}>Daily</Text>
-        </View>
-      </View>
+      </TouchableOpacity>
       <View style={styles.calendarContainer}>
         <Calendar
          onSelectDate={handleSelectDate}/>
@@ -161,6 +171,9 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    borderRightColor: '#ffffff',
+    borderRightWidth: 2,
+    height: '100%',
   },
   blueBarRight: {
     flex: 1,
