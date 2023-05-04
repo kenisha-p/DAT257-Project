@@ -75,17 +75,28 @@ const UsageDaily = ({ navigation }) => {
 
   return (
    <View style={styles.container}>
+<<<<<<< HEAD
         <View style={styles.blueBarContainer}>
           <View style={styles.blueBarLeft}>
           <TouchableOpacity onPress= {handleBlueBarPress}>  
             <Text style={styles.blueBarText}>Monthly</Text>
             </TouchableOpacity>
+=======
+      <TouchableOpacity onPress= {handleBlueBarPress}>
+        <View style={styles.blueBarContainer}>
+          <View style={styles.blueBarLeft}>
+            <Text style={styles.blueBarText}>Monthly</Text>
+>>>>>>> 55185851fbd2a5c7876f0e2fe89eb48ec42125b0
           </View>
           <View style={styles.whiteLine}/>
           <View style={styles.blueBarRight}>
             <Text style={styles.blueBarText}>Daily</Text>
           </View>
         </View>
+<<<<<<< HEAD
+=======
+      </TouchableOpacity>
+>>>>>>> 55185851fbd2a5c7876f0e2fe89eb48ec42125b0
       <View style={styles.calendarContainer}>
         <Calendar
          onSelectDate={handleSelectDate}/>
@@ -176,19 +187,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRightColor: '#ffffff',
     borderRightWidth: 2,
+<<<<<<< HEAD
     borderLeftColor: '#ffffff',
     borderLeftWidth: 2,
     height: '100%',
     backgroundColor: '#3452A2',
+=======
+    height: '100%',
+>>>>>>> 55185851fbd2a5c7876f0e2fe89eb48ec42125b0
   },
   blueBarRight: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+<<<<<<< HEAD
     borderRightColor: '#ffffff',
     borderRightWidth: 2,
     height: '100%',
     backgroundColor: '#8292C4',
+=======
+>>>>>>> 55185851fbd2a5c7876f0e2fe89eb48ec42125b0
   },
   blueBarText: {
     color: '#ffffff',

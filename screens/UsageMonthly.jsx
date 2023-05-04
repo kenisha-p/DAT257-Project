@@ -74,17 +74,28 @@ const UsageDaily = ({ navigation }) => {
 
   return (
    <View style={styles.container}>
+<<<<<<< HEAD
+=======
+      <TouchableOpacity onPress= {handleBlueBarPress}>
+>>>>>>> 55185851fbd2a5c7876f0e2fe89eb48ec42125b0
         <View style={styles.blueBarContainer}>
           <View style={styles.blueBarLeft}>
             <Text style={styles.blueBarText}>Monthly</Text>
           </View>
           <View style={styles.whiteLine}/>
           <View style={styles.blueBarRight}>
+<<<<<<< HEAD
           <TouchableOpacity onPress= {handleBlueBarPress}>
             <Text style={styles.blueBarText}>Daily</Text>
             </TouchableOpacity>
           </View>
         </View>
+=======
+            <Text style={styles.blueBarText}>Daily</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+>>>>>>> 55185851fbd2a5c7876f0e2fe89eb48ec42125b0
       <View style={styles.calendarContainer}>
         <Calendar
          onSelectDate={handleSelectDate}/>
@@ -165,9 +176,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+<<<<<<< HEAD
     height: 50,
     paddingHorizontal: 20,
     backgroundColor: '#3452A2',
+=======
+    backgroundColor: '#3452A2',
+    height: 50,
+    paddingHorizontal: 20,
+>>>>>>> 55185851fbd2a5c7876f0e2fe89eb48ec42125b0
   },
   blueBarLeft: {
     flex: 1,
@@ -175,19 +192,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRightColor: '#ffffff',
     borderRightWidth: 2,
+<<<<<<< HEAD
     borderLeftColor: '#ffffff',
     borderLeftWidth: 2,
     height: '100%',
     backgroundColor: '#8292C4',
+=======
+    height: '100%',
+>>>>>>> 55185851fbd2a5c7876f0e2fe89eb48ec42125b0
   },
   blueBarRight: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+<<<<<<< HEAD
     borderRightColor: '#ffffff',
     borderRightWidth: 2,
     height: '100%',
     backgroundColor: '#3452A2',
+=======
+>>>>>>> 55185851fbd2a5c7876f0e2fe89eb48ec42125b0
   },
   blueBarText: {
     color: '#ffffff',

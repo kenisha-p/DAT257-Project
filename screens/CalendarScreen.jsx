@@ -1,12 +1,19 @@
+<<<<<<< HEAD
 import React, { useState } from "react";
 import { useEffect } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+=======
+import React, { useState, useEffect } from "react";
+import { View, StyleSheet, Text } from "react-native";
+>>>>>>> 55185851fbd2a5c7876f0e2fe89eb48ec42125b0
 import Calendar from "../components/CalendarComponent";
 import SaveButton from "../components/add_time";
 import { collection, addDoc } from "firebase/firestore";
 import db from "../config";
-import axios from 'axios';
+import axios from "axios";
+import AddButton from "../components/AddButton";
 
+<<<<<<< HEAD
 
 
 
@@ -19,26 +26,29 @@ import axios from 'axios';
 ];*/
 
 //This function returns the UI for the calendar and handles the selection of date
+=======
+>>>>>>> 55185851fbd2a5c7876f0e2fe89eb48ec42125b0
 const CalendarScreen = () => {
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
+  const [todaysDate, setTodaysDate] = useState("");
+
   const handleSelectDate = (date) => {
     setSelectedDate(date);
+    setSelectedTimeSlot(null); // clear selected timeslot when date is changed
   };
+
   const handleSelectTimeSlot = (timeSlot) => {
     setSelectedTimeSlot(timeSlot);
   };
 
-// This function saves the selected date and time slot to the Firestore database
-  const saveTime = async (date) => {
-    console.log(`Selected Date: ${date}`);
-
-    console.log(`Selected Time Slot: ${selectedTimeSlot.start}-${selectedTimeSlot.end}`);
+  const saveTime = async () => {
     try {
       const docRef = await addDoc(collection(db, "time"), {
         date: selectedDate,
         startTime: selectedTimeSlot.start,
         endTime: selectedTimeSlot.end,
+        price: selectedTimeSlot.price,
       });
       console.log("Document written with ID: ", docRef.id);
     } catch (error) {
@@ -46,6 +56,7 @@ const CalendarScreen = () => {
     }
   };
 
+<<<<<<< HEAD
   //this function modifies the data from the api in a usable way
   function getSEKValues(inputData) {
     
@@ -114,13 +125,82 @@ async function fetchElectricityPrices() {
   
 //Render for the UI or "View". Handles the textbars for "Time" and "Total cost". Handles as well the (sort of) 
 //radio buttons which the user is to press for booking. 
+=======
+  const [cost8_11, setCost8_11] = useState(0);
+  const [cost12_15, setCost12_15] = useState(0);
+  const [cost16_19, setCost16_19] = useState(0);
+
+  useEffect(() => {
+    const fetchElectricityPrices = async () => {
+      try {
+        const today = new Date(selectedDate);
+      
+const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        // Check if selected date is in the future
+        if (today > new Date() ) {
+          console.log("Selected date is in the future, skipping electricity prices fetch");
+          return;
+        }
+
+        setTodaysDate(today.toISOString().slice(0, 10)); // set todaysDate as a string in YYYY-MM-DD format
+    
+        
+       
+
+        const formattedDate = `${today.getFullYear()}/${
+          (today.getMonth() + 1).toString().padStart(2, "0")
+        }-${today.getDate().toString().padStart(2, "0")}`;
+    
+        const response = await axios.get(
+          `https://www.elprisetjustnu.se/api/v1/prices/${formattedDate}_SE3.json`
+        );
+    
+        setCost8_11(
+          (
+            (response.data[9].SEK_per_kWh +
+              response.data[10].SEK_per_kWh +
+              response.data[11].SEK_per_kWh) *
+            3
+          ).toFixed(1)
+        );
+    
+        setCost12_15(
+          (
+            (response.data[13].SEK_per_kWh +
+              response.data[14].SEK_per_kWh +
+              response.data[15].SEK_per_kWh) *
+            3
+          ).toFixed(1)
+        );
+    
+        setCost16_19(
+          (
+            (response.data[17].SEK_per_kWh +
+              response.data[18].SEK_per_kWh +
+              response.data[19].SEK_per_kWh) *
+            3
+          ).toFixed(1)
+        );
+      } catch (error) {
+        console.error("Error fetching electricity prices: ", error);
+      }
+    };
+    fetchElectricityPrices();
+  }, [selectedDate]);
+
+>>>>>>> 55185851fbd2a5c7876f0e2fe89eb48ec42125b0
   return (
     <View style={styles.container}>
       <View style={styles.calendarContainer}>
         <Calendar onSelectDate={handleSelectDate} />
       </View>
+<<<<<<< HEAD
   
 
+=======
+>>>>>>> 55185851fbd2a5c7876f0e2fe89eb48ec42125b0
       <View style={styles.textContainer}>
         <View style={styles.timeText}>
           <Text style={{ fontSize: 20 }}>Times</Text>
@@ -134,13 +214,65 @@ async function fetchElectricityPrices() {
       </View>
       <View style={styles.listan}>
         <Text style={[styles.item, { textAlign: 'left' }]}>08:00-11:00</Text>
+        {selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
+        <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>{`${cost8_11} kr`}</Text>
+        ) : (
+        <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>N/A</Text>
+        )}
+        <AddButton
+          onPress={() =>
+            handleSelectTimeSlot({
+              start: '08:00',
+              end: '11:00',
+              price:
+              selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
+              ? Number(cost8_11)
+              : 'Hög',
+            })
+          }
+        />
       </View>
       <View style={styles.listan}>
-        <Text style={[styles.item, { textAlign: 'left' }]}>11:00-14:00</Text>
+        <Text style={[styles.item, { textAlign: 'left' }]}>12:00-15:00</Text>
+         {selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
+          <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>{`${cost12_15} kr`}</Text>
+        ) : (
+          <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>N/A</Text>
+        )}
+        <AddButton
+          onPress={() =>
+            handleSelectTimeSlot({
+              start: '12:00',
+              end: '15:00',
+              price:
+                selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
+                ? Number(cost12_15)
+                  : 'Hög',
+            })
+          }
+        />
       </View>
       <View style={styles.listan}>
-        <Text style={[styles.item, { textAlign: 'left' }]}>14:00-17:00</Text>
+        <Text style={[styles.item, { textAlign: 'left' }]}>16:00-19:00</Text>
+        {selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
+          <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>{`${cost16_19} kr`}</Text>
+        ) : (
+          <Text style={[styles.item, { textAlign: 'center', marginRight: 50 }]}>N/A</Text>
+        )}
+        <AddButton
+          onPress={() =>
+            handleSelectTimeSlot({
+              start: '16:00',
+              end: '19:00',
+              price:
+              selectedDate && todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
+              ? Number(cost16_19)
+                  : 'Hög',
+            })
+          }
+        />
       </View>
+<<<<<<< HEAD
       <View style={styles.listan}>
         <Text style={[styles.item, { textAlign: 'left' }]}>17:00-20:00</Text>
       </View>
@@ -148,6 +280,8 @@ async function fetchElectricityPrices() {
 
     
   
+=======
+>>>>>>> 55185851fbd2a5c7876f0e2fe89eb48ec42125b0
       <View style={styles.saveButton}>
         <SaveButton onPress={() => saveTime(selectedDate)} />
       </View>
@@ -163,8 +297,9 @@ async function fetchElectricityPrices() {
 
     </View>
   );
-  
 };
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 5,
@@ -178,7 +313,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 20,
-    paddingBottom: 30,
+    paddingBottom: 5,
   },
   timeText: {
     flex: 0,
