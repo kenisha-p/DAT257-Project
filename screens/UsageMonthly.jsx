@@ -5,7 +5,6 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import db from "../config";
 import axios from "axios";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import Home from "./Home";
 
 
 const UsageDaily = ({ navigation }) => {
@@ -68,7 +67,7 @@ const UsageDaily = ({ navigation }) => {
     console.log('Blue Bar pressed');
     // Add your code to handle the press event here
 
-    navigation.navigate('UsageMonthly');
+    navigation.navigate('UsageDaily');
   };
 
 
