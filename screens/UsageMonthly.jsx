@@ -74,17 +74,17 @@ const UsageDaily = ({ navigation }) => {
 
   return (
    <View style={styles.container}>
-      <TouchableOpacity onPress= {handleBlueBarPress}>
         <View style={styles.blueBarContainer}>
           <View style={styles.blueBarLeft}>
             <Text style={styles.blueBarText}>Monthly</Text>
           </View>
           <View style={styles.whiteLine}/>
           <View style={styles.blueBarRight}>
+          <TouchableOpacity onPress= {handleBlueBarPress}>
             <Text style={styles.blueBarText}>Daily</Text>
+            </TouchableOpacity>
           </View>
         </View>
-      </TouchableOpacity>
       <View style={styles.calendarContainer}>
         <Calendar
          onSelectDate={handleSelectDate}/>
@@ -165,9 +165,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#3452A2',
     height: 50,
     paddingHorizontal: 20,
+    backgroundColor: '#3452A2',
   },
   blueBarLeft: {
     flex: 1,
@@ -175,12 +175,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRightColor: '#ffffff',
     borderRightWidth: 2,
+    borderLeftColor: '#ffffff',
+    borderLeftWidth: 2,
     height: '100%',
+    backgroundColor: '#8292C4',
   },
   blueBarRight: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    borderRightColor: '#ffffff',
+    borderRightWidth: 2,
+    height: '100%',
+    backgroundColor: '#3452A2',
   },
   blueBarText: {
     color: '#ffffff',

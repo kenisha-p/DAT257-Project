@@ -75,17 +75,17 @@ const UsageDaily = ({ navigation }) => {
 
   return (
    <View style={styles.container}>
-      <TouchableOpacity onPress= {handleBlueBarPress}>
         <View style={styles.blueBarContainer}>
           <View style={styles.blueBarLeft}>
+          <TouchableOpacity onPress= {handleBlueBarPress}>  
             <Text style={styles.blueBarText}>Monthly</Text>
+            </TouchableOpacity>
           </View>
           <View style={styles.whiteLine}/>
           <View style={styles.blueBarRight}>
             <Text style={styles.blueBarText}>Daily</Text>
           </View>
         </View>
-      </TouchableOpacity>
       <View style={styles.calendarContainer}>
         <Calendar
          onSelectDate={handleSelectDate}/>
@@ -176,12 +176,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRightColor: '#ffffff',
     borderRightWidth: 2,
+    borderLeftColor: '#ffffff',
+    borderLeftWidth: 2,
     height: '100%',
+    backgroundColor: '#3452A2',
   },
   blueBarRight: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    borderRightColor: '#ffffff',
+    borderRightWidth: 2,
+    height: '100%',
+    backgroundColor: '#8292C4',
   },
   blueBarText: {
     color: '#ffffff',
