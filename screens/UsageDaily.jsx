@@ -40,14 +40,14 @@ const UsageDaily = () => {
     if (!querySnapshot.empty) {
       const totalPrice = querySnapshot.docs.reduce((total, doc) => total + doc.data().price, 0); //calculates the total cost of one day
       const avgPrice = totalPrice / querySnapshot.size; //calculates average cost per booking of that day, is that what we want?
-      setAvgPrice(avgPrice.toFixed(2));
+      setAvgPrice(avgPrice.toFixed(2) + 'kr');
     } else {
       setAvgPrice(0);
     }
 
     if (!querySnapshot.empty) {
         const totalPrice = querySnapshot.docs.reduce((total, doc) => total + doc.data().price, 0); 
-        setElectricCost(totalPrice.toFixed(2));
+        setElectricCost(totalPrice.toFixed(2) + 'kr' );
       } else {
         setElectricCost(0);
       }
