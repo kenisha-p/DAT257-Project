@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Image, TouchableOpacity } from 'react-native';
 
-const MyButton = ({ onPress }) => {
+const AddButton = ({ onPress }) => {
   const [isFilled, setIsFilled] = useState(false);
   const [count, setCount] = useState(0);
 
@@ -27,4 +27,4 @@ const MyButton = ({ onPress }) => {
   );
 };
 
-export default MyButton;
+export default AddButton;
