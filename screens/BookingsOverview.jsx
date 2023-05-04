@@ -57,6 +57,11 @@ const Overview = () => {
     setShowRemoveAlert(true);
   };
 
+  const handleBlur = () => {
+    setShowRemoveAlert(false);
+    setTimeToRemove(null);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -73,7 +78,7 @@ const Overview = () => {
             <Text
               style={[styles.item, { textAlign: "left" }]}
             >{`${time.startTime}-${time.endTime}`}</Text>
-            <Remove_bottom onPress={() => handleSelectTime(time.id)} />
+          <Remove_bottom onPress={() => handleSelectTime(time.id)} onNotFilled={() => setTimeToRemove(null)}/>
           </View>
         ))}
       </ScrollView>
