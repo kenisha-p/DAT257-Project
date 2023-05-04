@@ -5,7 +5,6 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import db from "../config";
 import axios from "axios";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import Home from "./Home";
 
 
 const UsageDaily = ({ navigation }) => {
@@ -41,14 +40,14 @@ const UsageDaily = ({ navigation }) => {
     if (!querySnapshot.empty) {
       const totalPrice = querySnapshot.docs.reduce((total, doc) => total + doc.data().price, 0); //calculates the total cost of one day
       const avgPrice = totalPrice / querySnapshot.size; //calculates average cost per booking of that day, is that what we want?
-      setAvgPrice(avgPrice.toFixed(2) + 'kr');
+      setAvgPrice(avgPrice.toFixed(2));
     } else {
       setAvgPrice(0);
     }
 
     if (!querySnapshot.empty) {
         const totalPrice = querySnapshot.docs.reduce((total, doc) => total + doc.data().price, 0); 
-        setElectricCost(totalPrice.toFixed(2) + 'kr' );
+        setElectricCost(totalPrice.toFixed(2));
       } else {
         setElectricCost(0);
       }
@@ -68,7 +67,7 @@ const UsageDaily = ({ navigation }) => {
     console.log('Blue Bar pressed');
     // Add your code to handle the press event here
 
-    navigation.navigate('UsageMonthly');
+    navigation.navigate('UsageDaily');
   };
 
 
@@ -77,13 +76,13 @@ const UsageDaily = ({ navigation }) => {
    <View style={styles.container}>
         <View style={styles.blueBarContainer}>
           <View style={styles.blueBarLeft}>
-          <TouchableOpacity onPress= {handleBlueBarPress}>  
             <Text style={styles.blueBarText}>Monthly</Text>
-            </TouchableOpacity>
           </View>
           <View style={styles.whiteLine}/>
           <View style={styles.blueBarRight}>
+          <TouchableOpacity onPress= {handleBlueBarPress}>
             <Text style={styles.blueBarText}>Daily</Text>
+            </TouchableOpacity>
           </View>
         </View>
       <View style={styles.calendarContainer}>
@@ -166,9 +165,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#3452A2',
     height: 50,
     paddingHorizontal: 20,
+    backgroundColor: '#3452A2',
   },
   blueBarLeft: {
     flex: 1,
@@ -179,7 +178,7 @@ const styles = StyleSheet.create({
     borderLeftColor: '#ffffff',
     borderLeftWidth: 2,
     height: '100%',
-    backgroundColor: '#3452A2',
+    backgroundColor: '#8292C4',
   },
   blueBarRight: {
     flex: 1,
@@ -188,7 +187,7 @@ const styles = StyleSheet.create({
     borderRightColor: '#ffffff',
     borderRightWidth: 2,
     height: '100%',
-    backgroundColor: '#8292C4',
+    backgroundColor: '#3452A2',
   },
   blueBarText: {
     color: '#ffffff',
