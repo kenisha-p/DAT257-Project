@@ -33,6 +33,13 @@ const Overview = () => {
           <Text style={styles.blueBarText}>My washing machine</Text>
         </View>
       </View>
+      <View style={styles.contentContainer}>
+        <View style={styles.leftLabelContainer}>
+          <Text style={styles.leftLabel}>How many wash cycles do you do in a time slot?</Text>
+          <Text style={styles.leftLabel}>How much electricity does your machine use per hour?</Text>
+          <Text style={styles.leftLabel}>How many litres of water does your machine use per wash?</Text>
+        </View>
+      </View>
     </View>
   );
 };
@@ -65,6 +72,25 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  contentContainer: {
+    alignItems: 'left',
+  },
+
+  leftLabelContainer: {
+    marginTop: 100,
+    alignItems: 'flex-start',
+    marginLeft: 20,
+    width: 220,
+    backgroundColor: '#ffffff'
+  },
+  
+  leftLabel: {
+    color: '#000000',
+    fontSize: 18,
+    marginBottom: 80,
+    flexWrap: 'wrap',
+  }
+  
 });
 
 export default Overview;
