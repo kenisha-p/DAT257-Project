@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, TextInput } from "react-native"; // inkludera TextInput
 import { collection, query, where, getDocs, updateDoc } from 'firebase/firestore';
 import db from "../config";
 import axios from "axios";
@@ -34,16 +34,28 @@ const Overview = () => {
         </View>
       </View>
       <View style={styles.contentContainer}>
-        <View style={styles.leftLabelContainer}>
-          <Text style={styles.leftLabel}>How many wash cycles do you do in a time slot?</Text>
-          <Text style={styles.leftLabel}>How much electricity does your machine use per hour?</Text>
-          <Text style={styles.leftLabel}>How many litres of water does your machine use per wash?</Text>
+        <View style={styles.labelsContainer}>
+          <View style={styles.leftLabelContainer}>
+            <Text style={styles.leftLabel}>How many wash cycles do you do in a time slot?</Text>
+            <Text style={styles.leftLabel}>How much electricity does your machine use per hour?</Text>
+            <Text style={styles.leftLabel}>How many litres of water does your machine use per wash?</Text>
+          </View>
+          <View style={styles.rightLabelContainer}>
+            <View style={styles.inputContainer}> 
+              <TextInput style={styles.input} keyboardType="numeric" onChangeText={setWashCykles} value={washCykles} /> 
+            </View>
+            <View style={styles.inputContainer}> 
+              <TextInput style={styles.input} keyboardType="numeric" onChangeText={setElectricityConsumtion} value={electricityConsumtion} /> 
+            </View>
+            <View style={styles.inputContainer}> 
+              <TextInput style={styles.input} keyboardType="numeric" onChangeText={setWaterConsumtion} value={waterConsumtion} /> 
+            </View>
+          </View>
         </View>
       </View>
     </View>
   );
-};
-
+}
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -67,13 +79,16 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: '#3452A2',
   },
+
   blueBarText: {
     color: '#ffffff',
     fontSize: 18,
     fontWeight: 'bold',
   },
+
   contentContainer: {
-    alignItems: 'left',
+    flexDirection: 'row', 
+    justifyContent: 'space-between',
   },
 
   leftLabelContainer: {
@@ -81,16 +96,41 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginLeft: 20,
     width: 220,
-    backgroundColor: '#ffffff'
+    backgroundColor: '#ffffff',
+    padding: 10,
+    alignItems: 'left',
+
   },
   
+  rightLabelContainer: {
+    alignItems: 'flex-start',
+    width: 220, 
+    backgroundColor: '#ffffff',
+    padding: 10,
+    marginRight: 20, 
+    alignItems: 'right',
+  },
+
   leftLabel: {
     color: '#000000',
     fontSize: 18,
     marginBottom: 80,
     flexWrap: 'wrap',
-  }
-  
+  },
+
+  inputContainer: {
+    backgroundColor: '#f4f4f4',
+    borderRadius: 10,
+    padding: 10,
+    marginTop: 10,
+    width: 100,
+  },
+
+  input: {
+    color: '#000000',
+    fontSize: 18,
+    textAlign: 'center',
+  },
 });
 
 export default Overview;
