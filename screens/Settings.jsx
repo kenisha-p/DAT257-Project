@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { View, StyleSheet, Text, TextInput, TouchableOpacity, Keyboard } from "react-native";
-import { doc, updateDoc } from 'firebase/firestore';
+import React, { useState, useEffect} from "react";
+import { View, StyleSheet, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from "react-native";
+import { doc, updateDoc, getDoc } from 'firebase/firestore';
 import Save_rectangle from "../components/save";
 
 import db from "../config";
@@ -18,7 +18,8 @@ const Overview = () => {
 
   const updateSettings = async () => {
     const updateRef = doc(db, 'Settings', 'settings');
-    try {
+    if (washCykles !== "" && electricityConsumtion !== "" && waterConsumtion !== "") {
+      try {
       await updateDoc(updateRef, {
         "Wash": washCykles,
         "Electricity": electricityConsumtion,
@@ -27,15 +28,28 @@ const Overview = () => {
     } catch (error) {
       console.log(error);
     }
-    setElectricityConsumtion(null);
-    setWashCykles(null);
-    setWaterConsumtion(null);
+    console.log("Settings set");
 
+  }
+  else {
+    console.log("No settings changed");
+  }
   };
-  
+
+useEffect(() => {
+  async function getData() {
+    const docRef = doc(db, 'Settings', 'settings');
+    const docSnap = await getDoc(docRef);
+    setWaterConsumtion(docSnap.data().Water);
+    setElectricityConsumtion(docSnap.data().Electricity);
+    setWashCykles(docSnap.data().Wash);
+  }
+  getData();
+}, []);
+
 
   return (
-    <View style={styles.container} onPress={handlePress}>
+    <TouchableWithoutFeedback onPress={handlePress}>
       <View style={styles.container}>
         <View style={styles.blueBarContainer}>
           <View style={styles.blueBar}>
@@ -45,25 +59,54 @@ const Overview = () => {
         <View style={styles.contentContainer}>
           <View style={styles.labelContainer}>
             <View style={styles.row}>
-              <Text style={styles.leftLabel}>How many wash cycles do you do in a time slot?</Text>
-              <TextInput style={styles.input}  keyboardType="numeric" onChangeText={setWashCykles} value={washCykles} autoFocus={true} />
+              <Text style={styles.leftLabel}>
+                How many wash cycles do you do in a time slot?
+              </Text>
+              <TextInput
+                style={styles.input}
+                keyboardType="numeric"
+                onChangeText={setWashCykles}
+                value={washCykles}
+                autoFocus={false}
+              />
             </View>
             <View style={styles.row}>
-              <Text style={styles.leftLabel}>How much electricity does your machine use per hour?</Text>
-              <TextInput style={styles.input} keyboardType="numeric" onChangeText={setElectricityConsumtion} value={electricityConsumtion} autoFocus={true} />
+              <Text style={styles.leftLabel}>
+                How much electricity does your machine use per hour?
+              </Text>
+              <TextInput
+                style={styles.input}
+                keyboardType="numeric"
+                onChangeText={setElectricityConsumtion}
+                value={electricityConsumtion}
+                autoFocus={false}
+              />
             </View>
             <View style={styles.row}>
-              <Text style={styles.leftLabel}>How many litres of water does your machine use per wash?</Text>
-              <TextInput style={styles.input} keyboardType="numeric" onChangeText={setWaterConsumtion} value={waterConsumtion} autoFocus={true} />
+              <Text style={styles.leftLabel}>
+                How many litres of water does your machine use per wash?
+              </Text>
+              <TextInput
+                style={styles.input}
+                keyboardType="numeric"
+                onChangeText={setWaterConsumtion}
+                value={waterConsumtion}
+                autoFocus={false}
+              />
             </View>
           </View>
         </View>
-        <View style={[styles.Remove_Rectangle, { position: "absolute", bottom: 100, marginLeft: 100, }]}>
+        <View
+          style={[
+            styles.Remove_Rectangle,
+            { position: "absolute", bottom: 100, marginLeft: 100 },
+          ]}
+        >
           <Save_rectangle onPress={updateSettings} />
         </View>
       </View>
-    </View>
-  );  
+    </TouchableWithoutFeedback>
+  );
 };
 
 
