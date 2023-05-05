@@ -1,21 +1,25 @@
-import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Text, TextInput } from "react-native"; // inkludera TextInput
-import { collection, query, where, getDocs, updateDoc } from 'firebase/firestore';
+import React, { useState } from "react";
+import { View, StyleSheet, Text, TextInput, TouchableOpacity, Keyboard } from "react-native";
+import { doc, updateDoc } from 'firebase/firestore';
+import Save_rectangle from "../components/save";
+
 import db from "../config";
-import axios from "axios";
-import { TouchableOpacity } from "react-native-gesture-handler";
 
 const BLUE_BAR_HEIGHT = 50;
 
+const handlePress = () => {
+  Keyboard.dismiss(); 
+}
+
 const Overview = () => {
-  const [washCykles, setWashCykles] = useState(null);
-  const [electricityConsumtion, setElectricityConsumtion] = useState(null);
-  const [waterConsumtion, setWaterConsumtion] = useState(null);
+  const [washCykles, setWashCykles] = useState("");
+  const [electricityConsumtion, setElectricityConsumtion] = useState("");
+  const [waterConsumtion, setWaterConsumtion] = useState("");
 
   const updateSettings = async () => {
     const updateRef = doc(db, 'Settings', 'settings');
     try {
-      await db.updateDoc(updateRef, {
+      await updateDoc(updateRef, {
         "Wash": washCykles,
         "Electricity": electricityConsumtion,
         "Water": waterConsumtion,
@@ -23,39 +27,46 @@ const Overview = () => {
     } catch (error) {
       console.log(error);
     }
+    setElectricityConsumtion(null);
+    setWashCykles(null);
+    setWaterConsumtion(null);
+
   };
   
 
   return (
-    <View style={styles.container}>
-      <View style={styles.blueBarContainer}>
-        <View style={styles.blueBar}>
-          <Text style={styles.blueBarText}>My washing machine</Text>
+    <View style={styles.container} onPress={handlePress}>
+      <View style={styles.container}>
+        <View style={styles.blueBarContainer}>
+          <View style={styles.blueBar}>
+            <Text style={styles.blueBarText}>My washing machine</Text>
+          </View>
         </View>
-      </View>
-      <View style={styles.contentContainer}>
-        <View style={styles.labelsContainer}>
-          <View style={styles.leftLabelContainer}>
-            <Text style={styles.leftLabel}>How many wash cycles do you do in a time slot?</Text>
-            <Text style={styles.leftLabel}>How much electricity does your machine use per hour?</Text>
-            <Text style={styles.leftLabel}>How many litres of water does your machine use per wash?</Text>
-          </View>
-          <View style={styles.rightLabelContainer}>
-            <View style={styles.inputContainer}> 
-              <TextInput style={styles.input} keyboardType="numeric" onChangeText={setWashCykles} value={washCykles} /> 
+        <View style={styles.contentContainer}>
+          <View style={styles.labelContainer}>
+            <View style={styles.row}>
+              <Text style={styles.leftLabel}>How many wash cycles do you do in a time slot?</Text>
+              <TextInput style={styles.input}  keyboardType="numeric" onChangeText={setWashCykles} value={washCykles} autoFocus={true} />
             </View>
-            <View style={styles.inputContainer}> 
-              <TextInput style={styles.input} keyboardType="numeric" onChangeText={setElectricityConsumtion} value={electricityConsumtion} /> 
+            <View style={styles.row}>
+              <Text style={styles.leftLabel}>How much electricity does your machine use per hour?</Text>
+              <TextInput style={styles.input} keyboardType="numeric" onChangeText={setElectricityConsumtion} value={electricityConsumtion} autoFocus={true} />
             </View>
-            <View style={styles.inputContainer}> 
-              <TextInput style={styles.input} keyboardType="numeric" onChangeText={setWaterConsumtion} value={waterConsumtion} /> 
+            <View style={styles.row}>
+              <Text style={styles.leftLabel}>How many litres of water does your machine use per wash?</Text>
+              <TextInput style={styles.input} keyboardType="numeric" onChangeText={setWaterConsumtion} value={waterConsumtion} autoFocus={true} />
             </View>
           </View>
+        </View>
+        <View style={[styles.Remove_Rectangle, { position: "absolute", bottom: 100, marginLeft: 100, }]}>
+          <Save_rectangle onPress={updateSettings} />
         </View>
       </View>
     </View>
-  );
-}
+  );  
+};
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -87,50 +98,49 @@ const styles = StyleSheet.create({
   },
 
   contentContainer: {
-    flexDirection: 'row', 
+    flexDirection: 'row',
     justifyContent: 'space-between',
-  },
-
-  leftLabelContainer: {
+    alignItems: 'flex-start',
     marginTop: 100,
-    alignItems: 'flex-start',
-    marginLeft: 20,
-    width: 220,
-    backgroundColor: '#ffffff',
-    padding: 10,
-    alignItems: 'left',
-
+    paddingHorizontal: 20,
+    marginRight: 10,
   },
-  
-  rightLabelContainer: {
+
+  labelContainer: {
+    flex: 1,
+    flexDirection: 'column',
     alignItems: 'flex-start',
-    width: 220, 
     backgroundColor: '#ffffff',
     padding: 10,
-    marginRight: 20, 
-    alignItems: 'right',
+  },
+
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 30,
+    width: '90%',
   },
 
   leftLabel: {
     color: '#000000',
     fontSize: 18,
-    marginBottom: 80,
+    marginRight: 40,
     flexWrap: 'wrap',
-  },
-
-  inputContainer: {
-    backgroundColor: '#f4f4f4',
-    borderRadius: 10,
-    padding: 10,
-    marginTop: 10,
-    width: 100,
+    width: '80%',
   },
 
   input: {
     color: '#000000',
     fontSize: 18,
     textAlign: 'center',
+    backgroundColor: '#f2f2f2',
+    borderRadius: 5,
+    padding: 5,
+    width: '20%',
+    marginLeft: 0,
   },
+
 });
 
 export default Overview;
