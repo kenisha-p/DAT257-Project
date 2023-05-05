@@ -16,8 +16,6 @@ const UsageDaily = () => {
 
   const BLUE_BAR_HEIGHT = 50;
 
-  
-
   const getBookingInfo = async (selectedDate) => {
     const bookingsRef = db.collection('time');
     const querySnapshot = await bookingsRef.where('date', '==', selectedDate).get();
