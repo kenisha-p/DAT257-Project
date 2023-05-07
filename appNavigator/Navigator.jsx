@@ -5,6 +5,7 @@ import Calendar from '../screens/CalendarScreen';
 import Overview from '../screens/BookingsOverview';
 import UsageDaily from '../screens/UsageDaily';
 import Settings from '../screens/Settings';
+import UsageMonthly from '../screens/UsageMonthly';
 
 const Stack = createStackNavigator();
 
@@ -34,10 +35,16 @@ const Navigator = () => {
         options={{ title: 'Usage' }}
       />
 
-<Stack.Screen
+    <Stack.Screen
         name="Settings"
         component={Settings}
         options={{ title: 'Settings' }}
+       />
+
+    <Stack.Screen
+        name="UsageMonthly"
+        component={UsageMonthly}
+        options={{ title: 'UsageMonthly' }}
       />
 
     </Stack.Navigator>
