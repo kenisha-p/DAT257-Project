@@ -15,7 +15,6 @@ const UsageDaily = ({ navigation }) => {
   const [avgPrice, setAvgPrice] = useState(0);
   const [electricCost, setElectricCost] = useState(0);
   const [waterUsage, setWaterUsage] = useState(0);
-  const [numWashes, setNumWashes] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
 
