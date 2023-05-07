@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import Calendar from "../components/CalendarComponent";
 import SaveButton from "../components/add_time";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, getDoc, doc } from "firebase/firestore";
 import db from "../config";
 import axios from "axios";
 import AddButton from "../components/AddButton";
@@ -13,6 +13,8 @@ const CalendarScreen = () => {
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [todaysDate, setTodaysDate] = useState("");
   const [confirmationAlert, setConfirmationAlert] = useState(false);
+  const [electricityConsumtion, setElectricityConsumtion] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleSelectDate = (date) => {
     setSelectedDate(date);
@@ -43,10 +45,22 @@ const CalendarScreen = () => {
   const [cost16_19, setCost16_19] = useState(0);
 
   useEffect(() => {
+    const getData = async () => {
+      const docRef = doc(db, 'Settings', 'settings');
+      const docSnap = await getDoc(docRef);
+      setElectricityConsumtion(docSnap.data().Electricity);
+      console.log("Hämtar elektricitet");
+    };
+
+    getData().then(() => {
+      setIsLoading(false);
+    });
+  }, []);
+
+  useEffect(() => {
     const fetchElectricityPrices = async () => {
       try {
         const today = new Date(selectedDate);
-
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
 
@@ -58,7 +72,7 @@ const CalendarScreen = () => {
           return;
         }
 
-        setTodaysDate(today.toISOString().slice(0, 10)); // set todaysDate as a string in YYYY-MM-DD format
+        setTodaysDate(today.toISOString().slice(0, 10));
 
         const formattedDate = `${today.getFullYear()}/${(today.getMonth() + 1)
           .toString()
@@ -72,8 +86,8 @@ const CalendarScreen = () => {
           (
             (response.data[9].SEK_per_kWh +
               response.data[10].SEK_per_kWh +
-              response.data[11].SEK_per_kWh) *
-            3
+              response.data[11].SEK_per_kWh) /3 *
+            electricityConsumtion
           ).toFixed(1)
         );
 
@@ -81,8 +95,8 @@ const CalendarScreen = () => {
           (
             (response.data[13].SEK_per_kWh +
               response.data[14].SEK_per_kWh +
-              response.data[15].SEK_per_kWh) *
-            3
+              response.data[15].SEK_per_kWh) /3 *
+            electricityConsumtion
           ).toFixed(1)
         );
 
@@ -90,22 +104,25 @@ const CalendarScreen = () => {
           (
             (response.data[17].SEK_per_kWh +
               response.data[18].SEK_per_kWh +
-              response.data[19].SEK_per_kWh) *
-            3
+              response.data[19].SEK_per_kWh) /3 *
+            electricityConsumtion
           ).toFixed(1)
         );
       } catch (error) {
         console.error("Error fetching electricity prices: ", error);
       }
     };
-    fetchElectricityPrices();
-  }, [selectedDate]);
+
+    if (!isLoading) {
+      fetchElectricityPrices();
+    }
+  }, [isLoading, selectedDate]);
 
   const confirmBooking = () => {
     console.log("Confirming booking");
     setConfirmationAlert(true);
   };
-
+  if (!isLoading) {
   return (
     <View style={styles.container}>
       <View style={styles.calendarContainer}>
@@ -217,6 +234,7 @@ const CalendarScreen = () => {
     </View>
   );
 };
+}
 
 const styles = StyleSheet.create({
   container: {

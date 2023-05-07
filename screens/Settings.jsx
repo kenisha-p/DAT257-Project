@@ -72,7 +72,7 @@ useEffect(() => {
             </View>
             <View style={styles.row}>
               <Text style={styles.leftLabel}>
-                How much electricity does your machine use per hour?
+                How much electricity does your machine use per wash?
               </Text>
               <TextInput
                 style={styles.input}

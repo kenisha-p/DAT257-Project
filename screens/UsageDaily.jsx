@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import Calendar from "../components/CalendarComponent";
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, getDoc, doc } from 'firebase/firestore';
 import db from "../config";
 import axios from "axios";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -9,10 +9,13 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 
 const UsageDaily = () => {
   const [selectedDate, setSelectedDate] = useState('');
-  const [numWashes, setNumWashes] = useState(0);
   const [avgPrice, setAvgPrice] = useState(0);
   const [electricCost, setElectricCost] = useState(0);
   const [waterUsage, setWaterUsage] = useState(0);
+  const [washCykles, getWashCykles] = useState("");
+  const [waterConsumtion, getWaterConsumtion] = useState("");
+  const [numWashes, setNumWashes] = useState(0);
+
 
   const BLUE_BAR_HEIGHT = 50;
 
@@ -27,6 +30,16 @@ const UsageDaily = () => {
   
     return bookings;
   };
+
+  useEffect(() => {
+    async function getData() {
+      const docRef = doc(db, 'Settings', 'settings');
+      const docSnap = await getDoc(docRef);
+      getWaterConsumtion(docSnap.data().Water);
+      getWashCykles(docSnap.data().Wash);
+    }
+    getData();
+  }, []);
   
   const handleSelectDate = async (date) => {
     setSelectedDate(date);
@@ -52,8 +65,8 @@ const UsageDaily = () => {
 
       if (!querySnapshot.empty) {
         const numBookings = querySnapshot.docs.length;
-        setNumWashes(numBookings);
-        setWaterUsage(numBookings*150 + ' litres') //a washer uses about 50 litres of water per cycle, and an average cycle is about 1 hour
+        setNumWashes(numBookings*washCykles);
+        setWaterUsage(numBookings*waterConsumtion + ' litres') //a washer uses about 50 litres of water per cycle, and an average cycle is about 1 hour
       } else {
         setNumWashes(0);
         setWaterUsage(0)

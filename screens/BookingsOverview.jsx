@@ -31,6 +31,17 @@ const Overview = () => {
     getData();
   }, []);
 
+  useEffect(() => {
+    async function getData() {
+      const docRef = doc(db, 'Settings', 'settings');
+      const docSnap = await getDoc(docRef);
+      getWaterConsumtion(docSnap.data().Water);
+      getElectricityConsumtion(docSnap.data().Electricity);
+      getWashCykles(docSnap.data().Wash);
+    }
+    getData();
+  }, []);
+
   const handleSelectTime = (id) => {
     setTimeToRemove(id);
   };
