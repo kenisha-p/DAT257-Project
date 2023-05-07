@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView } from "react-native";
 import Remove_bottom from "../components/Remove_bottom";
 import Remove_Rectangle from "../components/Remove_Rectangle";
 import RemoveAlert from "../components/RemoveAlert";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { collection, getDocs, deleteDoc, doc, getDoc } from "firebase/firestore";
 import db from "../config";
 
 const Overview = () => {
@@ -27,17 +27,6 @@ const Overview = () => {
       });
 
       setTimes(timesArray);
-    }
-    getData();
-  }, []);
-
-  useEffect(() => {
-    async function getData() {
-      const docRef = doc(db, 'Settings', 'settings');
-      const docSnap = await getDoc(docRef);
-      getWaterConsumtion(docSnap.data().Water);
-      getElectricityConsumtion(docSnap.data().Electricity);
-      getWashCykles(docSnap.data().Wash);
     }
     getData();
   }, []);

@@ -4,7 +4,8 @@ import { Image, TouchableOpacity } from 'react-native';
 const MyButton = ({ onPress }) => {
   return (
     <TouchableOpacity onPress={onPress}>
-      <Image source={require('../assets/add2.png')} />
+      <Image source={require('../assets/add_time.png')} style={{ width: 180, height: 50 }}
+ />
     </TouchableOpacity>
   );
 };
