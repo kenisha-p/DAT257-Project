@@ -1,23 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import Calendar from "../components/CalendarComponent";
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, getDoc, doc } from 'firebase/firestore';
 import db from "../config";
 import axios from "axios";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Home from "./Home";
 
 
+
 const UsageDaily = ({ navigation }) => {
-  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
   const [numWashes, setNumWashes] = useState(0);
   const [avgPrice, setAvgPrice] = useState(0);
   const [electricCost, setElectricCost] = useState(0);
   const [waterUsage, setWaterUsage] = useState(0);
+  const [numWashes, setNumWashes] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+
+
 
   const BLUE_BAR_HEIGHT = 50;
-
-  
 
   const getBookingInfo = async (selectedDate) => {
     const bookingsRef = db.collection('time');
@@ -30,8 +33,19 @@ const UsageDaily = ({ navigation }) => {
   
     return bookings;
   };
+
+  useEffect(() => {
+    async function getData() {      
+      const currentDate = new Date().toISOString().slice(0, 10);
+      handleSelectDate(currentDate);
+    }
+    getData().then(() => {
+      setIsLoading(false);
+    });
+  }, []);
   
   const handleSelectDate = async (date) => {
+    
     setSelectedDate(date);
   
     const timeRef = collection(db, 'time');
@@ -55,8 +69,10 @@ const UsageDaily = ({ navigation }) => {
 
       if (!querySnapshot.empty) {
         const numBookings = querySnapshot.docs.length;
-        setNumWashes(numBookings);
-        setWaterUsage(numBookings*150 + ' litres') //a washer uses about 50 litres of water per cycle, and an average cycle is about 1 hour
+        const docRef = doc(db, 'Settings', 'settings');
+        const docSnap = await getDoc(docRef);
+        setNumWashes(numBookings*docSnap.data().Wash);
+        setWaterUsage(docSnap.data().Wash*numBookings*docSnap.data().Water + ' litres') 
       } else {
         setNumWashes(0);
         setWaterUsage(0)
@@ -72,7 +88,7 @@ const UsageDaily = ({ navigation }) => {
   };
 
 
-
+  if (!isLoading) {
   return (
    <View style={styles.container}>
         <View style={styles.blueBarContainer}>
@@ -110,6 +126,7 @@ const UsageDaily = ({ navigation }) => {
     </View>
   );
 };
+}
 
 const styles = StyleSheet.create({
   container: {

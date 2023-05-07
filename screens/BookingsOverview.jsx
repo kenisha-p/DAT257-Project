@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView } from "react-native";
 import Remove_bottom from "../components/Remove_bottom";
 import Remove_Rectangle from "../components/Remove_Rectangle";
 import RemoveAlert from "../components/RemoveAlert";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { collection, getDocs, deleteDoc, doc, getDoc } from "firebase/firestore";
 import db from "../config";
 
 const Overview = () => {
@@ -47,13 +47,13 @@ const Overview = () => {
       );
       setTimeToRemove(null);
       setShowRemoveAlert(false); // Hide the remove alert after removing the time
+      console.log("Confirming removal of time with id:", timeToRemove);
     } catch (error) {
       console.error("Error removing time: ", error);
     }
   };
 
   const confirmRemoveTime = () => {
-    console.log("Confirming removal of time with id:", timeToRemove);
     setShowRemoveAlert(true);
   };
 
@@ -82,6 +82,7 @@ const Overview = () => {
           </View>
         ))}
       </ScrollView>
+      <View style={styles.extraSpace} /> 
       {timeToRemove && (
         <View
           style={[styles.Remove_Rectangle, { position: "absolute", bottom: 0 }]}
@@ -113,6 +114,8 @@ const styles = StyleSheet.create({
   scrollContainer: {
     paddingVertical: 20,
     paddingHorizontal: 10,
+    width: "100%",
+    // Ange önskad maxhöjd här med enheten "px"
   },
 
   header: {
@@ -121,6 +124,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 10,
     paddingVertical: 20,
+    marginBottom: -25,
   },
   headerText: {
     fontSize: 15,
@@ -138,7 +142,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ffffff",
     backgroundColor: "#e6e6e6",
-    marginHorizontal: 40,
+    marginHorizontal: 20,
     marginBottom: 10,
   },
 
@@ -153,6 +157,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 100,
     marginBottom: 100,
   },
+  extraSpace: {
+    height: 175, // Höjden på det vita utrymmet under containern
+  },
+
 });
 
 export default Overview;
