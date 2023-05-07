@@ -72,7 +72,6 @@ const styles = StyleSheet.create({
     color: "#72777A",
     textAlign: "center",
     flex: 0,
-    order: 0,
     flexGrow: 0,
   },
   buttonsContainer: {

@@ -47,13 +47,13 @@ const Overview = () => {
       );
       setTimeToRemove(null);
       setShowRemoveAlert(false); // Hide the remove alert after removing the time
+      console.log("Confirming removal of time with id:", timeToRemove);
     } catch (error) {
       console.error("Error removing time: ", error);
     }
   };
 
   const confirmRemoveTime = () => {
-    console.log("Confirming removal of time with id:", timeToRemove);
     setShowRemoveAlert(true);
   };
 
@@ -113,6 +113,8 @@ const styles = StyleSheet.create({
   scrollContainer: {
     paddingVertical: 20,
     paddingHorizontal: 10,
+    width: "100%",
+    // Ange önskad maxhöjd här med enheten "px"
   },
 
   header: {
@@ -121,6 +123,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 10,
     paddingVertical: 20,
+    marginBottom: -25,
   },
   headerText: {
     fontSize: 15,
@@ -138,7 +141,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ffffff",
     backgroundColor: "#e6e6e6",
-    marginHorizontal: 40,
+    marginHorizontal: 20,
     marginBottom: 10,
   },
 

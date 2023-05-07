@@ -72,7 +72,7 @@ useEffect(() => {
             </View>
             <View style={styles.row}>
               <Text style={styles.leftLabel}>
-                How much electricity does your machine use per wash?
+                How much electricity does your machine use per wash (kWh)?
               </Text>
               <TextInput
                 style={styles.input}
@@ -84,7 +84,7 @@ useEffect(() => {
             </View>
             <View style={styles.row}>
               <Text style={styles.leftLabel}>
-                How many litres of water does your machine use per wash?
+                How many litres of water does your machine use per wash (litres)?
               </Text>
               <TextInput
                 style={styles.input}

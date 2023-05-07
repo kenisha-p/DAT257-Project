@@ -13,7 +13,8 @@ const CalendarScreen = () => {
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [todaysDate, setTodaysDate] = useState("");
   const [confirmationAlert, setConfirmationAlert] = useState(false);
-  const [electricityConsumtion, setElectricityConsumtion] = useState(1);
+  const [electricityConsumtion, getElectricityConsumtion] = useState("");
+  const [washCykles, getWashCykles] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
   const handleSelectDate = (date) => {
@@ -56,8 +57,9 @@ const CalendarScreen = () => {
     const getData = async () => {
       const docRef = doc(db, 'Settings', 'settings');
       const docSnap = await getDoc(docRef);
-      setElectricityConsumtion(docSnap.data().Electricity);
-      console.log("Hämtar elektricitet");
+      getElectricityConsumtion(docSnap.data().Electricity);
+      getWashCykles(docSnap.data().Wash);
+      console.log("Collect settings");
     };
 
     getData().then(() => {
@@ -90,13 +92,11 @@ const CalendarScreen = () => {
           `https://www.elprisetjustnu.se/api/v1/prices/${formattedDate}_SE3.json`
         );
 
-        console.log(response);
-
         setCost00_2(
           (
             (response.data[0].SEK_per_kWh +
               response.data[1].SEK_per_kWh) /2 *
-            electricityConsumtion
+            electricityConsumtion * washCykles
           ).toFixed(1)
         );
 
@@ -104,7 +104,7 @@ const CalendarScreen = () => {
           (
             (response.data[2].SEK_per_kWh +
               response.data[3].SEK_per_kWh) /2 *
-            electricityConsumtion
+            electricityConsumtion * washCykles
           ).toFixed(1)
         );
 
@@ -112,7 +112,7 @@ const CalendarScreen = () => {
           (
             (response.data[4].SEK_per_kWh +
               response.data[5].SEK_per_kWh) /2 *
-            electricityConsumtion
+            electricityConsumtion * washCykles
           ).toFixed(1)
         );
 
@@ -120,7 +120,7 @@ const CalendarScreen = () => {
           (
             (response.data[6].SEK_per_kWh +
               response.data[7].SEK_per_kWh) /2 *
-            electricityConsumtion
+            electricityConsumtion * washCykles
           ).toFixed(1)
         );
 
@@ -128,7 +128,7 @@ const CalendarScreen = () => {
           (
             (response.data[8].SEK_per_kWh +
               response.data[9].SEK_per_kWh) /2 *
-            electricityConsumtion
+            electricityConsumtion * washCykles
           ).toFixed(1)
         );
 
@@ -136,7 +136,7 @@ const CalendarScreen = () => {
           (
             (response.data[10].SEK_per_kWh +
               response.data[11].SEK_per_kWh) /2 *
-            electricityConsumtion
+            electricityConsumtion * washCykles
           ).toFixed(1)
         );
 
@@ -144,7 +144,7 @@ const CalendarScreen = () => {
           (
             (response.data[12].SEK_per_kWh +
               response.data[13].SEK_per_kWh) /2 *
-            electricityConsumtion
+            electricityConsumtion * washCykles
           ).toFixed(1)
         );
 
@@ -152,7 +152,7 @@ const CalendarScreen = () => {
           (
             (response.data[14].SEK_per_kWh +
               response.data[15].SEK_per_kWh) /2 *
-            electricityConsumtion
+            electricityConsumtion * washCykles
           ).toFixed(1)
         );
 
@@ -160,7 +160,7 @@ const CalendarScreen = () => {
           (
             (response.data[16].SEK_per_kWh +
               response.data[17].SEK_per_kWh) /2 *
-            electricityConsumtion
+            electricityConsumtion * washCykles
           ).toFixed(1)
         );
 
@@ -168,7 +168,7 @@ const CalendarScreen = () => {
           (
             (response.data[18].SEK_per_kWh +
               response.data[19].SEK_per_kWh) /2 *
-            electricityConsumtion
+            electricityConsumtion * washCykles
           ).toFixed(1)
         );
 
@@ -176,7 +176,7 @@ const CalendarScreen = () => {
           (
             (response.data[20].SEK_per_kWh +
               response.data[21].SEK_per_kWh) /2 *
-            electricityConsumtion
+            electricityConsumtion * washCykles
           ).toFixed(1)
         );
 
@@ -184,7 +184,7 @@ const CalendarScreen = () => {
           (
             (response.data[22].SEK_per_kWh +
               response.data[23].SEK_per_kWh) /2 *
-            electricityConsumtion
+            electricityConsumtion * washCykles
           ).toFixed(1)
         );
 
