@@ -594,7 +594,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     position: "absolute",
     width: "100%",
-    marginTop: -10,
+    marginTop: 10,
   },
   
   listan: {
