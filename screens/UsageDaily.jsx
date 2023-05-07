@@ -8,13 +8,13 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 
 
 const UsageDaily = () => {
-  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
   const [avgPrice, setAvgPrice] = useState(0);
   const [electricCost, setElectricCost] = useState(0);
   const [waterUsage, setWaterUsage] = useState(0);
-  const [washCykles, getWashCykles] = useState("");
-  const [waterConsumtion, getWaterConsumtion] = useState("");
   const [numWashes, setNumWashes] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+
 
 
   const BLUE_BAR_HEIGHT = 50;
@@ -32,16 +32,17 @@ const UsageDaily = () => {
   };
 
   useEffect(() => {
-    async function getData() {
-      const docRef = doc(db, 'Settings', 'settings');
-      const docSnap = await getDoc(docRef);
-      getWaterConsumtion(docSnap.data().Water);
-      getWashCykles(docSnap.data().Wash);
+    async function getData() {      
+      const currentDate = new Date().toISOString().slice(0, 10);
+      handleSelectDate(currentDate);
     }
-    getData();
+    getData().then(() => {
+      setIsLoading(false);
+    });
   }, []);
   
   const handleSelectDate = async (date) => {
+    
     setSelectedDate(date);
   
     const timeRef = collection(db, 'time');
@@ -65,8 +66,10 @@ const UsageDaily = () => {
 
       if (!querySnapshot.empty) {
         const numBookings = querySnapshot.docs.length;
-        setNumWashes(numBookings*washCykles);
-        setWaterUsage(numBookings*waterConsumtion + ' litres') //a washer uses about 50 litres of water per cycle, and an average cycle is about 1 hour
+        const docRef = doc(db, 'Settings', 'settings');
+        const docSnap = await getDoc(docRef);
+        setNumWashes(numBookings*docSnap.data().Wash);
+        setWaterUsage(docSnap.data().Wash*numBookings*docSnap.data().Water + ' litres') 
       } else {
         setNumWashes(0);
         setWaterUsage(0)
@@ -80,7 +83,7 @@ const UsageDaily = () => {
   };
 
 
-
+  if (!isLoading) {
   return (
    <View style={styles.container}>
       <TouchableOpacity onPress= {handleBlueBarPress}>
@@ -118,6 +121,7 @@ const UsageDaily = () => {
     </View>
   );
 };
+}
 
 const styles = StyleSheet.create({
   container: {
