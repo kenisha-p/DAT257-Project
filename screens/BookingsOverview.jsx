@@ -82,6 +82,7 @@ const Overview = () => {
           </View>
         ))}
       </ScrollView>
+      <View style={styles.extraSpace} /> 
       {timeToRemove && (
         <View
           style={[styles.Remove_Rectangle, { position: "absolute", bottom: 0 }]}
@@ -156,6 +157,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 100,
     marginBottom: 100,
   },
+  extraSpace: {
+    height: 175, // Höjden på det vita utrymmet under containern
+  },
+
 });
 
 export default Overview;
