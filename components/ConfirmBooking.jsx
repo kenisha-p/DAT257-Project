@@ -61,7 +61,6 @@ const styles = StyleSheet.create({
     color: "#090A0A",
     textAlign: "center",
     flex: 0,
-    order: 0,
     flexGrow: 0,
   },
   subtitle: {

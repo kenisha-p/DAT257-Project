@@ -227,7 +227,7 @@ const CalendarScreen = () => {
           todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
             <Text
               style={[styles.item, { textAlign: "center", marginRight: 50 }]}
-            >{`${cost8_10} kr`}</Text>
+            >{`${cost00_2} kr`}</Text>
           ) : (
             <Text style={[styles.item, { textAlign: "center", marginRight: 50 }]}>
               N/A
@@ -513,7 +513,7 @@ const CalendarScreen = () => {
         todaysDate === new Date(selectedDate).toISOString().slice(0,        10) ? (
           <Text
             style={[styles.item, { textAlign: "center", marginRight: 50 }]}
-          >{`${cost20_22} kr`}</Text>
+          >{`${cost22_00} kr`}</Text>
         ) : (
           <Text style={[styles.item, { textAlign: "center", marginRight: 50 }]}>
             N/A
