@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import Calendar from "../components/CalendarComponent";
 import { collection, query, where, getDocs } from 'firebase/firestore';
@@ -6,23 +6,21 @@ import db from "../config";
 import axios from "axios";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-
 const UsageMonthly = ({ navigation }) => {
-  const [selectedDate, setSelectedDate] = useState('2023-01');
+  const currentDate = new Date();
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const [selectedDate, setSelectedDate] = useState(`${year}-${month}`);
   const [numWashes, setNumWashes] = useState(0);
   const [avgPrice, setAvgPrice] = useState(0);
   const [electricCost, setElectricCost] = useState(0);
   const [waterUsage, setWaterUsage] = useState(0);
-  //const [selectedMonth, setSelectedMonth] = useState('January');
-
 
   const BLUE_BAR_HEIGHT = 50;
 
-  
-
   const getBookingInfo = async (selectedDate) => {
     const bookingsRef = db.collection('time');
-    const querySnapshot = await bookingsRef.where('date', '==', selectedDate).get();
+    const querySnapshot = await bookingsRef.where('date', '>=', selectedDate).where('date', '<=', getEndOfMonth(selectedDate)).get();
     
     const bookings = [];
     querySnapshot.forEach((doc) => {
@@ -36,35 +34,26 @@ const UsageMonthly = ({ navigation }) => {
     setSelectedDate(date);
   
     const timeRef = collection(db, 'time');
-    const q = query(timeRef, where('date', '==', date));
+    const q = query(timeRef, where('date', '>=', date), where('date', '<=', getEndOfMonth(date)));
     const querySnapshot = await getDocs(q);
     
     if (!querySnapshot.empty) {
-      const totalPrice = querySnapshot.docs.reduce((total, doc) => total + doc.data().price, 0); //calculates the total cost of one day
-      const avgPrice = totalPrice / querySnapshot.size; //calculates average cost per booking of that day, is that what we want?
+      const totalPrice = querySnapshot.docs.reduce((total, doc) => total + doc.data().price, 0);
+      const avgPrice = totalPrice / querySnapshot.size;
       setAvgPrice(avgPrice.toFixed(2));
     } else {
       setAvgPrice(0);
     }
 
     if (!querySnapshot.empty) {
-        const totalPrice = querySnapshot.docs.reduce((total, doc) => total + doc.data().price, 0); 
-        setElectricCost(totalPrice.toFixed(2));
-      } else {
-        setElectricCost(0);
-      }
-
-      if (!querySnapshot.empty) {
-        const numBookings = querySnapshot.docs.length;
-        setNumWashes(numBookings);
-        setWaterUsage(numBookings*150 + ' litres') //a washer uses about 50 litres of water per cycle, and an average cycle is about 1 hour
-      } else {
-        setNumWashes(0);
-        setWaterUsage(0)
-      }
-
+      const numBookings = querySnapshot.docs.length;
+      setNumWashes(numBookings);
+      setWaterUsage(numBookings * 150 + ' litres');
+    } else {
+      setNumWashes(0);
+      setWaterUsage(0);
+    }
   };
-
   const handleBlueBarPress = () => {
     console.log('Blue Bar pressed');
     // Add your code to handle the press event here
