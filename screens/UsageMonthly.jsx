@@ -8,11 +8,13 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 
 
 const UsageMonthly = ({ navigation }) => {
-  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedDate, setSelectedDate] = useState('2023-01');
   const [numWashes, setNumWashes] = useState(0);
   const [avgPrice, setAvgPrice] = useState(0);
   const [electricCost, setElectricCost] = useState(0);
   const [waterUsage, setWaterUsage] = useState(0);
+  //const [selectedMonth, setSelectedMonth] = useState('January');
+
 
   const BLUE_BAR_HEIGHT = 50;
 
@@ -70,11 +72,44 @@ const UsageMonthly = ({ navigation }) => {
     navigation.navigate('UsageDaily');
   };
 
-  const handleMonthBarPress = () => {
-    console.log('Month Bar pressed');
-    // Add your code to handle the press event here
-  };
+  const handlePrevPress = () => {
+    // Extract the current year and month from the selected date
+    const [year, month] = selectedDate.split('-');
+    
+    // Convert the year and month to numbers
+    const yearNumber = Number(year);
+    const monthNumber = Number(month);
+  
+    // Calculate the year and month of the previous month
+    const previousMonthYear = monthNumber === 1 ? yearNumber - 1 : yearNumber;
+    const previousMonth = monthNumber === 1 ? 12 : monthNumber - 1;
+  
+    // Format the previous month as a string with leading zeros
+    const previousMonthString = `${previousMonthYear}-${previousMonth.toString().padStart(2, '0')}`;
+  
+    // Update the selected date to the first day of the previous month
+    setSelectedDate(previousMonthString);
 
+    };
+
+  const handleNextPress = () => {
+        // Extract the current year and month from the selected date
+  const [year, month] = selectedDate.split('-');
+
+  // Convert the year and month to numbers
+  const yearNumber = Number(year);
+  const monthNumber = Number(month);
+
+  // Calculate the year and month of the next month
+  const nextMonthYear = monthNumber === 12 ? yearNumber + 1 : yearNumber;
+  const nextMonth = monthNumber === 12 ? 1 : monthNumber + 1;
+
+  // Format the next month as a string with leading zeros
+  const nextMonthString = `${nextMonthYear}-${nextMonth.toString().padStart(2, '0')}`;
+
+  // Update the selected date to the next month
+  setSelectedDate(nextMonthString);
+  };
 
 
   return (
@@ -92,17 +127,19 @@ const UsageMonthly = ({ navigation }) => {
         </View>
         <View style={styles.MonthBarContainer}>
           <View style={styles.MonthBarLeft}>
+          <TouchableOpacity onPress= {handlePrevPress}>
             <Text style={styles.MonthBarText}>Previous</Text>
+            </TouchableOpacity>
           </View>
           <View style={styles.whiteLine}/>
           <View style={styles.MonthBarRight}>
-          <TouchableOpacity onPress= {handleMonthBarPress}>
+          <TouchableOpacity onPress= {handleNextPress}>
             <Text style={styles.MonthBarText}>Next</Text>
             </TouchableOpacity>
           </View>
         </View>
       <View style={styles.contentContainer}>
-        <Text style={styles.selectedDateText}>Your usage for: January{selectedDate}</Text>
+        <Text style={styles.selectedDateText}>Your usage for: {selectedDate}</Text>
         <View style={styles.whiteSquare}>
           <View style={styles.leftLabelContainer}>
             <Text style={styles.leftLabel}>Number of washes:</Text>
@@ -249,8 +286,9 @@ const styles = StyleSheet.create({
     borderRightWidth: 2,
     borderLeftColor: '#ffffff',
     borderLeftWidth: 2,
-    height: '100%',
-    backgroundColor: '#ffffff',
+    height: 30,
+    backgroundColor: '#D6EAF8',
+    borderRadius: 30,
   },
   MonthBarRight: {
     flex: 1,
@@ -258,8 +296,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRightColor: '#ffffff',
     borderRightWidth: 2,
-    height: '100%',
-    backgroundColor: '#ffffff',
+    height: 30,
+    backgroundColor: '#D6EAF8',
+    borderRadius: 30,
   },
   MonthBarText: {
     color: '#000000',
