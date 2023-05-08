@@ -6,6 +6,22 @@ import db from "../config";
 import axios from "axios";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
+
+const getStartOfPrevMonth = (selectedDate) => {
+  const [year, month] = selectedDate.split('-');
+  const prevMonth = month === '01' ? '12' : String(Number(month) - 1).padStart(2, '0');
+  const prevYear = month === '01' ? String(Number(year) - 1) : year;
+  return `${prevYear}-${prevMonth}-01`;
+};
+
+const getEndOfPrevMonth = (selectedDate) => {
+  const [year, month] = selectedDate.split('-');
+  const prevMonth = month === '01' ? '12' : String(Number(month) - 1).padStart(2, '0');
+  const prevYear = month === '01' ? String(Number(year) - 1) : year;
+  const lastDay = new Date(prevYear, prevMonth, 0).getDate();
+  return `${prevYear}-${prevMonth}-${lastDay}`;
+};
+
 const UsageMonthly = ({ navigation }) => {
   const BLUE_BAR_HEIGHT = 50;
 
@@ -21,6 +37,13 @@ const UsageMonthly = ({ navigation }) => {
   const [avgPrice, setAvgPrice] = useState(0);
   const [electricCost, setElectricCost] = useState(0);
   const [waterUsage, setWaterUsage] = useState(0);
+
+
+  const [prevNumWashes, setPrevNumWashes] = useState(0);
+  const [prevAvgPrice, setPrevAvgPrice] = useState(0);
+  const [prevElectricCost, setPrevElectricCost] = useState(0);
+  const [prevWaterUsage, setPrevWaterUsage] = useState(0);
+
 
   const getEndOfMonth = (selectedDate) => {
     const [year, month] = selectedDate.split('-');
@@ -68,15 +91,15 @@ const UsageMonthly = ({ navigation }) => {
 
   const handleSelectDate = async (date) => {
     setSelectedDate(date);
-
+  
     const timeRef = collection(db, 'time');
     const startOfMonth = date + '-01';
     const endOfMonth = getEndOfMonth(date);
     const q = query(timeRef, where('date', '>=', startOfMonth), where('date', '<=', endOfMonth));
     const querySnapshot = await getDocs(q);
-
+  
     console.log('Query Snapshot:', querySnapshot);
-
+  
     if (!querySnapshot.empty) {
       const totalPrice = querySnapshot.docs.reduce((total, doc) => total + doc.data().price, 0);
       const avgPrice = totalPrice / querySnapshot.size;
@@ -86,14 +109,14 @@ const UsageMonthly = ({ navigation }) => {
     } else {
       setAvgPrice(0);
     }
-
+  
     if (!querySnapshot.empty) {
       const totalPrice = querySnapshot.docs.reduce((total, doc) => total + doc.data().price, 0); 
       setElectricCost(totalPrice.toFixed(2) + 'kr' );
     } else {
       setElectricCost(0);
     }
-
+  
     if (!querySnapshot.empty) {
       const numBookings = querySnapshot.docs.length;
       console.log('Num Bookings:', numBookings);
@@ -103,8 +126,31 @@ const UsageMonthly = ({ navigation }) => {
       setNumWashes(0);
       setWaterUsage(0);
     }
-    
+  
+    // Calculate usage for previous month
+    const startOfPrevMonth = getStartOfPrevMonth(date);
+    const endOfPrevMonth = getEndOfPrevMonth(date);
+  
+    const prevMonthQ = query(timeRef, where('date', '>=', startOfPrevMonth), where('date', '<=', endOfPrevMonth));
+    const prevMonthSnapshot = await getDocs(prevMonthQ);
+  
+    if (!prevMonthSnapshot.empty) {
+      const prevTotalPrice = prevMonthSnapshot.docs.reduce((total, doc) => total + doc.data().price, 0);
+      const prevAvgPrice = prevTotalPrice / prevMonthSnapshot.size;
+      const prevNumBookings = prevMonthSnapshot.docs.length;
+  
+      setPrevAvgPrice(prevAvgPrice.toFixed(2));
+      setPrevNumWashes(prevNumBookings);
+      setPrevElectricCost(prevTotalPrice.toFixed(2) + 'kr');
+      setPrevWaterUsage(prevNumBookings * 150 + ' litres');
+    } else {
+      setPrevAvgPrice(0);
+      setPrevNumWashes(0);
+      setPrevElectricCost(0);
+      setPrevWaterUsage(0);
+    }
   };
+    
 
   
 
@@ -189,13 +235,13 @@ const UsageMonthly = ({ navigation }) => {
         <View style={styles.whiteSquare}>
           <View style={styles.leftLabelContainer}>
             <Text style={styles.leftLabel}>Number of washes:</Text>
-            <Text style={styles.leftSubLabel}>+4 compared to previous month</Text>
+            <Text style={styles.leftSubLabel}> {numWashes - prevNumWashes} compared to previous month</Text>
             <Text style={styles.leftLabel}>Average price:</Text>
-            <Text style={styles.leftSub2Label}>-0,18kr/kWh compared to previous month</Text>
+            <Text style={styles.leftSub2Label}> {(avgPrice - prevAvgPrice).toFixed(2)} kr/kWh compared to previous month</Text>
             <Text style={styles.leftLabel}>Electric cost:</Text>
-            <Text style={styles.leftSub3Label}>+24 kr compared to last month</Text>
+            <Text style={styles.leftSub3Label}>{parseFloat(electricCost) - parseFloat(prevElectricCost)} kr compared to last month</Text>
             <Text style={styles.leftLabel}>Water usage:</Text>
-            <Text style={styles.leftSub4Label}>+40 litres compared to last month</Text>
+            <Text style={styles.leftSub4Label}>{parseFloat(waterUsage) - parseFloat(prevWaterUsage)} litres compared to last month</Text>
           </View>
           <View style={styles.rightLabelContainer}>
             <Text style={styles.rightLabel} >{numWashes}</Text>
