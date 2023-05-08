@@ -14,6 +14,7 @@ const UsageDaily = ({ navigation }) => {
   const [avgPrice, setAvgPrice] = useState(0);
   const [electricCost, setElectricCost] = useState(0);
   const [waterUsage, setWaterUsage] = useState(0);
+  const [selectedOption, setSelectedOption] = useState('daily');
 
   const BLUE_BAR_HEIGHT = 50;
 
@@ -65,7 +66,14 @@ const UsageDaily = ({ navigation }) => {
   };
 
   const handleBlueBarPress = () => {
+<<<<<<< Updated upstream
     navigation.navigate('UsageMonthly');
+=======
+    console.log('Blue Bar pressed');
+    const option = selectedOption === 'daily' ? 'Monthly' : 'Daily';
+    setSelectedOption(option);
+    // Add your code to handle the press event here
+>>>>>>> Stashed changes
   };
 
 
