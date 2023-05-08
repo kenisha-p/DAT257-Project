@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import Calendar from "../components/CalendarComponent";
 import { collection, query, where, getDocs } from 'firebase/firestore';
@@ -7,53 +7,107 @@ import axios from "axios";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 const UsageMonthly = ({ navigation }) => {
-  const currentDate = new Date();
-  const year = currentDate.getFullYear();
-  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-  const [selectedDate, setSelectedDate] = useState(`${year}-${month}`);
+  const BLUE_BAR_HEIGHT = 50;
+
+  const getCurrentMonth = () => {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    return `${year}-${month}`;
+  };
+
+  const [selectedDate, setSelectedDate] = useState(getCurrentMonth());
   const [numWashes, setNumWashes] = useState(0);
   const [avgPrice, setAvgPrice] = useState(0);
   const [electricCost, setElectricCost] = useState(0);
   const [waterUsage, setWaterUsage] = useState(0);
 
-  const BLUE_BAR_HEIGHT = 50;
+  const getEndOfMonth = (selectedDate) => {
+    const [year, month] = selectedDate.split('-');
+    const lastDay = new Date(year, month, 0).getDate();
+    return `${year}-${month}-${lastDay}`;
+  };
 
   const getBookingInfo = async (selectedDate) => {
     const bookingsRef = db.collection('time');
-    const querySnapshot = await bookingsRef.where('date', '>=', selectedDate).where('date', '<=', getEndOfMonth(selectedDate)).get();
-    
+    const querySnapshot = await bookingsRef
+      .where('date', '>=', selectedDate)
+      .where('date', '<=', getEndOfMonth(selectedDate))
+      .get();
+
+    console.log('Query Snapshot:', querySnapshot);
+
     const bookings = [];
     querySnapshot.forEach((doc) => {
       bookings.push(doc.data());
     });
-  
+
+    console.log('Bookings:', bookings);
+
     return bookings;
   };
+
+  useEffect(() => {
+    const fetchBookingInfo = async () => {
+      const bookings = await getBookingInfo(selectedDate);
+      console.log('Fetched Bookings:', bookings);
+      // Update the state with the fetched bookings or perform any required operations
+    };
   
+    fetchBookingInfo();
+  }, [selectedDate]);
+  
+  useEffect(() => {
+    const fetchDataForSelectedDate = async () => {
+      await handleSelectDate(selectedDate);
+      // Perform any additional operations based on the selected date
+    };
+  
+    fetchDataForSelectedDate();
+  }, [selectedDate]);
+
   const handleSelectDate = async (date) => {
     setSelectedDate(date);
-  
+
     const timeRef = collection(db, 'time');
-    const q = query(timeRef, where('date', '>=', date), where('date', '<=', getEndOfMonth(date)));
+    const startOfMonth = date + '-01';
+    const endOfMonth = getEndOfMonth(date);
+    const q = query(timeRef, where('date', '>=', startOfMonth), where('date', '<=', endOfMonth));
     const querySnapshot = await getDocs(q);
-    
+
+    console.log('Query Snapshot:', querySnapshot);
+
     if (!querySnapshot.empty) {
       const totalPrice = querySnapshot.docs.reduce((total, doc) => total + doc.data().price, 0);
       const avgPrice = totalPrice / querySnapshot.size;
+      console.log('Total Price:', totalPrice);
+      console.log('Avg Price:', avgPrice);
       setAvgPrice(avgPrice.toFixed(2));
     } else {
       setAvgPrice(0);
     }
 
     if (!querySnapshot.empty) {
+      const totalPrice = querySnapshot.docs.reduce((total, doc) => total + doc.data().price, 0); 
+      setElectricCost(totalPrice.toFixed(2) + 'kr' );
+    } else {
+      setElectricCost(0);
+    }
+
+    if (!querySnapshot.empty) {
       const numBookings = querySnapshot.docs.length;
+      console.log('Num Bookings:', numBookings);
       setNumWashes(numBookings);
       setWaterUsage(numBookings * 150 + ' litres');
     } else {
       setNumWashes(0);
       setWaterUsage(0);
     }
+    
   };
+
+  
+
   const handleBlueBarPress = () => {
     console.log('Blue Bar pressed');
     // Add your code to handle the press event here
@@ -78,6 +132,9 @@ const UsageMonthly = ({ navigation }) => {
   
     // Update the selected date to the first day of the previous month
     setSelectedDate(previousMonthString);
+
+
+    
 
     };
 
@@ -218,8 +275,8 @@ const styles = StyleSheet.create({
   rightLabel: {
     color: '#000000',
     fontSize: 16,
-    marginBottom: 20,
-    marginTop: 20
+    marginBottom: 49,
+    marginTop: 25
   },
   selectedDateText: {
     fontSize: 16, // Change font size as needed
