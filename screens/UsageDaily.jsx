@@ -65,9 +65,6 @@ const UsageDaily = ({ navigation }) => {
   };
 
   const handleBlueBarPress = () => {
-    console.log('Blue Bar pressed');
-    // Add your code to handle the press event here
-
     navigation.navigate('UsageMonthly');
   };
 

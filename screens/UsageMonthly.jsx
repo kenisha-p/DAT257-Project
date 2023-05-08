@@ -7,8 +7,8 @@ import axios from "axios";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 
-const UsageDaily = ({ navigation }) => {
-  const [selectedDate, setSelectedDate] = useState('');
+const UsageMonthly = ({ navigation }) => {
+  const [selectedMonth, setSelectedMonth] = useState('');
   const [numWashes, setNumWashes] = useState(0);
   const [avgPrice, setAvgPrice] = useState(0);
   const [electricCost, setElectricCost] = useState(0);
@@ -30,11 +30,11 @@ const UsageDaily = ({ navigation }) => {
     return bookings;
   };
   
-  const handleSelectDate = async (date) => {
-    setSelectedDate(date);
-  
+  const handleSelectMonth = async (month) => {
+    const firstDayOfMonth = new Date(month.getFullYear(), month.getMonth(), 1);
+    const lastDayOfMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0);
     const timeRef = collection(db, 'time');
-    const q = query(timeRef, where('date', '==', date));
+    const q = query(timeRef, where('date', '>=', firstDayOfMonth.toISOString()), where('date', '<=', lastDayOfMonth.toISOString()));
     const querySnapshot = await getDocs(q);
     
     if (!querySnapshot.empty) {
@@ -61,12 +61,9 @@ const UsageDaily = ({ navigation }) => {
         setWaterUsage(0)
       }
 
-  };
+    };
 
   const handleBlueBarPress = () => {
-    console.log('Blue Bar pressed');
-    // Add your code to handle the press event here
-
     navigation.navigate('UsageDaily');
   };
 
@@ -87,10 +84,10 @@ const UsageDaily = ({ navigation }) => {
         </View>
       <View style={styles.calendarContainer}>
         <Calendar
-         onSelectDate={handleSelectDate}/>
+         onSelectMonth={handleSelectMonth}/>
       </View>
       <View style={styles.contentContainer}>
-        <Text style={styles.selectedDateText}>Your usage on: {selectedDate}</Text>
+        <Text style={styles.selectedDateText}>Your usage on: {selectedMonth.toLocaleString()}</Text>
         <View style={styles.blueSquare}>
           <View style={styles.leftLabelContainer}>
             <Text style={styles.leftLabel}>Number of washes:</Text>
