@@ -73,21 +73,27 @@ const CalendarScreen = () => {
         const today = new Date(selectedDate);
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
-
-        // Check if selected date is in the future
-        if (today > new Date()) {
-          console.log(
-            "Selected date is in the future, skipping electricity prices fetch"
-          );
-          return;
-        }
-
-        setTodaysDate(today.toISOString().slice(0, 10));
-
-        const formattedDate = `${today.getFullYear()}/${(today.getMonth() + 1)
+  
+        let formattedDate = `${today.getFullYear()}/${(today.getMonth() + 1)
           .toString()
           .padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}`;
-
+  
+        const isAfter16Today = new Date().getHours() >= 13;
+        const isTomorrow = today.getDate() === tomorrow.getDate();
+  
+        // Check if selected date is tomorrow and current time is after 16:00
+        if (isTomorrow && isAfter16Today) {
+          formattedDate = `${tomorrow.getFullYear()}/${(tomorrow.getMonth() + 1)
+            .toString()
+            .padStart(2, "0")}-${tomorrow.getDate().toString().padStart(2, "0")}`;
+          console.log("Fetching tomorrow's electricity prices");
+        } else if (today > new Date() || (isTomorrow && !isAfter16Today)) {
+          console.log("Selected date is in the future, skipping electricity prices fetch");
+          return;
+        }
+  
+        setTodaysDate(today.toISOString().slice(0, 10));
+  
         const response = await axios.get(
           `https://www.elprisetjustnu.se/api/v1/prices/${formattedDate}_SE3.json`
         );
@@ -242,7 +248,7 @@ const CalendarScreen = () => {
                   selectedDate &&
                   todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
                     ? Number(cost00_2)
-                    : "Hög",
+                    : 0,
               })
             }
           />
