@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import Remove_bottom from '../components/Remove_bottom';
-import Remove_Rectangle from '../components/Remove_Rectangle';
-import RemoveAlert from '../components/RemoveAlert';
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
+import Remove_bottom from "../components/Remove_bottom";
+import Remove_Rectangle from "../components/Remove_Rectangle";
+import RemoveAlert from "../components/RemoveAlert";
+import { collection, getDocs, deleteDoc, doc, getDoc } from "firebase/firestore";
 import db from "../config";
 
 const Overview = () => {
@@ -19,6 +19,13 @@ const Overview = () => {
       querySnapshot.forEach((doc) => {
         timesArray.push({ id: doc.id, ...doc.data() }); // Added id property to each time object
       });
+
+      timesArray.sort((a, b) => {
+        const dateA = new Date(a.date + "T" + a.startTime);
+        const dateB = new Date(b.date + "T" + b.startTime);
+        return dateB - dateA;
+      });
+
       setTimes(timesArray);
     }
     getData();
@@ -35,35 +42,51 @@ const Overview = () => {
     }
     try {
       await deleteDoc(doc(db, "time", timeToRemove));
-      setTimes((prevTimes) => prevTimes.filter((time) => time.id !== timeToRemove));
+      setTimes((prevTimes) =>
+        prevTimes.filter((time) => time.id !== timeToRemove)
+      );
       setTimeToRemove(null);
       setShowRemoveAlert(false); // Hide the remove alert after removing the time
+      console.log("Confirming removal of time with id:", timeToRemove);
     } catch (error) {
       console.error("Error removing time: ", error);
     }
-  };  
+  };
 
   const confirmRemoveTime = () => {
-    console.log("Confirming removal of time with id:", timeToRemove);
     setShowRemoveAlert(true);
   };
-  
+
+  const handleBlur = () => {
+    setShowRemoveAlert(false);
+    setTimeToRemove(null);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={[styles.headerText, { textAlign: 'center' }]}>Day</Text>
-        <Text style={[styles.headerText, { textAlign: 'right' }]}>Time</Text>
-        <Text style={[styles.headerText, { textAlign: 'right' }]}>Remove</Text>
+        <Text style={[styles.headerText, { textAlign: "center" }]}>Day</Text>
+        <Text style={[styles.headerText, { textAlign: "right" }]}>Time</Text>
+        <Text style={[styles.headerText, { textAlign: "right" }]}>Remove</Text>
       </View>
-      {times.map((time) => (
-        <View style={styles.list} key={time.id}>
-          <Text style={[styles.item, { textAlign: 'left' }]}>{time.date}</Text>
-          <Text style={[styles.item, { textAlign: 'left' }]}>{`${time.startTime}-${time.endTime}`}</Text>
-          <Remove_bottom onPress={() => handleSelectTime(time.id)} />
-        </View>
-      ))}
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {times.map((time) => (
+          <View style={styles.list} key={time.id}>
+            <Text style={[styles.item, { textAlign: "left" }]}>
+              {time.date}
+            </Text>
+            <Text
+              style={[styles.item, { textAlign: "left" }]}
+            >{`${time.startTime}-${time.endTime}`}</Text>
+          <Remove_bottom onPress={() => handleSelectTime(time.id)} onNotFilled={() => setTimeToRemove(null)}/>
+          </View>
+        ))}
+      </ScrollView>
+      <View style={styles.extraSpace} /> 
       {timeToRemove && (
-        <View style={[styles.Remove_Rectangle, { position: 'absolute', bottom: 0 }]}>
+        <View
+          style={[styles.Remove_Rectangle, { position: "absolute", bottom: 0 }]}
+        >
           <Remove_Rectangle onPress={confirmRemoveTime} timeId={timeToRemove} />
         </View>
       )}
@@ -81,52 +104,63 @@ const Overview = () => {
   );
 };
 
-
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    height: "100%",
+    backgroundColor: "#ffffff",
   },
+
+  scrollContainer: {
+    paddingVertical: 20,
+    paddingHorizontal: 10,
+    width: "100%",
+    // Ange önskad maxhöjd här med enheten "px"
+  },
+
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: 10,
     paddingVertical: 20,
-    
+    marginBottom: -25,
   },
   headerText: {
     fontSize: 15,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
     flex: 1,
     marginHorizontal: 20,
   },
   list: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     paddingHorizontal: 10,
     paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#ffffff',
-    backgroundColor: '#e6e6e6',
-    marginHorizontal: 40,
+    borderColor: "#ffffff",
+    backgroundColor: "#e6e6e6",
+    marginHorizontal: 20,
     marginBottom: 10,
   },
-  
+
   item: {
     fontSize: 15,
     flex: 1,
     marginHorizontal: 10,
   },
   Remove_Rectangle: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginHorizontal: 100,
-    marginBottom:100,
-  }
+    marginBottom: 100,
+  },
+  extraSpace: {
+    height: 175, // Höjden på det vita utrymmet under containern
+  },
+
 });
 
 export default Overview;
