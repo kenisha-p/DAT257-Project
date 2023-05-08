@@ -8,11 +8,13 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 
 
 const UsageMonthly = ({ navigation }) => {
-  const [selectedMonth, setSelectedMonth] = useState('');
+  const [selectedDate, setSelectedDate] = useState('2023-01');
   const [numWashes, setNumWashes] = useState(0);
   const [avgPrice, setAvgPrice] = useState(0);
   const [electricCost, setElectricCost] = useState(0);
   const [waterUsage, setWaterUsage] = useState(0);
+  //const [selectedMonth, setSelectedMonth] = useState('January');
+
 
   const BLUE_BAR_HEIGHT = 50;
 
@@ -67,6 +69,44 @@ const UsageMonthly = ({ navigation }) => {
     navigation.navigate('UsageDaily');
   };
 
+  const handlePrevPress = () => {
+    // Extract the current year and month from the selected date
+    const [year, month] = selectedDate.split('-');
+    
+    // Convert the year and month to numbers
+    const yearNumber = Number(year);
+    const monthNumber = Number(month);
+  
+    // Calculate the year and month of the previous month
+    const previousMonthYear = monthNumber === 1 ? yearNumber - 1 : yearNumber;
+    const previousMonth = monthNumber === 1 ? 12 : monthNumber - 1;
+  
+    // Format the previous month as a string with leading zeros
+    const previousMonthString = `${previousMonthYear}-${previousMonth.toString().padStart(2, '0')}`;
+  
+    // Update the selected date to the first day of the previous month
+    setSelectedDate(previousMonthString);
+
+    };
+
+  const handleNextPress = () => {
+        // Extract the current year and month from the selected date
+  const [year, month] = selectedDate.split('-');
+
+  // Convert the year and month to numbers
+  const yearNumber = Number(year);
+  const monthNumber = Number(month);
+
+  // Calculate the year and month of the next month
+  const nextMonthYear = monthNumber === 12 ? yearNumber + 1 : yearNumber;
+  const nextMonth = monthNumber === 12 ? 1 : monthNumber + 1;
+
+  // Format the next month as a string with leading zeros
+  const nextMonthString = `${nextMonthYear}-${nextMonth.toString().padStart(2, '0')}`;
+
+  // Update the selected date to the next month
+  setSelectedDate(nextMonthString);
+  };
 
 
   return (
@@ -82,18 +122,31 @@ const UsageMonthly = ({ navigation }) => {
             </TouchableOpacity>
           </View>
         </View>
-      <View style={styles.calendarContainer}>
-        <Calendar
-         onSelectMonth={handleSelectMonth}/>
-      </View>
+        <View style={styles.MonthBarContainer}>
+          <View style={styles.MonthBarLeft}>
+          <TouchableOpacity onPress= {handlePrevPress}>
+            <Text style={styles.MonthBarText}>Previous</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.whiteLine}/>
+          <View style={styles.MonthBarRight}>
+          <TouchableOpacity onPress= {handleNextPress}>
+            <Text style={styles.MonthBarText}>Next</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       <View style={styles.contentContainer}>
-        <Text style={styles.selectedDateText}>Your usage on: {selectedMonth.toLocaleString()}</Text>
-        <View style={styles.blueSquare}>
+        <Text style={styles.selectedDateText}>Your usage for: {selectedDate}</Text>
+        <View style={styles.whiteSquare}>
           <View style={styles.leftLabelContainer}>
             <Text style={styles.leftLabel}>Number of washes:</Text>
+            <Text style={styles.leftSubLabel}>+4 compared to previous month</Text>
             <Text style={styles.leftLabel}>Average price:</Text>
+            <Text style={styles.leftSub2Label}>-0,18kr/kWh compared to previous month</Text>
             <Text style={styles.leftLabel}>Electric cost:</Text>
+            <Text style={styles.leftSub3Label}>+24 kr compared to last month</Text>
             <Text style={styles.leftLabel}>Water usage:</Text>
+            <Text style={styles.leftSub4Label}>+40 litres compared to last month</Text>
           </View>
           <View style={styles.rightLabelContainer}>
             <Text style={styles.rightLabel} >{numWashes}</Text>
@@ -112,19 +165,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
   },
-  calendarContainer: {
-    flex: 1,
-    margin: 10,
-    borderRadius: 10,
-    overflow: 'hidden',
-  },
   contentContainer: {
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
-  blueSquare: {
-    backgroundColor: '#3452A2',
+  whiteSquare: {
+    backgroundColor: '#ffffff',
     borderRadius: 10,
     padding: 30,
     margin: 0,
@@ -132,24 +179,52 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '80%',
-    height: '85%'
+    height: '70%'
   },
   leftLabelContainer: {
     alignItems: 'flex-start',
     marginRight: 10,
   },
   leftLabel: {
-    color: '#ffffff',
+    color: '#000000',
     fontWeight: 'bold',
     fontSize: 16,
+    marginBottom: 10,
+    marginTop: 20,
+  },
+  leftSubLabel: {
+    color: '#FF0000',
+    fontWeight: 'bold',
+    fontSize: 12,
     marginBottom: 20,
-    marginTop: 20
+    marginTop: 2,
+  },
+  leftSub2Label: {
+    color: '#00ff00',
+    fontWeight: 'bold',
+    fontSize: 12,
+    marginBottom: 20,
+    marginTop: 2,
+  },
+  leftSub3Label: {
+    color: '#FF0000',
+    fontWeight: 'bold',
+    fontSize: 12,
+    marginBottom: 20,
+    marginTop: 2,
+  },
+  leftSub4Label: {
+    color: '#FF0000',
+    fontWeight: 'bold',
+    fontSize: 12,
+    marginBottom: 20,
+    marginTop: 2,
   },
   rightLabelContainer: {
     alignItems: 'flex-end',
   },
   rightLabel: {
-    color: '#ffffff',
+    color: '#000000',
     fontSize: 16,
     marginBottom: 20,
     marginTop: 20
@@ -191,5 +266,41 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  MonthBarContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    height: 50,
+    paddingHorizontal: 20,
+    backgroundColor: '#ffffff',
+    marginTop: 15,
+  },
+  MonthBarLeft: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRightColor: '#ffffff',
+    borderRightWidth: 2,
+    borderLeftColor: '#ffffff',
+    borderLeftWidth: 2,
+    height: 30,
+    backgroundColor: '#D6EAF8',
+    borderRadius: 30,
+  },
+  MonthBarRight: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRightColor: '#ffffff',
+    borderRightWidth: 2,
+    height: 30,
+    backgroundColor: '#D6EAF8',
+    borderRadius: 30,
+  },
+  MonthBarText: {
+    color: '#000000',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
 });
-export default UsageDaily;
+export default UsageMonthly;
