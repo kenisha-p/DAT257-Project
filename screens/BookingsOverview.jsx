@@ -103,7 +103,7 @@ const Overview = () => {
             Upcoming Bookings
           </Text>
         </View>
-        <View style={styles.topContainer}>
+        <View style={styles.splitContainer}>
           <ScrollView contentContainerStyle={styles.scrollContainer}>
             {upcomingBookings.map((time) => (
               <View style={styles.list} key={time.id}>
@@ -124,7 +124,7 @@ const Overview = () => {
           </Text>
         </View>
 
-        <View style={styles.topContainer}>
+        <View style={styles.splitContainer}>
           <ScrollView contentContainerStyle={styles.scrollContainer}>
             {pastBookings.map((time) => (
               <View style={styles.list} key={time.id}>
@@ -229,11 +229,7 @@ const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
   },
-  topContainer: {
-    flex: 1,
-    backgroundColor: "#f5f6ff",
-  },
-  bottomContainer: {
+  splitContainer: {
     flex: 1,
     backgroundColor: "#f5f6ff",
   },
