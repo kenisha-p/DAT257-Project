@@ -142,11 +142,15 @@ const UsageMonthly = ({ navigation }) => {
       const prevTotalPrice = prevMonthSnapshot.docs.reduce((total, doc) => total + doc.data().price, 0);
       const prevAvgPrice = prevTotalPrice / prevMonthSnapshot.size;
       const prevNumBookings = prevMonthSnapshot.docs.length;
+
+      const docRef = doc(db, 'Settings', 'settings');
+      const docSnap = await getDoc(docRef);
+      const waterValue = docSnap.data().Water; // Accessing the 'Water' field from the 'Settings' document
   
       setPrevAvgPrice(prevAvgPrice.toFixed(2));
       setPrevNumWashes(prevNumBookings);
       setPrevElectricCost(prevTotalPrice.toFixed(2) + 'kr');
-      setPrevWaterUsage(prevNumBookings * 150 + ' litres');
+      setPrevWaterUsage(prevNumBookings * waterValue + ' litres');
     } else {
       setPrevAvgPrice(0);
       setPrevNumWashes(0);
