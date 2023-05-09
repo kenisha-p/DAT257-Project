@@ -57,6 +57,28 @@ const Overview = () => {
     setShowRemoveAlert(true);
   };
 
+  const currentDate = new Date();
+  const hours = currentDate.getHours().toString().padStart(2, "0");
+  const minutes = currentDate.getMinutes().toString().padStart(2, "0");
+  const currentTime = `${hours}:${minutes}`;
+  console.log("Current Time:", currentTime);
+
+  const pastBookings = [];
+  const upcomingBookings = [];
+
+  times.forEach((time) => {
+    const bookingDate = new Date(time.date);
+    const bookingTime = time.endTime;
+    if (bookingDate < currentDate && bookingTime < currentTime) {
+      pastBookings.push(time);
+    } else {
+      upcomingBookings.push(time);
+    }
+  });
+
+  console.log("Past Bookings:", pastBookings);
+  console.log("Upcoming Bookings:", upcomingBookings);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -64,22 +86,55 @@ const Overview = () => {
         <Text style={[styles.headerText, { textAlign: "right" }]}>Time</Text>
         <Text style={[styles.headerText, { textAlign: "right" }]}>Remove</Text>
       </View>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {times.map((time) => (
-          <View style={styles.list} key={time.id}>
-            <Text style={[styles.item, { textAlign: "left" }]}>
-              {time.date}
-            </Text>
-            <Text
-              style={[styles.item, { textAlign: "left" }]}
-            >{`${time.startTime}-${time.endTime}`}</Text>
-            <Remove_bottom onPress={() => handleSelectTime(time.id)} />
-          </View>
-        ))}
-      </ScrollView>
+      <View style={styles.listContainer}>
+        <View style={styles.header}>
+          <Text style={[styles.title, { textAlign: "left" }]}>
+            Upcoming Bookings
+          </Text>
+        </View>
+        <View style={styles.topContainer}>
+          <ScrollView contentContainerStyle={styles.scrollContainer}>
+            {upcomingBookings.map((time) => (
+              <View style={styles.list} key={time.id}>
+                <Text style={[styles.item, { textAlign: "left" }]}>
+                  {time.date}
+                </Text>
+                <Text
+                  style={[styles.item, { textAlign: "left" }]}
+                >{`${time.startTime}-${time.endTime}`}</Text>
+                <Remove_bottom onPress={() => handleSelectTime(time.id)} />
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+        <View style={styles.header}>
+          <Text style={[styles.title, { textAlign: "left" }]}>
+            Past Bookings
+          </Text>
+        </View>
+
+        <View style={styles.topContainer}>
+          <ScrollView contentContainerStyle={styles.scrollContainer}>
+            {pastBookings.map((time) => (
+              <View style={styles.list} key={time.id}>
+                <Text style={[styles.item, { textAlign: "left" }]}>
+                  {time.date}
+                </Text>
+                <Text
+                  style={[styles.item, { textAlign: "left" }]}
+                >{`${time.startTime}-${time.endTime}`}</Text>
+                <Remove_bottom onPress={() => handleSelectTime(time.id)} />
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+      </View>
       {timeToRemove && (
         <View
-          style={[styles.Remove_Rectangle, { position: "absolute", bottom: 0 }]}
+          style={[
+            styles.Remove_Rectangle,
+            { position: "absolute", bottom: -30, right: 15 },
+          ]}
         >
           <Remove_Rectangle onPress={confirmRemoveTime} timeId={timeToRemove} />
         </View>
@@ -114,7 +169,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
     paddingVertical: 20,
   },
   headerText: {
@@ -123,6 +178,15 @@ const styles = StyleSheet.create({
     textAlign: "center",
     flex: 1,
     marginHorizontal: 20,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#001478",
+    textAlign: "center",
+    flex: 1,
+    marginHorizontal: 35,
+    marginVertical: -10,
   },
   list: {
     flexDirection: "row",
@@ -147,6 +211,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginHorizontal: 100,
     marginBottom: 100,
+  },
+  listContainer: {
+    flex: 1,
+  },
+  topContainer: {
+    flex: 1,
+    backgroundColor: "#f5f6ff",
+  },
+  bottomContainer: {
+    flex: 1,
+    backgroundColor: "#f5f6ff",
   },
 });
 
