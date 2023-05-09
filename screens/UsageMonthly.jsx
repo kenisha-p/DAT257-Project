@@ -235,17 +235,25 @@ const UsageMonthly = ({ navigation }) => {
         <View style={styles.whiteSquare}>
           <View style={styles.leftLabelContainer}>
             <Text style={styles.leftLabel}>Number of washes:</Text>
-            <Text style={styles.leftSubLabel}> {numWashes - prevNumWashes} compared to previous month</Text>
+            <Text style={[styles.leftSubLabel, { color: (numWashes - prevNumWashes) < 0 ? '#00FF00' : '#FF0000' }]}>
+            {(numWashes - prevNumWashes) >= 0 ? '+' : '-'}{Math.abs(numWashes - prevNumWashes)} compared to previous month</Text>
             <Text style={styles.leftLabel}>Average price:</Text>
-            <Text style={styles.leftSub2Label}> {(avgPrice - prevAvgPrice).toFixed(2)} kr/kWh compared to previous month</Text>
+            <Text style={[styles.leftSub2Label, { color: (avgPrice - prevAvgPrice) < 0 ? '#00FF00' : '#FF0000' }]}>
+             {(avgPrice - prevAvgPrice) < 0 ? '-' : '+'}
+              {Math.abs(avgPrice - prevAvgPrice).toFixed(2)} kr/kWh compared to previous month</Text>
             <Text style={styles.leftLabel}>Electric cost:</Text>
-            <Text style={styles.leftSub3Label}>{parseFloat(electricCost) - parseFloat(prevElectricCost)} kr compared to last month</Text>
+            <Text style={[styles.leftSub3Label,{ color: parseFloat(electricCost) - parseFloat(prevElectricCost) < 0 ? '#00FF00' : '#FF0000' }]}>
+               {(parseFloat(electricCost) - parseFloat(prevElectricCost)) < 0 ? '-' : '+'}
+                {Math.abs(parseFloat(electricCost) - parseFloat(prevElectricCost))} kr compared to last month</Text>
             <Text style={styles.leftLabel}>Water usage:</Text>
-            <Text style={styles.leftSub4Label}>{parseFloat(waterUsage) - parseFloat(prevWaterUsage)} litres compared to last month</Text>
+            <Text style={[styles.leftSub4Label,{ color: parseFloat(waterUsage) - parseFloat(prevWaterUsage) < 0 ? '#00FF00' : '#FF0000' }]}>
+                {(parseFloat(waterUsage) - parseFloat(prevWaterUsage)) < 0 ? '-' : '+'}
+                {Math.abs(parseFloat(waterUsage) - parseFloat(prevWaterUsage))} litres compared to last month</Text>
+
           </View>
           <View style={styles.rightLabelContainer}>
             <Text style={styles.rightLabel} >{numWashes}</Text>
-            <Text style={styles.rightLabel}>{avgPrice}</Text>
+            <Text style={styles.rightLabel}>{avgPrice + 'kr/kWh'}</Text>
             <Text style={styles.rightLabel}>{electricCost}</Text>
             <Text style={styles.rightLabel}>{waterUsage}</Text>
           </View>
