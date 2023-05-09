@@ -5,6 +5,7 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import db from "../config";
 import axios from "axios";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { getDoc, doc } from 'firebase/firestore';
 
 
 const getStartOfPrevMonth = (selectedDate) => {
@@ -117,15 +118,18 @@ const UsageMonthly = ({ navigation }) => {
       setElectricCost(0);
     }
   
-    if (!querySnapshot.empty) {
+   if (!querySnapshot.empty) {
       const numBookings = querySnapshot.docs.length;
-      console.log('Num Bookings:', numBookings);
+      const docRef = doc(db, 'Settings', 'settings');
+      const docSnap = await getDoc(docRef);
+      const waterValue = docSnap.data().Water; // Accessing the 'Water' field from the 'Settings' document
       setNumWashes(numBookings);
-      setWaterUsage(numBookings * 150 + ' litres');
+      setWaterUsage(numBookings * waterValue + ' litres');
     } else {
       setNumWashes(0);
       setWaterUsage(0);
     }
+
   
     // Calculate usage for previous month
     const startOfPrevMonth = getStartOfPrevMonth(date);
@@ -406,4 +410,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-export default UsageMonthly;
+export default UsageMonthly; 
