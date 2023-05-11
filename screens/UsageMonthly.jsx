@@ -5,65 +5,162 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import db from "../config";
 import axios from "axios";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { getDoc, doc } from 'firebase/firestore';
 
+
+const getStartOfPrevMonth = (selectedDate) => {
+  const [year, month] = selectedDate.split('-');
+  const prevMonth = month === '01' ? '12' : String(Number(month) - 1).padStart(2, '0');
+  const prevYear = month === '01' ? String(Number(year) - 1) : year;
+  return `${prevYear}-${prevMonth}-01`;
+};
+
+const getEndOfPrevMonth = (selectedDate) => {
+  const [year, month] = selectedDate.split('-');
+  const prevMonth = month === '01' ? '12' : String(Number(month) - 1).padStart(2, '0');
+  const prevYear = month === '01' ? String(Number(year) - 1) : year;
+  const lastDay = new Date(prevYear, prevMonth, 0).getDate();
+  return `${prevYear}-${prevMonth}-${lastDay}`;
+};
 
 const UsageMonthly = ({ navigation }) => {
-  const [selectedDate, setSelectedDate] = useState('2023-01');
+  const BLUE_BAR_HEIGHT = 50;
+
+  const getCurrentMonth = () => {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    return `${year}-${month}`;
+  };
+
+  const [selectedDate, setSelectedDate] = useState(getCurrentMonth());
   const [numWashes, setNumWashes] = useState(0);
   const [avgPrice, setAvgPrice] = useState(0);
   const [electricCost, setElectricCost] = useState(0);
   const [waterUsage, setWaterUsage] = useState(0);
-  //const [selectedMonth, setSelectedMonth] = useState('January');
 
 
-  const BLUE_BAR_HEIGHT = 50;
+  const [prevNumWashes, setPrevNumWashes] = useState(0);
+  const [prevAvgPrice, setPrevAvgPrice] = useState(0);
+  const [prevElectricCost, setPrevElectricCost] = useState(0);
+  const [prevWaterUsage, setPrevWaterUsage] = useState(0);
 
-  
+
+  const getEndOfMonth = (selectedDate) => {
+    const [year, month] = selectedDate.split('-');
+    const lastDay = new Date(year, month, 0).getDate();
+    return `${year}-${month}-${lastDay}`;
+  };
 
   const getBookingInfo = async (selectedDate) => {
     const bookingsRef = db.collection('time');
-    const querySnapshot = await bookingsRef.where('date', '==', selectedDate).get();
-    
+    const querySnapshot = await bookingsRef
+      .where('date', '>=', selectedDate)
+      .where('date', '<=', getEndOfMonth(selectedDate))
+      .get();
+
+    console.log('Query Snapshot:', querySnapshot);
+
     const bookings = [];
     querySnapshot.forEach((doc) => {
       bookings.push(doc.data());
     });
-  
+
+    console.log('Bookings:', bookings);
+
     return bookings;
   };
+
+  useEffect(() => {
+    const fetchBookingInfo = async () => {
+      const bookings = await getBookingInfo(selectedDate);
+      console.log('Fetched Bookings:', bookings);
+      // Update the state with the fetched bookings or perform any required operations
+    };
   
+    fetchBookingInfo();
+  }, [selectedDate]);
+  
+  useEffect(() => {
+    const fetchDataForSelectedDate = async () => {
+      await handleSelectDate(selectedDate);
+      // Perform any additional operations based on the selected date
+    };
+  
+    fetchDataForSelectedDate();
+  }, [selectedDate]);
+
   const handleSelectDate = async (date) => {
     setSelectedDate(date);
   
     const timeRef = collection(db, 'time');
-    const q = query(timeRef, where('date', '==', date));
+    const startOfMonth = date + '-01';
+    const endOfMonth = getEndOfMonth(date);
+    const q = query(timeRef, where('date', '>=', startOfMonth), where('date', '<=', endOfMonth));
     const querySnapshot = await getDocs(q);
-    
+  
+    console.log('Query Snapshot:', querySnapshot);
+  
     if (!querySnapshot.empty) {
-      const totalPrice = querySnapshot.docs.reduce((total, doc) => total + doc.data().price, 0); //calculates the total cost of one day
-      const avgPrice = totalPrice / querySnapshot.size; //calculates average cost per booking of that day, is that what we want?
+      const totalPrice = querySnapshot.docs.reduce((total, doc) => total + doc.data().price, 0);
+      const avgPrice = totalPrice / querySnapshot.size;
+      console.log('Total Price:', totalPrice);
+      console.log('Avg Price:', avgPrice);
       setAvgPrice(avgPrice.toFixed(2));
     } else {
       setAvgPrice(0);
     }
-
+  
     if (!querySnapshot.empty) {
-        const totalPrice = querySnapshot.docs.reduce((total, doc) => total + doc.data().price, 0); 
-        setElectricCost(totalPrice.toFixed(2));
-      } else {
-        setElectricCost(0);
-      }
+      const totalPrice = querySnapshot.docs.reduce((total, doc) => total + doc.data().price, 0); 
+      setElectricCost(totalPrice.toFixed(2) + 'kr' );
+    } else {
+      setElectricCost(0);
+    }
+  
+   if (!querySnapshot.empty) {
+      const numBookings = querySnapshot.docs.length;
+      const docRef = doc(db, 'Settings', 'settings');
+      const docSnap = await getDoc(docRef);
+      const waterValue = docSnap.data().Water; // Accessing the 'Water' field from the 'Settings' document
+      setNumWashes(numBookings);
+      setWaterUsage(numBookings * waterValue + ' litres');
+    } else {
+      setNumWashes(0);
+      setWaterUsage(0);
+    }
 
-      if (!querySnapshot.empty) {
-        const numBookings = querySnapshot.docs.length;
-        setNumWashes(numBookings);
-        setWaterUsage(numBookings*150 + ' litres') //a washer uses about 50 litres of water per cycle, and an average cycle is about 1 hour
-      } else {
-        setNumWashes(0);
-        setWaterUsage(0)
-      }
+  
+    // Calculate usage for previous month
+    const startOfPrevMonth = getStartOfPrevMonth(date);
+    const endOfPrevMonth = getEndOfPrevMonth(date);
+  
+    const prevMonthQ = query(timeRef, where('date', '>=', startOfPrevMonth), where('date', '<=', endOfPrevMonth));
+    const prevMonthSnapshot = await getDocs(prevMonthQ);
+  
+    if (!prevMonthSnapshot.empty) {
+      const prevTotalPrice = prevMonthSnapshot.docs.reduce((total, doc) => total + doc.data().price, 0);
+      const prevAvgPrice = prevTotalPrice / prevMonthSnapshot.size;
+      const prevNumBookings = prevMonthSnapshot.docs.length;
 
+      const docRef = doc(db, 'Settings', 'settings');
+      const docSnap = await getDoc(docRef);
+      const waterValue = docSnap.data().Water; // Accessing the 'Water' field from the 'Settings' document
+  
+      setPrevAvgPrice(prevAvgPrice.toFixed(2));
+      setPrevNumWashes(prevNumBookings);
+      setPrevElectricCost(prevTotalPrice.toFixed(2) + 'kr');
+      setPrevWaterUsage(prevNumBookings * waterValue + ' litres');
+    } else {
+      setPrevAvgPrice(0);
+      setPrevNumWashes(0);
+      setPrevElectricCost(0);
+      setPrevWaterUsage(0);
+    }
   };
+    
+
+  
 
   const handleBlueBarPress = () => {
     console.log('Blue Bar pressed');
@@ -89,6 +186,9 @@ const UsageMonthly = ({ navigation }) => {
   
     // Update the selected date to the first day of the previous month
     setSelectedDate(previousMonthString);
+
+
+    
 
     };
 
@@ -143,17 +243,25 @@ const UsageMonthly = ({ navigation }) => {
         <View style={styles.whiteSquare}>
           <View style={styles.leftLabelContainer}>
             <Text style={styles.leftLabel}>Number of washes:</Text>
-            <Text style={styles.leftSubLabel}>+4 compared to previous month</Text>
+            <Text style={[styles.leftSubLabel, { color: (numWashes - prevNumWashes) < 0 ? '#00FF00' : '#FF0000' }]}>
+            {(numWashes - prevNumWashes) >= 0 ? '+' : '-'}{Math.abs(numWashes - prevNumWashes)} compared to previous month</Text>
             <Text style={styles.leftLabel}>Average price:</Text>
-            <Text style={styles.leftSub2Label}>-0,18kr/kWh compared to previous month</Text>
+            <Text style={[styles.leftSub2Label, { color: (avgPrice - prevAvgPrice) < 0 ? '#00FF00' : '#FF0000' }]}>
+             {(avgPrice - prevAvgPrice) < 0 ? '-' : '+'}
+              {Math.abs(avgPrice - prevAvgPrice).toFixed(2)} kr/kWh compared to previous month</Text>
             <Text style={styles.leftLabel}>Electric cost:</Text>
-            <Text style={styles.leftSub3Label}>+24 kr compared to last month</Text>
+            <Text style={[styles.leftSub3Label,{ color: parseFloat(electricCost) - parseFloat(prevElectricCost) < 0 ? '#00FF00' : '#FF0000' }]}>
+               {(parseFloat(electricCost) - parseFloat(prevElectricCost)) < 0 ? '-' : '+'}
+                {Math.abs(parseFloat(electricCost) - parseFloat(prevElectricCost))} kr compared to last month</Text>
             <Text style={styles.leftLabel}>Water usage:</Text>
-            <Text style={styles.leftSub4Label}>+40 litres compared to last month</Text>
+            <Text style={[styles.leftSub4Label,{ color: parseFloat(waterUsage) - parseFloat(prevWaterUsage) < 0 ? '#00FF00' : '#FF0000' }]}>
+                {(parseFloat(waterUsage) - parseFloat(prevWaterUsage)) < 0 ? '-' : '+'}
+                {Math.abs(parseFloat(waterUsage) - parseFloat(prevWaterUsage))} litres compared to last month</Text>
+
           </View>
           <View style={styles.rightLabelContainer}>
             <Text style={styles.rightLabel} >{numWashes}</Text>
-            <Text style={styles.rightLabel}>{avgPrice}</Text>
+            <Text style={styles.rightLabel}>{avgPrice + 'kr/kWh'}</Text>
             <Text style={styles.rightLabel}>{electricCost}</Text>
             <Text style={styles.rightLabel}>{waterUsage}</Text>
           </View>
@@ -229,8 +337,8 @@ const styles = StyleSheet.create({
   rightLabel: {
     color: '#000000',
     fontSize: 16,
-    marginBottom: 20,
-    marginTop: 20
+    marginBottom: 49,
+    marginTop: 25
   },
   selectedDateText: {
     fontSize: 16, // Change font size as needed
@@ -306,4 +414,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-export default UsageMonthly;
+export default UsageMonthly; 
