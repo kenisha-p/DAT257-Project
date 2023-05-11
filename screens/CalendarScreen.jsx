@@ -193,7 +193,7 @@ useEffect(() => {
                   selectedDate &&
                   todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
                     ? Number(cost2_4)
-                    : "Hög",
+                    : 0,
               })
             }
           />
@@ -219,7 +219,7 @@ useEffect(() => {
                   selectedDate &&
                   todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
                     ? Number(cost4_6)
-                    : "Hög",
+                    : 0,
               })
             }
           />
@@ -245,7 +245,7 @@ useEffect(() => {
                   selectedDate &&
                   todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
                     ? Number(cost6_8)
-                    : "Hög",
+                    : 0,
               })
             }
           />
@@ -271,7 +271,7 @@ useEffect(() => {
                   selectedDate &&
                   todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
                     ? Number(cost8_10)
-                    : "Hög",
+                    : 0,
               })
             }
           />
@@ -297,7 +297,7 @@ useEffect(() => {
                   selectedDate &&
                   todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
                     ? Number(cost10_12)
-                    : "Hög",
+                    : 0,
               })
             }
           />
@@ -323,7 +323,7 @@ useEffect(() => {
                 selectedDate &&
                 todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
                   ? Number(cost12_14)
-                  : "Hög",
+                  : 0,
             })
           }
         />
@@ -349,7 +349,7 @@ useEffect(() => {
                 selectedDate &&
                 todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
                   ? Number(cost14_16)
-                  : "Hög",
+                  : 0,
             })
           }
         />
@@ -375,7 +375,7 @@ useEffect(() => {
                 selectedDate &&
                 todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
                   ? Number(cost16_18)
-                  : "Hög",
+                  : 0,
             })
           }
         />
@@ -401,7 +401,7 @@ useEffect(() => {
                 selectedDate &&
                 todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
                   ? Number(cost18_20)
-                  : "Hög",
+                  : 0,
             })
           }
         />
@@ -427,7 +427,7 @@ useEffect(() => {
                 selectedDate &&
                 todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
                   ? Number(cost20_22)
-                  : "Hög",
+                  : 0,
             })
           }
         />
@@ -453,7 +453,7 @@ useEffect(() => {
                 selectedDate &&
                 todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
                   ? Number(cost22_00)
-                  : "Hög",
+                  : 0,
             })
           }
           />
