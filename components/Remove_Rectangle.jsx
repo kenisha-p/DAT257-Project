@@ -1,6 +1,5 @@
 import React from 'react';
 import { Image, TouchableOpacity } from 'react-native';
-import Remove_bottom from '../components/Remove_bottom';
 
 const MyButton = ({ onPress }) => {
   return (
