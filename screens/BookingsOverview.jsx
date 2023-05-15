@@ -39,7 +39,14 @@ const Overview = () => {
 
   const handleSelectTime = (id) => {
     setTimeToRemove(id);
+    console.log("Helloooo");
   };
+
+  const handleNotFilled = ()=> {
+    console.log("goodbyeee");
+    setShowRemoveAlert(false);
+  };
+
 
   const handleRemoveTime = async () => {
     if (!timeToRemove) {
@@ -130,7 +137,10 @@ const Overview = () => {
                 <Text
                   style={[styles.item, { textAlign: "left" }]}
                 >{`${time.startTime}-${time.endTime}`}</Text>
-                <Remove_bottom onPress={() => handleSelectTime(time.id)} />
+              <Remove_bottom
+                  onPress={() => handleSelectTime(time.id)}
+                  onCancel={handleNotFilled}
+              />
               </View>
             ))}
           </ScrollView>
