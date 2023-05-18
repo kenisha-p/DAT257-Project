@@ -80,14 +80,10 @@ const UsageDaily = ({ navigation }) => {
   };
 
   const handleBlueBarPress = () => {
-<<<<<<< Updated upstream
-    navigation.navigate('UsageMonthly');
-=======
     console.log('Blue Bar pressed');
-    const option = selectedOption === 'daily' ? 'Monthly' : 'Daily';
-    setSelectedOption(option);
     // Add your code to handle the press event here
->>>>>>> Stashed changes
+
+    navigation.navigate('UsageMonthly');
   };
 
 

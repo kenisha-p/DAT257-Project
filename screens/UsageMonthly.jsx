@@ -94,7 +94,9 @@ const UsageMonthly = ({ navigation }) => {
     setSelectedDate(date);
   
     const timeRef = collection(db, 'time');
-    const q = query(timeRef, where('date', '==', date));
+    const startOfMonth = date + '-01';
+    const endOfMonth = getEndOfMonth(date);
+    const q = query(timeRef, where('date', '>=', startOfMonth), where('date', '<=', endOfMonth));
     const querySnapshot = await getDocs(q);
   
     console.log('Query Snapshot:', querySnapshot);
@@ -128,9 +130,42 @@ const UsageMonthly = ({ navigation }) => {
       setWaterUsage(0);
     }
 
+  
+    // Calculate usage for previous month
+    const startOfPrevMonth = getStartOfPrevMonth(date);
+    const endOfPrevMonth = getEndOfPrevMonth(date);
+  
+    const prevMonthQ = query(timeRef, where('date', '>=', startOfPrevMonth), where('date', '<=', endOfPrevMonth));
+    const prevMonthSnapshot = await getDocs(prevMonthQ);
+  
+    if (!prevMonthSnapshot.empty) {
+      const prevTotalPrice = prevMonthSnapshot.docs.reduce((total, doc) => total + doc.data().price, 0);
+      const prevAvgPrice = prevTotalPrice / prevMonthSnapshot.size;
+      const prevNumBookings = prevMonthSnapshot.docs.length;
+
+      const docRef = doc(db, 'Settings', 'settings');
+      const docSnap = await getDoc(docRef);
+      const waterValue = docSnap.data().Water; // Accessing the 'Water' field from the 'Settings' document
+  
+      setPrevAvgPrice(prevAvgPrice.toFixed(2));
+      setPrevNumWashes(prevNumBookings);
+      setPrevElectricCost(prevTotalPrice.toFixed(2) + 'kr');
+      setPrevWaterUsage(prevNumBookings * waterValue + ' litres');
+    } else {
+      setPrevAvgPrice(0);
+      setPrevNumWashes(0);
+      setPrevElectricCost(0);
+      setPrevWaterUsage(0);
+    }
   };
+    
+
+  
 
   const handleBlueBarPress = () => {
+    console.log('Blue Bar pressed');
+    // Add your code to handle the press event here
+
     navigation.navigate('UsageDaily');
   };
 
