@@ -154,8 +154,8 @@ useEffect(() => {
               style={[styles.item, { textAlign: "center", marginRight: 50 }]}
             >{`${cost00_2} kr`}</Text>
           ) : (
-            <Text style={[styles.item, { textAlign: "center", marginRight: 50 }]}>
-              N/A
+            <Text style={[styles.item, { textAlign: "right", marginRight: 0 }]}>
+              Price not avalible for now
             </Text>
           )}
           <AddButton
@@ -180,8 +180,8 @@ useEffect(() => {
               style={[styles.item, { textAlign: "center", marginRight: 50 }]}
             >{`${cost2_4} kr`}</Text>
           ) : (
-            <Text style={[styles.item, { textAlign: "center", marginRight: 50 }]}>
-              N/A
+            <Text style={[styles.item, { textAlign: "right", marginRight: 0 }]}>
+              Price not avalible for now
             </Text>
           )}
           <AddButton
@@ -206,8 +206,8 @@ useEffect(() => {
               style={[styles.item, { textAlign: "center", marginRight: 50 }]}
             >{`${cost4_6} kr`}</Text>
           ) : (
-            <Text style={[styles.item, { textAlign: "center", marginRight: 50 }]}>
-              N/A
+            <Text style={[styles.item, { textAlign: "right", marginRight: 0 }]}>
+              Price not avalible for now
             </Text>
           )}
           <AddButton
@@ -232,8 +232,8 @@ useEffect(() => {
               style={[styles.item, { textAlign: "center", marginRight: 50 }]}
             >{`${cost6_8} kr`}</Text>
           ) : (
-            <Text style={[styles.item, { textAlign: "center", marginRight: 50 }]}>
-              N/A
+            <Text style={[styles.item, { textAlign: "right", marginRight: 0 }]}>
+              Price not avalible for now
             </Text>
           )}
           <AddButton
@@ -258,8 +258,8 @@ useEffect(() => {
               style={[styles.item, { textAlign: "center", marginRight: 50 }]}
             >{`${cost8_10} kr`}</Text>
           ) : (
-            <Text style={[styles.item, { textAlign: "center", marginRight: 50 }]}>
-              N/A
+            <Text style={[styles.item, { textAlign: "right", marginRight: 0 }]}>
+              Price not avalible for now
             </Text>
           )}
           <AddButton
@@ -284,8 +284,8 @@ useEffect(() => {
               style={[styles.item, { textAlign: "center", marginRight: 50 }]}
             >{`${cost10_12} kr`}</Text>
           ) : (
-            <Text style={[styles.item, { textAlign: "center", marginRight: 50 }]}>
-              N/A
+            <Text style={[styles.item, { textAlign: "right", marginRight: 0 }]}>
+              Price not avalible for now
             </Text>
           )}
           <AddButton
@@ -310,8 +310,8 @@ useEffect(() => {
               style={[styles.item, { textAlign: "center", marginRight: 50 }]}
             >{`${cost12_14} kr`}</Text>
           ) : (
-            <Text style={[styles.item, { textAlign: "center", marginRight: 50 }]}>
-              N/A
+            <Text style={[styles.item, { textAlign: "right", marginRight: 0 }]}>
+              Price not avalible for now
             </Text>
           )}
           <AddButton
@@ -336,8 +336,8 @@ useEffect(() => {
             style={[styles.item, { textAlign: "center", marginRight: 50 }]}
           >{`${cost14_16} kr`}</Text>
         ) : (
-          <Text style={[styles.item, { textAlign: "center", marginRight: 50 }]}>
-            N/A
+          <Text style={[styles.item, { textAlign: "right", marginRight: 0 }]}>
+            Price not avalible for now
           </Text>
         )}
         <AddButton
@@ -362,8 +362,8 @@ useEffect(() => {
             style={[styles.item, { textAlign: "center", marginRight: 50 }]}
           >{`${cost16_18} kr`}</Text>
         ) : (
-          <Text style={[styles.item, { textAlign: "center", marginRight: 50 }]}>
-            N/A
+          <Text style={[styles.item, { textAlign: "right", marginRight: 0 }]}>
+            Price not avalible for now
           </Text>
         )}
         <AddButton
@@ -388,8 +388,8 @@ useEffect(() => {
             style={[styles.item, { textAlign: "center", marginRight: 50 }]}
           >{`${cost18_20} kr`}</Text>
         ) : (
-          <Text style={[styles.item, { textAlign: "center", marginRight: 50 }]}>
-            N/A
+          <Text style={[styles.item, { textAlign: "right", marginRight: 0 }]}>
+            Price not avalible for now
           </Text>
         )}
         <AddButton
@@ -414,8 +414,8 @@ useEffect(() => {
             style={[styles.item, { textAlign: "center", marginRight: 50 }]}
           >{`${cost20_22} kr`}</Text>
         ) : (
-          <Text style={[styles.item, { textAlign: "center", marginRight: 50 }]}>
-            N/A
+          <Text style={[styles.item, { textAlign: "right", marginRight: 0 }]}>
+            Price not avalible for now
           </Text>
         )}
         <AddButton
@@ -440,8 +440,8 @@ useEffect(() => {
             style={[styles.item, { textAlign: "center", marginRight: 50 }]}
           >{`${cost22_00} kr`}</Text>
         ) : (
-          <Text style={[styles.item, { textAlign: "center", marginRight: 50 }]}>
-            N/A
+          <Text style={[styles.item, { textAlign: "right", marginRight: 0 }]}>
+            Price not avalible for now
           </Text>
         )}
         <AddButton
