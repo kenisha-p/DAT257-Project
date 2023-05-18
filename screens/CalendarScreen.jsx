@@ -67,136 +67,61 @@ const CalendarScreen = () => {
     });
   }, []);
 
-  useEffect(() => {
-    const fetchElectricityPrices = async () => {
-      try {
-        const today = new Date(selectedDate);
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
+  const calculateCost = (start, end, data) =>
+  ((data[start].SEK_per_kWh + data[end].SEK_per_kWh) / 2 * electricityConsumtion * washCykles).toFixed(1)
 
-        // Check if selected date is in the future
-        if (today > new Date()) {
-          console.log(
-            "Selected date is in the future, skipping electricity prices fetch"
-          );
-          return;
-        }
+useEffect(() => {
+  const fetchElectricityPrices = async () => {
+    try {
+      const today = new Date(selectedDate);
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
 
-        setTodaysDate(today.toISOString().slice(0, 10));
+      let formattedDate = `${today.getFullYear()}/${(today.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}`;
 
-        const formattedDate = `${today.getFullYear()}/${(today.getMonth() + 1)
+      const isAfter16Today = new Date().getHours() >= 13;
+      const isTomorrow = today.getDate() === tomorrow.getDate();
+
+      // Check if selected date is tomorrow and current time is after 16:00
+      if (isTomorrow && isAfter16Today) {
+        formattedDate = `${tomorrow.getFullYear()}/${(tomorrow.getMonth() + 1)
           .toString()
-          .padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}`;
-
-        const response = await axios.get(
-          `https://www.elprisetjustnu.se/api/v1/prices/${formattedDate}_SE3.json`
-        );
-
-        setCost00_2(
-          (
-            (response.data[0].SEK_per_kWh +
-              response.data[1].SEK_per_kWh) /2 *
-            electricityConsumtion * washCykles
-          ).toFixed(1)
-        );
-
-        setCost2_4(
-          (
-            (response.data[2].SEK_per_kWh +
-              response.data[3].SEK_per_kWh) /2 *
-            electricityConsumtion * washCykles
-          ).toFixed(1)
-        );
-
-        setCost4_6(
-          (
-            (response.data[4].SEK_per_kWh +
-              response.data[5].SEK_per_kWh) /2 *
-            electricityConsumtion * washCykles
-          ).toFixed(1)
-        );
-
-        setCost6_8(
-          (
-            (response.data[6].SEK_per_kWh +
-              response.data[7].SEK_per_kWh) /2 *
-            electricityConsumtion * washCykles
-          ).toFixed(1)
-        );
-
-        setCost8_10(
-          (
-            (response.data[8].SEK_per_kWh +
-              response.data[9].SEK_per_kWh) /2 *
-            electricityConsumtion * washCykles
-          ).toFixed(1)
-        );
-
-        setCost10_12(
-          (
-            (response.data[10].SEK_per_kWh +
-              response.data[11].SEK_per_kWh) /2 *
-            electricityConsumtion * washCykles
-          ).toFixed(1)
-        );
-
-        setCost12_14(
-          (
-            (response.data[12].SEK_per_kWh +
-              response.data[13].SEK_per_kWh) /2 *
-            electricityConsumtion * washCykles
-          ).toFixed(1)
-        );
-
-        setCost14_16(
-          (
-            (response.data[14].SEK_per_kWh +
-              response.data[15].SEK_per_kWh) /2 *
-            electricityConsumtion * washCykles
-          ).toFixed(1)
-        );
-
-        setCost16_18(
-          (
-            (response.data[16].SEK_per_kWh +
-              response.data[17].SEK_per_kWh) /2 *
-            electricityConsumtion * washCykles
-          ).toFixed(1)
-        );
-
-        setCost18_20(
-          (
-            (response.data[18].SEK_per_kWh +
-              response.data[19].SEK_per_kWh) /2 *
-            electricityConsumtion * washCykles
-          ).toFixed(1)
-        );
-
-        setCost20_22(
-          (
-            (response.data[20].SEK_per_kWh +
-              response.data[21].SEK_per_kWh) /2 *
-            electricityConsumtion * washCykles
-          ).toFixed(1)
-        );
-
-        setCost22_00(
-          (
-            (response.data[22].SEK_per_kWh +
-              response.data[23].SEK_per_kWh) /2 *
-            electricityConsumtion * washCykles
-          ).toFixed(1)
-        );
-
-      } catch (error) {
-        console.error("Error fetching electricity prices: ", error);
+          .padStart(2, "0")}-${tomorrow.getDate().toString().padStart(2, "0")}`;
+        console.log("Fetching tomorrow's electricity prices");
+      } else if (today > new Date() || (isTomorrow && !isAfter16Today)) {
+        console.log("Selected date is in the future, skipping electricity prices fetch");
+        return;
       }
-    };
 
-    if (!isLoading) {
-      fetchElectricityPrices();
+      setTodaysDate(today.toISOString().slice(0, 10));
+
+      const response = await axios.get(
+        `https://www.elprisetjustnu.se/api/v1/prices/${formattedDate}_SE3.json`
+      );
+
+      setCost00_2(calculateCost(0, 1, response.data));
+      setCost2_4(calculateCost(2, 3, response.data));
+      setCost4_6(calculateCost(4, 5, response.data));
+      setCost6_8(calculateCost(6, 7, response.data));
+      setCost8_10(calculateCost(8, 9, response.data));
+      setCost10_12(calculateCost(10, 11, response.data));
+      setCost12_14(calculateCost(12, 13, response.data));
+      setCost14_16(calculateCost(14, 15, response.data));
+      setCost16_18(calculateCost(16, 17, response.data));
+      setCost18_20(calculateCost(18, 19, response.data));
+      setCost20_22(calculateCost(20, 21, response.data));
+      setCost22_00(calculateCost(22, 23, response.data));
+    } catch (error) {
+      console.error("Error fetching electricity prices: ", error);
     }
-  }, [isLoading, selectedDate]);
+  };
+
+  if (!isLoading) {
+    fetchElectricityPrices();
+  }
+}, [isLoading, selectedDate]);
 
   const confirmBooking = () => {
     console.log("Confirming booking");
@@ -242,7 +167,7 @@ const CalendarScreen = () => {
                   selectedDate &&
                   todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
                     ? Number(cost00_2)
-                    : "Hög",
+                    : 0,
               })
             }
           />
@@ -268,7 +193,7 @@ const CalendarScreen = () => {
                   selectedDate &&
                   todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
                     ? Number(cost2_4)
-                    : "Hög",
+                    : 0,
               })
             }
           />
@@ -294,7 +219,7 @@ const CalendarScreen = () => {
                   selectedDate &&
                   todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
                     ? Number(cost4_6)
-                    : "Hög",
+                    : 0,
               })
             }
           />
@@ -320,7 +245,7 @@ const CalendarScreen = () => {
                   selectedDate &&
                   todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
                     ? Number(cost6_8)
-                    : "Hög",
+                    : 0,
               })
             }
           />
@@ -346,7 +271,7 @@ const CalendarScreen = () => {
                   selectedDate &&
                   todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
                     ? Number(cost8_10)
-                    : "Hög",
+                    : 0,
               })
             }
           />
@@ -372,7 +297,7 @@ const CalendarScreen = () => {
                   selectedDate &&
                   todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
                     ? Number(cost10_12)
-                    : "Hög",
+                    : 0,
               })
             }
           />
@@ -398,7 +323,7 @@ const CalendarScreen = () => {
                 selectedDate &&
                 todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
                   ? Number(cost12_14)
-                  : "Hög",
+                  : 0,
             })
           }
         />
@@ -424,7 +349,7 @@ const CalendarScreen = () => {
                 selectedDate &&
                 todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
                   ? Number(cost14_16)
-                  : "Hög",
+                  : 0,
             })
           }
         />
@@ -450,7 +375,7 @@ const CalendarScreen = () => {
                 selectedDate &&
                 todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
                   ? Number(cost16_18)
-                  : "Hög",
+                  : 0,
             })
           }
         />
@@ -476,7 +401,7 @@ const CalendarScreen = () => {
                 selectedDate &&
                 todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
                   ? Number(cost18_20)
-                  : "Hög",
+                  : 0,
             })
           }
         />
@@ -502,7 +427,7 @@ const CalendarScreen = () => {
                 selectedDate &&
                 todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
                   ? Number(cost20_22)
-                  : "Hög",
+                  : 0,
             })
           }
         />
@@ -528,7 +453,7 @@ const CalendarScreen = () => {
                 selectedDate &&
                 todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
                   ? Number(cost22_00)
-                  : "Hög",
+                  : 0,
             })
           }
           />
