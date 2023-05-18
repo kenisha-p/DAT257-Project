@@ -1,62 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
-import Remove_bottom from "../components/Remove_bottom";
-import Remove_Rectangle from "../components/Remove_Rectangle";
-import RemoveAlert from "../components/RemoveAlert";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
-import db from "../config";
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import Remove_bottom from '../components/Remove_bottom';
+import Remove_Rectangle from '../components/Remove_Rectangle';
 
 const Overview = () => {
-  const [times, setTimes] = useState([]);
-  const [timeToRemove, setTimeToRemove] = useState(null);
-  const [showRemoveAlert, setShowRemoveAlert] = useState(false);
-
-  // Go thru the database, push all the enteties to an array and add and id to every property
-  useEffect(() => {
-    async function getData() {
-      const querySnapshot = await getDocs(collection(db, "time"));
-      const timesArray = [];
-      querySnapshot.forEach((doc) => {
-        timesArray.push({ id: doc.id, ...doc.data() }); // Added id property to each time object
-      });
-
-      timesArray.sort((a, b) => {
-        const dateA = new Date(a.date + "T" + a.startTime);
-        const dateB = new Date(b.date + "T" + b.startTime);
-        return dateB - dateA;
-      });
-
-      setTimes(timesArray);
-    }
-    getData();
-  }, []);
-
-  const handleSelectTime = (id) => {
-    setTimeToRemove(id);
-  };
-
-  const handleRemoveTime = async () => {
-    if (!timeToRemove) {
-      console.log("No time to remove selected");
-      return;
-    }
-    try {
-      await deleteDoc(doc(db, "time", timeToRemove));
-      setTimes((prevTimes) =>
-        prevTimes.filter((time) => time.id !== timeToRemove)
-      );
-      setTimeToRemove(null);
-      setShowRemoveAlert(false); // Hide the remove alert after removing the time
-    } catch (error) {
-      console.error("Error removing time: ", error);
-    }
-  };
-
-  const confirmRemoveTime = () => {
-    console.log("Confirming removal of time with id:", timeToRemove);
-    setShowRemoveAlert(true);
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -64,36 +11,24 @@ const Overview = () => {
         <Text style={[styles.headerText, { textAlign: "right" }]}>Time</Text>
         <Text style={[styles.headerText, { textAlign: "right" }]}>Remove</Text>
       </View>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {times.map((time) => (
-          <View style={styles.list} key={time.id}>
-            <Text style={[styles.item, { textAlign: "left" }]}>
-              {time.date}
-            </Text>
-            <Text
-              style={[styles.item, { textAlign: "left" }]}
-            >{`${time.startTime}-${time.endTime}`}</Text>
-            <Remove_bottom onPress={() => handleSelectTime(time.id)} />
-          </View>
-        ))}
-      </ScrollView>
-      {timeToRemove && (
-        <View
-          style={[styles.Remove_Rectangle, { position: "absolute", bottom: 0 }]}
-        >
-          <Remove_Rectangle onPress={confirmRemoveTime} timeId={timeToRemove} />
-        </View>
-      )}
-      {showRemoveAlert && (
-        <RemoveAlert
-          visible={true}
-          onCancel={() => {
-            setShowRemoveAlert(false);
-            setTimeToRemove(null);
-          }}
-          onConfirm={handleRemoveTime}
-        />
-      )}
+      <View style={styles.list}>
+        <Text style={[styles.item, { textAlign: 'left' }]}>Monday</Text>
+        <Text style={[styles.item, { textAlign: 'left' }]}>10:00 AM</Text>
+        <Remove_bottom onPress={() => {}} />
+      </View>
+      <View style={styles.list}>
+        <Text style={[styles.item, { textAlign: 'left' }]}>Tuesday</Text>
+        <Text style={[styles.item, { textAlign: 'left' }]}>11:30 AM</Text>
+        <Remove_bottom onPress={() => {}} />
+      </View>
+      <View style={styles.list}>
+        <Text style={[styles.item, { textAlign: 'left' }]}>Wednesday</Text>
+        <Text style={[styles.item, { textAlign: 'left' }]}>2:45 PM</Text>
+        <Remove_bottom onPress={() => {}} />
+      </View>
+      <View style={[styles.Remove_Rectangle, { position: 'absolute', bottom: 0 }]}>
+        <Remove_Rectangle onPress={() => {}} />
+      </View>
     </View>
   );
 };
@@ -101,21 +36,24 @@ const Overview = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: "100%",
-    backgroundColor: "#ffffff",
+    backgroundColor: '#ffffff',
   },
-
-  scrollContainer: {
-    paddingVertical: 20,
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 10,
+    width: "100%",
+    // Ange önskad maxhöjd här med enheten "px"
   },
 
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
     paddingVertical: 20,
+    
   },
   headerText: {
     fontSize: 15,
@@ -124,6 +62,15 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 20,
   },
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#001478",
+    textAlign: "center",
+    flex: 1,
+    marginHorizontal: 35,
+    marginVertical: -10,
+  },
   list: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -131,8 +78,8 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: "#ffffff",
-    backgroundColor: "#e6e6e6",
+    borderColor: '#ffffff',
+    backgroundColor: '#e6e6e6',
     marginHorizontal: 40,
     marginBottom: 10,
   },
@@ -146,8 +93,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginHorizontal: 100,
-    marginBottom: 100,
-  },
+    marginBottom: 10,
+  }
 });
 
 export default Overview;

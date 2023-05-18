@@ -4,6 +4,7 @@ import Electricprice from '../components/Electricprice';
 import Add_laundry from '../components/Add_laundry';
 import Remove_laundry from '../components/Remove_laundry';
 import Usage from '../components/Usage';
+import Settings from '../components/Settings_bottom';
 import * as Font from 'expo-font';
 
 export default class Home extends React.Component {
@@ -26,11 +27,6 @@ export default class Home extends React.Component {
   handleRemoveLaundryPress = () => {
     this.props.navigation.navigate('Overview');
   }
-
-  handleDailyUsagePress = () => {
-    this.props.navigation.navigate('UsageDaily');
-  }
-
   render() {
     if (!this.state.fontLoaded) {
       return <View />;
@@ -51,10 +47,10 @@ export default class Home extends React.Component {
               <Add_laundry onPress={this.handleAddLaundryPress} />
             </View>
             <View style={styles.button}>
-              <Remove_laundry onPress={this.handleRemoveLaundryPress} />
+              <Remove_laundry onPress={this.handleRemoveLaundryPress}/>
             </View>
             <View style={styles.button}>
-              <Usage onPress={this.handleDailyUsagePress} />
+              <Usage />
             </View>
           </View>
         </View>
@@ -69,6 +65,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 100,
+    backgroundColor: 'white'
   },
   contentContainer: {
     flex: 1,

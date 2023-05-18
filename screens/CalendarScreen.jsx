@@ -1,18 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Text } from "react-native";
-import Calendar from "../components/CalendarComponent";
-import SaveButton from "../components/add_time";
-import { collection, addDoc } from "firebase/firestore";
-import db from "../config";
-import axios from "axios";
-import AddButton from "../components/AddButton";
-import ConfirmBooking from "../components/ConfirmBooking";
+import React, { useState } from 'react';
+import { View, StyleSheet, Text } from 'react-native';
+import Calendar from '../components/CalendarComponent';
+import TimePicker from '../components/SelectTimeComponent';
+import SaveButton from '../components/add_time';
+import { collection, addDoc } from "firebase/firestore"; 
+import db from '../config';
 
 const CalendarScreen = () => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
-  const [todaysDate, setTodaysDate] = useState("");
-  const [confirmationAlert, setConfirmationAlert] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [startTime, setStartTime] = useState(new Date());
+  const [endTime, setEndTime] = useState(new Date());
 
   const handleSelectDate = (date) => {
     setSelectedDate(date);
@@ -32,78 +29,10 @@ const CalendarScreen = () => {
         price: selectedTimeSlot.price,
       });
       console.log("Document written with ID: ", docRef.id);
-      setConfirmationAlert(false);
+
     } catch (error) {
-      console.error("Error adding document: ", error);
+      console.error('Error adding document: ', error);
     }
-  };
-
-  const [cost8_11, setCost8_11] = useState(0);
-  const [cost12_15, setCost12_15] = useState(0);
-  const [cost16_19, setCost16_19] = useState(0);
-
-  useEffect(() => {
-    const fetchElectricityPrices = async () => {
-      try {
-        const today = new Date(selectedDate);
-
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-
-        // Check if selected date is in the future
-        if (today > new Date()) {
-          console.log(
-            "Selected date is in the future, skipping electricity prices fetch"
-          );
-          return;
-        }
-
-        setTodaysDate(today.toISOString().slice(0, 10)); // set todaysDate as a string in YYYY-MM-DD format
-
-        const formattedDate = `${today.getFullYear()}/${(today.getMonth() + 1)
-          .toString()
-          .padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}`;
-
-        const response = await axios.get(
-          `https://www.elprisetjustnu.se/api/v1/prices/${formattedDate}_SE3.json`
-        );
-
-        setCost8_11(
-          (
-            (response.data[9].SEK_per_kWh +
-              response.data[10].SEK_per_kWh +
-              response.data[11].SEK_per_kWh) *
-            3
-          ).toFixed(1)
-        );
-
-        setCost12_15(
-          (
-            (response.data[13].SEK_per_kWh +
-              response.data[14].SEK_per_kWh +
-              response.data[15].SEK_per_kWh) *
-            3
-          ).toFixed(1)
-        );
-
-        setCost16_19(
-          (
-            (response.data[17].SEK_per_kWh +
-              response.data[18].SEK_per_kWh +
-              response.data[19].SEK_per_kWh) *
-            3
-          ).toFixed(1)
-        );
-      } catch (error) {
-        console.error("Error fetching electricity prices: ", error);
-      }
-    };
-    fetchElectricityPrices();
-  }, [selectedDate]);
-
-  const confirmBooking = () => {
-    console.log("Confirming booking");
-    setConfirmationAlert(true);
   };
 
   return (
@@ -111,94 +40,332 @@ const CalendarScreen = () => {
       <View style={styles.calendarContainer}>
         <Calendar onSelectDate={handleSelectDate} />
       </View>
-      <View style={styles.textContainer}>
-        <View style={styles.timeText}>
-          <Text style={{ fontSize: 20 }}>Time</Text>
+      <View style={styles.timePickersContainer}>
+        <View style={styles.timePickerWrapper}>
+          <Text style={styles.timePickerLabel}>Starttid</Text>
+          <View style={styles.timePickerContainer}>
+            <TimePicker onChange={handleSelectStartTime} date={startTime} />
+          </View>
         </View>
-        <View style={styles.priceText}>
-          <Text style={{ fontSize: 20 }}>Total cost</Text>
+        <View style={{ width: 80 }} />
+        <View style={styles.timePickerWrapper}>
+          <Text style={styles.timePickerLabel}>Sluttid</Text>
+          <View style={styles.timePickerContainer}>
+            <TimePicker onChange={handleSelectEndTime} date={endTime} />
+          </View>
         </View>
-        <View style={styles.bookText}>
-          <Text style={{ fontSize: 20 }}>Book</Text>
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <View style={styles.listan}>
+          <Text style={[styles.item, { textAlign: "left" }]}>00:00-02:00</Text>
+          {selectedDate &&
+          todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
+            <Text
+              style={[styles.item, { textAlign: "center", marginRight: 50 }]}
+            >{`${cost00_2} kr`}</Text>
+          ) : (
+            <Text style={[styles.item, { textAlign: "right", marginRight: 0 }]}>
+              Price not avalible for now
+            </Text>
+          )}
+          <AddButton
+            onPress={() =>
+              handleSelectTimeSlot({
+                start: "00:00",
+                end: "02:00",
+                price:
+                  selectedDate &&
+                  todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
+                    ? Number(cost00_2)
+                    : 0,
+              })
+            }
+          />
         </View>
-      </View>
-      <View style={styles.listan}>
-        <Text style={[styles.item, { textAlign: "left" }]}>08:00-11:00</Text>
-        {selectedDate &&
-        todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
-          <Text
-            style={[styles.item, { textAlign: "center", marginRight: 50 }]}
-          >{`${cost8_11} kr`}</Text>
-        ) : (
-          <Text style={[styles.item, { textAlign: "center", marginRight: 50 }]}>
-            N/A
-          </Text>
-        )}
-        <AddButton
-          onPress={() =>
-            handleSelectTimeSlot({
-              start: "08:00",
-              end: "11:00",
-              price:
+        <View style={styles.listan}>
+          <Text style={[styles.item, { textAlign: "left" }]}>02:00-04:00</Text>
+          {selectedDate &&
+          todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
+            <Text
+              style={[styles.item, { textAlign: "center", marginRight: 50 }]}
+            >{`${cost2_4} kr`}</Text>
+          ) : (
+            <Text style={[styles.item, { textAlign: "right", marginRight: 0 }]}>
+              Price not avalible for now
+            </Text>
+          )}
+          <AddButton
+            onPress={() =>
+              handleSelectTimeSlot({
+                start: "02:00",
+                end: "04:00",
+                price:
+                  selectedDate &&
+                  todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
+                    ? Number(cost2_4)
+                    : 0,
+              })
+            }
+          />
+        </View>
+        <View style={styles.listan}>
+          <Text style={[styles.item, { textAlign: "left" }]}>04:00-06:00</Text>
+          {selectedDate &&
+          todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
+            <Text
+              style={[styles.item, { textAlign: "center", marginRight: 50 }]}
+            >{`${cost4_6} kr`}</Text>
+          ) : (
+            <Text style={[styles.item, { textAlign: "right", marginRight: 0 }]}>
+              Price not avalible for now
+            </Text>
+          )}
+          <AddButton
+            onPress={() =>
+              handleSelectTimeSlot({
+                start: "04:00",
+                end: "06:00",
+                price:
+                  selectedDate &&
+                  todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
+                    ? Number(cost4_6)
+                    : 0,
+              })
+            }
+          />
+        </View>
+        <View style={styles.listan}>
+          <Text style={[styles.item, { textAlign: "left" }]}>06:00-08:00</Text>
+          {selectedDate &&
+          todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
+            <Text
+              style={[styles.item, { textAlign: "center", marginRight: 50 }]}
+            >{`${cost6_8} kr`}</Text>
+          ) : (
+            <Text style={[styles.item, { textAlign: "right", marginRight: 0 }]}>
+              Price not avalible for now
+            </Text>
+          )}
+          <AddButton
+            onPress={() =>
+              handleSelectTimeSlot({
+                start: "06:00",
+                end: "08:00",
+                price:
+                  selectedDate &&
+                  todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
+                    ? Number(cost6_8)
+                    : 0,
+              })
+            }
+          />
+        </View>
+        <View style={styles.listan}>
+          <Text style={[styles.item, { textAlign: "left" }]}>08:00-10:00</Text>
+          {selectedDate &&
+          todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
+            <Text
+              style={[styles.item, { textAlign: "center", marginRight: 50 }]}
+            >{`${cost8_10} kr`}</Text>
+          ) : (
+            <Text style={[styles.item, { textAlign: "right", marginRight: 0 }]}>
+              Price not avalible for now
+            </Text>
+          )}
+          <AddButton
+            onPress={() =>
+              handleSelectTimeSlot({
+                start: "08:00",
+                end: "10:00",
+                price:
+                  selectedDate &&
+                  todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
+                    ? Number(cost8_10)
+                    : 0,
+              })
+            }
+          />
+        </View>
+        <View style={styles.listan}>
+          <Text style={[styles.item, { textAlign: "left" }]}>10:00-12:00</Text>
+          {selectedDate &&
+          todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
+            <Text
+              style={[styles.item, { textAlign: "center", marginRight: 50 }]}
+            >{`${cost10_12} kr`}</Text>
+          ) : (
+            <Text style={[styles.item, { textAlign: "right", marginRight: 0 }]}>
+              Price not avalible for now
+            </Text>
+          )}
+          <AddButton
+            onPress={() =>
+              handleSelectTimeSlot({
+                start: "10:00",
+                end: "12:00",
+                price:
+                  selectedDate &&
+                  todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
+                    ? Number(cost10_12)
+                    : 0,
+              })
+            }
+          />
+        </View>
+        <View style={styles.listan}>
+          <Text style={[styles.item, { textAlign: "left" }]}>12:00-14:00</Text>
+          {selectedDate &&
+          todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
+            <Text
+              style={[styles.item, { textAlign: "center", marginRight: 50 }]}
+            >{`${cost12_14} kr`}</Text>
+          ) : (
+            <Text style={[styles.item, { textAlign: "right", marginRight: 0 }]}>
+              Price not avalible for now
+            </Text>
+          )}
+          <AddButton
+            onPress={() =>
+              handleSelectTimeSlot({
+                start: "12:00",
+                end: "14:00",
+                price:
                 selectedDate &&
                 todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
-                  ? Number(cost8_11)
-                  : "Hög",
+                  ? Number(cost12_14)
+                  : 0,
             })
           }
         />
       </View>
       <View style={styles.listan}>
-        <Text style={[styles.item, { textAlign: "left" }]}>12:00-15:00</Text>
+        <Text style={[styles.item, { textAlign: "left" }]}>14:00-16:00</Text>
         {selectedDate &&
         todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
           <Text
             style={[styles.item, { textAlign: "center", marginRight: 50 }]}
-          >{`${cost12_15} kr`}</Text>
+          >{`${cost14_16} kr`}</Text>
         ) : (
-          <Text style={[styles.item, { textAlign: "center", marginRight: 50 }]}>
-            N/A
+          <Text style={[styles.item, { textAlign: "right", marginRight: 0 }]}>
+            Price not avalible for now
           </Text>
         )}
         <AddButton
           onPress={() =>
             handleSelectTimeSlot({
-              start: "12:00",
-              end: "15:00",
+              start: "14:00",
+              end: "16:00",
               price:
                 selectedDate &&
                 todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
-                  ? Number(cost12_15)
-                  : "Hög",
+                  ? Number(cost14_16)
+                  : 0,
             })
           }
         />
       </View>
       <View style={styles.listan}>
-        <Text style={[styles.item, { textAlign: "left" }]}>16:00-19:00</Text>
+        <Text style={[styles.item, { textAlign: "left" }]}>16:00-18:00</Text>
         {selectedDate &&
         todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
           <Text
             style={[styles.item, { textAlign: "center", marginRight: 50 }]}
-          >{`${cost16_19} kr`}</Text>
+          >{`${cost16_18} kr`}</Text>
         ) : (
-          <Text style={[styles.item, { textAlign: "center", marginRight: 50 }]}>
-            N/A
+          <Text style={[styles.item, { textAlign: "right", marginRight: 0 }]}>
+            Price not avalible for now
           </Text>
         )}
         <AddButton
           onPress={() =>
             handleSelectTimeSlot({
               start: "16:00",
-              end: "19:00",
+              end: "18:00",
               price:
                 selectedDate &&
                 todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
-                  ? Number(cost16_19)
-                  : "Hög",
+                  ? Number(cost16_18)
+                  : 0,
             })
           }
         />
+      </View>
+      <View style={styles.listan}>
+        <Text style={[styles.item, { textAlign: "left" }]}>18:00-20:00</Text>
+        {selectedDate &&
+        todaysDate === new Date(selectedDate).toISOString().slice(0, 10) ? (
+          <Text
+            style={[styles.item, { textAlign: "center", marginRight: 50 }]}
+          >{`${cost18_20} kr`}</Text>
+        ) : (
+          <Text style={[styles.item, { textAlign: "right", marginRight: 0 }]}>
+            Price not avalible for now
+          </Text>
+        )}
+        <AddButton
+          onPress={() =>
+            handleSelectTimeSlot({
+              start: "18:00",
+              end: "20:00",
+              price:
+                selectedDate &&
+                todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
+                  ? Number(cost18_20)
+                  : 0,
+            })
+          }
+        />
+      </View>
+      <View style={styles.listan}>
+        <Text style={[styles.item, { textAlign: "left" }]}>20:00-22:00</Text>
+        {selectedDate &&
+        todaysDate === new Date(selectedDate).toISOString().slice(0,        10) ? (
+          <Text
+            style={[styles.item, { textAlign: "center", marginRight: 50 }]}
+          >{`${cost20_22} kr`}</Text>
+        ) : (
+          <Text style={[styles.item, { textAlign: "right", marginRight: 0 }]}>
+            Price not avalible for now
+          </Text>
+        )}
+        <AddButton
+          onPress={() =>
+            handleSelectTimeSlot({
+              start: "20:00",
+              end: "22:00",
+              price:
+                selectedDate &&
+                todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
+                  ? Number(cost20_22)
+                  : 0,
+            })
+          }
+        />
+        </View>
+      <View style={styles.listan}>
+        <Text style={[styles.item, { textAlign: "left" }]}>22:00-00:00</Text>
+        {selectedDate &&
+        todaysDate === new Date(selectedDate).toISOString().slice(0,        10) ? (
+          <Text
+            style={[styles.item, { textAlign: "center", marginRight: 50 }]}
+          >{`${cost22_00} kr`}</Text>
+        ) : (
+          <Text style={[styles.item, { textAlign: "right", marginRight: 0 }]}>
+            Price not avalible for now
+          </Text>
+        )}
+        <AddButton
+          onPress={() =>
+            handleSelectTimeSlot({
+              start: "22:00",
+              end: "00:00",
+              price:
+                selectedDate &&
+                todaysDate === new Date(selectedDate).toISOString().slice(0, 10)
+                  ? Number(cost22_00)
+                  : 0,
+            })
+          }
+          />
       </View>
       <View style={styles.saveButton}>
         <SaveButton onPress={confirmBooking} />
@@ -217,6 +384,8 @@ const CalendarScreen = () => {
     </View>
   );
 };
+}
+
 
 const styles = StyleSheet.create({
   container: {
@@ -226,75 +395,37 @@ const styles = StyleSheet.create({
   calendarContainer: {
     flex: 1,
   },
-  textContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingBottom: 5,
+  timePickersContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 100,
+    marginBottom: 100,
+    
   },
-  timeText: {
-    flex: 0,
-    alignItems: "center",
-    justifyContent: "flex-end",
-    paddingLeft: 15,
+  timePickerWrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 100,
   },
-  priceText: {
-    flex: 2,
-    alignItems: "center",
-    justifyContent: "center",
+  timePickerLabel: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 5,
   },
-  bookText: {
-    flex: 0,
-    alignItems: "center",
-    justifyContent: "flex-end",
-    paddingRight: 15,
+  timePickerContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 25,
+    width: 100,
   },
-  /*timeSlotsContainer: {
-    flexDirection: "column",
-    alignItems: "flex-end",
-    justifyContent: "center",
-    height: 200,
-    marginBottom: 50,
-    backgroundColor: "#ffffff",
-    paddingHorizontal: 28,
-    paddingBottom: 0, // add some space between time slots and text views
-  },*/
-  listan: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 10,
-    paddingVertical: 12,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#ffffff",
-    backgroundColor: "#e6e6e6",
-    marginHorizontal: 10,
-    marginBottom: 10,
-  },
-  /*timeSlotWrapper: {
-    alignItems: "center",
-    justifyContent: "center",
-    width: 55,
-    height: 55,
-    borderRadius: 55 / 2,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    marginTop: 8,
-  },
-  selectedTimeSlot: {
-    backgroundColor: "#ccc",
-  },
-  timeSlotText: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },*/
   saveButton: {
-    alignItems: "center",
-    justifyContent: "center",
-    marginHorizontal: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 60,
     marginBottom: 80,
   },
 });
+
 
 export default CalendarScreen;

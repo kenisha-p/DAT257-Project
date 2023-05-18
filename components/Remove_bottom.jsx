@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Image, TouchableOpacity } from 'react-native';
 
-const MyButton = ({ onPress }) => {
+const MyButton = ({ onPress, onNotFilled }) => {
   const [isFilled, setIsFilled] = useState(false);
   const [count, setCount] = useState(0);
 
@@ -10,13 +10,7 @@ const MyButton = ({ onPress }) => {
     : require('../assets/RemoveBottom.png');
 
   const handlePress = () => {
-    if (isFilled) {
-      setIsFilled(false);
-      setCount(count - 1);
-    } else {
-      setIsFilled(true);
-      setCount(count + 1);
-    }
+    setIsFilled(!isFilled);
     onPress();
   };
 

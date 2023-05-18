@@ -3,8 +3,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Home from '../screens/Home';
 import Calendar from '../screens/CalendarScreen';
 import Overview from '../screens/BookingsOverview';
-import UsageDaily from '../screens/UsageDaily';
-import UsageMonthly from '../screens/UsageMonthly';
 
 const Stack = createStackNavigator();
 
@@ -25,23 +23,13 @@ const Navigator = () => {
       <Stack.Screen
         name="Overview"
         component={Overview}
-        options={{ title: 'Your booked times' }}
-      />
-
-      <Stack.Screen
-        name="UsageDaily"
-        component={UsageDaily}
-        options={{ title: 'Usage' }}
-      />
-
-      <Stack.Screen
-        name="UsageMonthly"
-        component={UsageMonthly}
-        options={{ title: 'UsageMonthly' }}
+        options={{ title: 'Booking overview' }}
       />
 
     </Stack.Navigator>
   );
 };
+
+
 
 export default Navigator;
