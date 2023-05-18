@@ -1,9 +1,112 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import Remove_bottom from '../components/Remove_bottom';
-import Remove_Rectangle from '../components/Remove_Rectangle';
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
+import Remove_bottom from "../components/Remove_bottom";
+import Remove_Rectangle from "../components/Remove_Rectangle";
+import RemoveAlert from "../components/RemoveAlert";
+import {
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+  getDoc,
+} from "firebase/firestore";
+import db from "../config";
 
 const Overview = () => {
+  const [times, setTimes] = useState([]);
+  const [timeToRemove, setTimeToRemove] = useState(null);
+  const [showRemoveAlert, setShowRemoveAlert] = useState(false);
+
+  // Go thru the database, push all the enteties to an array and add and id to every property
+  useEffect(() => {
+    async function getData() {
+      const querySnapshot = await getDocs(collection(db, "time"));
+      const timesArray = [];
+      querySnapshot.forEach((doc) => {
+        timesArray.push({ id: doc.id, ...doc.data() }); // Added id property to each time object
+      });
+
+      timesArray.sort((a, b) => {
+        const dateA = new Date(a.date + "T" + a.startTime);
+        const dateB = new Date(b.date + "T" + b.startTime);
+        return dateB - dateA;
+      });
+
+      setTimes(timesArray);
+    }
+    getData();
+  }, []);
+
+  const handleSelectTime = (id) => {
+    setTimeToRemove(id);
+  };
+
+  const handleRemoveTime = async () => {
+    if (!timeToRemove) {
+      console.log("No time to remove selected");
+      return;
+    }
+    try {
+      await deleteDoc(doc(db, "time", timeToRemove));
+      setTimes((prevTimes) =>
+        prevTimes.filter((time) => time.id !== timeToRemove)
+      );
+      setTimeToRemove(null);
+      setShowRemoveAlert(false); // Hide the remove alert after removing the time
+      console.log("Confirming removal of time with id:", timeToRemove);
+    } catch (error) {
+      console.error("Error removing time: ", error);
+    }
+  };
+
+  const confirmRemoveTime = () => {
+    setShowRemoveAlert(true);
+  };
+
+  const handleBlur = () => {
+    setShowRemoveAlert(false);
+    setTimeToRemove(null);
+  };
+
+  const currentDate = new Date();
+  const hours = currentDate.getHours().toString().padStart(2, "0");
+  const minutes = currentDate.getMinutes().toString().padStart(2, "0");
+  const currentTime = `${hours}:${minutes}`;
+  // var dd = String(currentDate.getDate()).padStart(2, "0");
+  // var mm = String(currentDate.getMonth() + 1).padStart(2, "0"); //January is 0!
+  // var yyyy = currentDate.getFullYear();
+  // today = yyyy + "-" + mm + "-" + dd;
+
+  console.log("Current Date & Time:", currentDate, currentTime);
+
+  const pastBookings = [];
+  const upcomingBookings = [];
+
+  times.forEach((time) => {
+    const bookingDate = new Date(time.date);
+    console.log("booking date:", bookingDate);
+    const bookingTime = time.endTime;
+    if (bookingDate < currentDate) {
+      pastBookings.push(time);
+    } else {
+      const bookingDay = bookingDate.getDate();
+      const currentDay = currentDate.getDate();
+
+      if (bookingDay === currentDay) {
+        if (bookingTime > currentTime) {
+          upcomingBookings.push(time);
+        } else {
+          pastBookings.push(time);
+        }
+      } else if (bookingDate > currentDate) {
+        upcomingBookings.push(time);
+      }
+    }
+  });
+
+  console.log("Past Bookings:", pastBookings);
+  console.log("Upcoming Bookings:", upcomingBookings);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -11,24 +114,69 @@ const Overview = () => {
         <Text style={[styles.headerText, { textAlign: "right" }]}>Time</Text>
         <Text style={[styles.headerText, { textAlign: "right" }]}>Remove</Text>
       </View>
-      <View style={styles.list}>
-        <Text style={[styles.item, { textAlign: 'left' }]}>Monday</Text>
-        <Text style={[styles.item, { textAlign: 'left' }]}>10:00 AM</Text>
-        <Remove_bottom onPress={() => {}} />
+      <View style={styles.listContainer}>
+        <View style={styles.header}>
+          <Text style={[styles.title, { textAlign: "left" }]}>
+            Upcoming Bookings
+          </Text>
+        </View>
+        <View style={styles.splitContainer}>
+          <ScrollView contentContainerStyle={styles.scrollContainer}>
+            {upcomingBookings.map((time) => (
+              <View style={styles.list} key={time.id}>
+                <Text style={[styles.item, { textAlign: "left" }]}>
+                  {time.date}
+                </Text>
+                <Text
+                  style={[styles.item, { textAlign: "left" }]}
+                >{`${time.startTime}-${time.endTime}`}</Text>
+                <Remove_bottom onPress={() => handleSelectTime(time.id)} />
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+        <View style={styles.header}>
+          <Text style={[styles.title, { textAlign: "left" }]}>
+            Past Bookings
+          </Text>
+        </View>
+
+        <View style={styles.splitContainer}>
+          <ScrollView contentContainerStyle={styles.scrollContainer}>
+            {pastBookings.map((time) => (
+              <View style={styles.list} key={time.id}>
+                <Text style={[styles.item, { textAlign: "left" }]}>
+                  {time.date}
+                </Text>
+                <Text
+                  style={[styles.item, { textAlign: "left" }]}
+                >{`${time.startTime}-${time.endTime}`}</Text>
+                <Remove_bottom onPress={() => handleSelectTime(time.id)} />
+              </View>
+            ))}
+          </ScrollView>
+        </View>
       </View>
-      <View style={styles.list}>
-        <Text style={[styles.item, { textAlign: 'left' }]}>Tuesday</Text>
-        <Text style={[styles.item, { textAlign: 'left' }]}>11:30 AM</Text>
-        <Remove_bottom onPress={() => {}} />
-      </View>
-      <View style={styles.list}>
-        <Text style={[styles.item, { textAlign: 'left' }]}>Wednesday</Text>
-        <Text style={[styles.item, { textAlign: 'left' }]}>2:45 PM</Text>
-        <Remove_bottom onPress={() => {}} />
-      </View>
-      <View style={[styles.Remove_Rectangle, { position: 'absolute', bottom: 0 }]}>
-        <Remove_Rectangle onPress={() => {}} />
-      </View>
+      {timeToRemove && (
+        <View
+          style={[
+            styles.Remove_Rectangle,
+            { position: "absolute", bottom: -30, right: 15 },
+          ]}
+        >
+          <Remove_Rectangle onPress={confirmRemoveTime} timeId={timeToRemove} />
+        </View>
+      )}
+      {showRemoveAlert && (
+        <RemoveAlert
+          visible={true}
+          onCancel={() => {
+            setShowRemoveAlert(false);
+            setTimeToRemove(null);
+          }}
+          onConfirm={handleRemoveTime}
+        />
+      )}
     </View>
   );
 };
@@ -36,12 +184,12 @@ const Overview = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    height: "100%",
+    backgroundColor: "#ffffff",
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+
+  scrollContainer: {
+    paddingVertical: 20,
     paddingHorizontal: 10,
     width: "100%",
     // Ange önskad maxhöjd här med enheten "px"
@@ -53,7 +201,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 20,
-    
+    //marginBottom: -25,
   },
   headerText: {
     fontSize: 15,
@@ -78,9 +226,9 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#ffffff',
-    backgroundColor: '#e6e6e6',
-    marginHorizontal: 40,
+    borderColor: "#ffffff",
+    backgroundColor: "#e6e6e6",
+    marginHorizontal: 20,
     marginBottom: 10,
   },
 
@@ -93,8 +241,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginHorizontal: 100,
-    marginBottom: 10,
-  }
+    marginBottom: 100,
+  },
+  listContainer: {
+    flex: 1,
+  },
+  splitContainer: {
+    flex: 1,
+    backgroundColor: "#f5f6ff",
+  },
 });
 
 export default Overview;

@@ -9,10 +9,17 @@ const MyButton = ({ onPress, onNotFilled }) => {
     ? require('../assets/FilledRemoveButton.png')
     : require('../assets/RemoveBottom.png');
 
-  const handlePress = () => {
-    setIsFilled(!isFilled);
-    onPress();
-  };
+    const handlePress = () => {
+      if (isFilled) {
+        setIsFilled(false);
+        setCount(count - 1);
+      } else {
+        setIsFilled(true);
+        setCount(count + 1);
+        onPress();
+      }
+    };
+    
 
   return (
     <TouchableOpacity onPress={handlePress}>

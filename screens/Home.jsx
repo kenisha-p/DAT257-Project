@@ -27,6 +27,15 @@ export default class Home extends React.Component {
   handleRemoveLaundryPress = () => {
     this.props.navigation.navigate('Overview');
   }
+
+  handleDailyUsagePress = () => {
+    this.props.navigation.navigate('UsageDaily');
+  }
+
+  handleSettingsPress = () => {
+    this.props.navigation.navigate('Settings');
+  }
+
   render() {
     if (!this.state.fontLoaded) {
       return <View />;
@@ -47,10 +56,13 @@ export default class Home extends React.Component {
               <Add_laundry onPress={this.handleAddLaundryPress} />
             </View>
             <View style={styles.button}>
-              <Remove_laundry onPress={this.handleRemoveLaundryPress}/>
+              <Remove_laundry onPress={this.handleRemoveLaundryPress} />
             </View>
             <View style={styles.button}>
-              <Usage />
+              <Usage onPress={this.handleDailyUsagePress} />
+            </View>
+            <View style={styles.button}>
+              <Settings onPress={this.handleSettingsPress} />
             </View>
           </View>
         </View>

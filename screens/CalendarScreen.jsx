@@ -1,15 +1,21 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
-import Calendar from '../components/CalendarComponent';
-import TimePicker from '../components/SelectTimeComponent';
-import SaveButton from '../components/add_time';
-import { collection, addDoc } from "firebase/firestore"; 
-import db from '../config';
+import React, { useState, useEffect } from "react";
+import { View, StyleSheet, Text, ScrollView } from "react-native";
+import Calendar from "../components/CalendarComponent";
+import SaveButton from "../components/add_time";
+import { collection, addDoc, getDoc, doc } from "firebase/firestore";
+import db from "../config";
+import axios from "axios";
+import AddButton from "../components/AddButton";
+import ConfirmBooking from "../components/ConfirmBooking";
 
 const CalendarScreen = () => {
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [startTime, setStartTime] = useState(new Date());
-  const [endTime, setEndTime] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
+  const [todaysDate, setTodaysDate] = useState("");
+  const [confirmationAlert, setConfirmationAlert] = useState(false);
+  const [electricityConsumtion, getElectricityConsumtion] = useState("");
+  const [washCykles, getWashCykles] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleSelectDate = (date) => {
     setSelectedDate(date);
@@ -29,29 +35,114 @@ const CalendarScreen = () => {
         price: selectedTimeSlot.price,
       });
       console.log("Document written with ID: ", docRef.id);
-
+      setConfirmationAlert(false);
     } catch (error) {
-      console.error('Error adding document: ', error);
+      console.error("Error adding document: ", error);
+    }
+  };
+  const [cost00_2, setCost00_2] = useState(0);
+  const [cost2_4, setCost2_4] = useState(0);
+  const [cost4_6, setCost4_6] = useState(0);
+  const [cost6_8, setCost6_8] = useState(0);
+  const [cost8_10, setCost8_10] = useState(0);
+  const [cost10_12, setCost10_12] = useState(0);
+  const [cost12_14, setCost12_14] = useState(0);
+  const [cost14_16, setCost14_16] = useState(0);
+  const [cost16_18, setCost16_18] = useState(0);
+  const [cost18_20, setCost18_20] = useState(0);
+  const [cost20_22, setCost20_22] = useState(0);
+  const [cost22_00, setCost22_00] = useState(0);
+
+  useEffect(() => {
+    const getData = async () => {
+      const docRef = doc(db, 'Settings', 'settings');
+      const docSnap = await getDoc(docRef);
+      getElectricityConsumtion(docSnap.data().Electricity);
+      getWashCykles(docSnap.data().Wash);
+      console.log("Collect settings");
+    };
+
+    getData().then(() => {
+      setIsLoading(false);
+    });
+  }, []);
+
+  const calculateCost = (start, end, data) =>
+  ((data[start].SEK_per_kWh + data[end].SEK_per_kWh) / 2 * electricityConsumtion * washCykles).toFixed(1)
+
+useEffect(() => {
+  const fetchElectricityPrices = async () => {
+    try {
+      const today = new Date(selectedDate);
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      let formattedDate = `${today.getFullYear()}/${(today.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}`;
+
+      const isAfter16Today = new Date().getHours() >= 13;
+      const isTomorrow = today.getDate() === tomorrow.getDate();
+
+      // Check if selected date is tomorrow and current time is after 16:00
+      if (isTomorrow && isAfter16Today) {
+        formattedDate = `${tomorrow.getFullYear()}/${(tomorrow.getMonth() + 1)
+          .toString()
+          .padStart(2, "0")}-${tomorrow.getDate().toString().padStart(2, "0")}`;
+        console.log("Fetching tomorrow's electricity prices");
+      } else if (today > new Date() || (isTomorrow && !isAfter16Today)) {
+        console.log("Selected date is in the future, skipping electricity prices fetch");
+        return;
+      }
+
+      setTodaysDate(today.toISOString().slice(0, 10));
+
+      const response = await axios.get(
+        `https://www.elprisetjustnu.se/api/v1/prices/${formattedDate}_SE3.json`
+      );
+
+      setCost00_2(calculateCost(0, 1, response.data));
+      setCost2_4(calculateCost(2, 3, response.data));
+      setCost4_6(calculateCost(4, 5, response.data));
+      setCost6_8(calculateCost(6, 7, response.data));
+      setCost8_10(calculateCost(8, 9, response.data));
+      setCost10_12(calculateCost(10, 11, response.data));
+      setCost12_14(calculateCost(12, 13, response.data));
+      setCost14_16(calculateCost(14, 15, response.data));
+      setCost16_18(calculateCost(16, 17, response.data));
+      setCost18_20(calculateCost(18, 19, response.data));
+      setCost20_22(calculateCost(20, 21, response.data));
+      setCost22_00(calculateCost(22, 23, response.data));
+    } catch (error) {
+      console.error("Error fetching electricity prices: ", error);
     }
   };
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.calendarContainer}>
-        <Calendar onSelectDate={handleSelectDate} />
-      </View>
-      <View style={styles.timePickersContainer}>
-        <View style={styles.timePickerWrapper}>
-          <Text style={styles.timePickerLabel}>Starttid</Text>
-          <View style={styles.timePickerContainer}>
-            <TimePicker onChange={handleSelectStartTime} date={startTime} />
-          </View>
+  if (!isLoading) {
+    fetchElectricityPrices();
+  }
+}, [isLoading, selectedDate]);
+
+  const confirmBooking = () => {
+    console.log("Confirming booking");
+    setConfirmationAlert(true);
+  };
+
+  if (!isLoading) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.calendarContainer}>
+          <Calendar onSelectDate={handleSelectDate} />
         </View>
-        <View style={{ width: 80 }} />
-        <View style={styles.timePickerWrapper}>
-          <Text style={styles.timePickerLabel}>Sluttid</Text>
-          <View style={styles.timePickerContainer}>
-            <TimePicker onChange={handleSelectEndTime} date={endTime} />
+        <View style={styles.textContainer}>
+          <View style={styles.timeText}>
+            <Text style={{ fontSize: 20 }}>Time</Text>
+          </View>
+          <View style={styles.priceText}>
+            <Text style={{ fontSize: 20 }}>Total cost</Text>
+          </View>
+          <View style={styles.bookText}>
+            <Text style={{ fontSize: 20 }}>Book</Text>
           </View>
         </View>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -367,6 +458,7 @@ const CalendarScreen = () => {
           }
           />
       </View>
+      </ScrollView>
       <View style={styles.saveButton}>
         <SaveButton onPress={confirmBooking} />
         {confirmationAlert && (
@@ -395,35 +487,60 @@ const styles = StyleSheet.create({
   calendarContainer: {
     flex: 1,
   },
-  timePickersContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 100,
-    marginBottom: 100,
-    
+  textContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    position: "absolute",
+    paddingHorizontal: 20,
+    paddingBottom: 5,
+    marginTop: 310,
   },
-  timePickerWrapper: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 100,
+  timeText: {
+    flex: 0,
+    alignItems: "center",
+    justifyContent: "flex-end",
+    paddingLeft: 15,
   },
-  timePickerLabel: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 5,
+  priceText: {
+    flex: 2,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  timePickerContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 25,
-    width: 100,
+  bookText: {
+    flex: 0,
+    alignItems: "center",
+    justifyContent: "flex-end",
+    paddingRight: 15,
   },
+
+  scrollContainer: {
+    paddingVertical: 20,
+    paddingHorizontal: 10,
+    position: "absolute",
+    width: "100%",
+    marginTop: 10,
+  },
+  
+  listan: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+    paddingVertical: 12,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#ffffff",
+    backgroundColor: "#e6e6e6",
+    marginHorizontal: 10,
+    marginBottom: 10,
+  },
+ 
   saveButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: 60,
-    marginBottom: 80,
+    alignItems: "center",
+    justifyContent: "center",
+    marginHorizontal: 22,
+    marginBottom: 30,
+    marginTop: 10,
   },
 });
 
