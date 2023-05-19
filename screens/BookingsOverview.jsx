@@ -39,7 +39,14 @@ const Overview = () => {
 
   const handleSelectTime = (id) => {
     setTimeToRemove(id);
+    console.log("Helloooo");
   };
+
+  const handleNotFilled = ()=> {
+    console.log("goodbyeee");
+    setShowRemoveAlert(false);
+  };
+
 
   const handleRemoveTime = async () => {
     if (!timeToRemove) {
@@ -115,13 +122,13 @@ const Overview = () => {
         <Text style={[styles.headerText, { textAlign: "right" }]}>Remove</Text>
       </View>
       <View style={styles.listContainer}>
-        <View style={styles.header}>
+        <View style={styles.splitContainer}>
+          <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <View style={styles.header}>
           <Text style={[styles.title, { textAlign: "left" }]}>
             Upcoming Bookings
           </Text>
         </View>
-        <View style={styles.splitContainer}>
-          <ScrollView contentContainerStyle={styles.scrollContainer}>
             {upcomingBookings.map((time) => (
               <View style={styles.list} key={time.id}>
                 <Text style={[styles.item, { textAlign: "left" }]}>
@@ -130,19 +137,21 @@ const Overview = () => {
                 <Text
                   style={[styles.item, { textAlign: "left" }]}
                 >{`${time.startTime}-${time.endTime}`}</Text>
-                <Remove_bottom onPress={() => handleSelectTime(time.id)} />
+              <Remove_bottom
+                  onPress={() => handleSelectTime(time.id)}
+                  onCancel={handleNotFilled}
+              />
               </View>
             ))}
-          </ScrollView>
-        </View>
-        <View style={styles.header}>
-          <Text style={[styles.title, { textAlign: "left" }]}>
-            Past Bookings
-          </Text>
-        </View>
+            <View style={styles.scrollViewHeader}>
+              <View style={styles.header}>
+                <Text style={[styles.title, { textAlign: "left" }]}>
+                  Past Bookings
+                </Text>
+              </View>
+            </View>
 
         <View style={styles.splitContainer}>
-          <ScrollView contentContainerStyle={styles.scrollContainer}>
             {pastBookings.map((time) => (
               <View style={styles.list} key={time.id}>
                 <Text style={[styles.item, { textAlign: "left" }]}>
@@ -151,9 +160,12 @@ const Overview = () => {
                 <Text
                   style={[styles.item, { textAlign: "left" }]}
                 >{`${time.startTime}-${time.endTime}`}</Text>
-                <Remove_bottom onPress={() => handleSelectTime(time.id)} />
+                <Remove_bottom 
+                onPress={() => handleNotFilled} 
+                />
               </View>
             ))}
+        </View>
           </ScrollView>
         </View>
       </View>
@@ -186,6 +198,12 @@ const styles = StyleSheet.create({
     flex: 1,
     height: "100%",
     backgroundColor: "#ffffff",
+  },
+
+  scrollViewHeader: {
+    flex: 1,
+    height: "100%",
+    backgroundColor: "#f5f6ff",
   },
 
   scrollContainer: {
