@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, } from "react-native";
 import Calendar from "../components/CalendarComponent";
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import db from "../config";
 import axios from "axios";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { getDoc, doc } from 'firebase/firestore';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 
 const getStartOfPrevMonth = (selectedDate) => {
@@ -22,7 +23,15 @@ const getEndOfPrevMonth = (selectedDate) => {
   const lastDay = new Date(prevYear, prevMonth, 0).getDate();
   return `${prevYear}-${prevMonth}-${lastDay}`;
 };
-
+const getMonthName = (dateString) => {
+  const date = new Date(dateString);
+  const monthIndex = date.getMonth();
+  const monthNames = [
+    'January','February','March','April','May','June','July','August','September','October','November',
+    'December',
+  ];
+  return monthNames[monthIndex];
+};
 const UsageMonthly = ({ navigation }) => {
   const BLUE_BAR_HEIGHT = 50;
 
@@ -44,11 +53,12 @@ const UsageMonthly = ({ navigation }) => {
   const [prevAvgPrice, setPrevAvgPrice] = useState(0);
   const [prevElectricCost, setPrevElectricCost] = useState(0);
   const [prevWaterUsage, setPrevWaterUsage] = useState(0);
+  const [currentMonthName, setCurrentMonthName] = useState('');
 
 
   const getEndOfMonth = (selectedDate) => {
     const [year, month] = selectedDate.split('-');
-    const lastDay = new Date(year, month, 0).getDate();
+    const lastDay = new Date(year, month - 1, 0).getDate();
     return `${year}-${month}-${lastDay}`;
   };
 
@@ -93,6 +103,9 @@ const UsageMonthly = ({ navigation }) => {
   const handleSelectDate = async (date) => {
     setSelectedDate(date);
   
+    // Update current month name
+    const monthName = getMonthName(date);
+    setCurrentMonthName(monthName);
     const timeRef = collection(db, 'time');
     const startOfMonth = date + '-01';
     const endOfMonth = getEndOfMonth(date);
@@ -172,7 +185,7 @@ const UsageMonthly = ({ navigation }) => {
   const handlePrevPress = () => {
     // Extract the current year and month from the selected date
     const [year, month] = selectedDate.split('-');
-    
+  
     // Convert the year and month to numbers
     const yearNumber = Number(year);
     const monthNumber = Number(month);
@@ -186,29 +199,25 @@ const UsageMonthly = ({ navigation }) => {
   
     // Update the selected date to the first day of the previous month
     setSelectedDate(previousMonthString);
-
-
-    
-
-    };
+  };
 
   const handleNextPress = () => {
-        // Extract the current year and month from the selected date
-  const [year, month] = selectedDate.split('-');
-
-  // Convert the year and month to numbers
-  const yearNumber = Number(year);
-  const monthNumber = Number(month);
-
-  // Calculate the year and month of the next month
-  const nextMonthYear = monthNumber === 12 ? yearNumber + 1 : yearNumber;
-  const nextMonth = monthNumber === 12 ? 1 : monthNumber + 1;
-
-  // Format the next month as a string with leading zeros
-  const nextMonthString = `${nextMonthYear}-${nextMonth.toString().padStart(2, '0')}`;
-
-  // Update the selected date to the next month
-  setSelectedDate(nextMonthString);
+    // Extract the current year and month from the selected date
+    const [year, month] = selectedDate.split('-');
+  
+    // Convert the year and month to numbers
+    const yearNumber = Number(year);
+    const monthNumber = Number(month);
+  
+    // Calculate the year and month of the next month
+    const nextMonthYear = monthNumber === 12 ? yearNumber + 1 : yearNumber;
+    const nextMonth = monthNumber === 12 ? 1 : monthNumber + 1;
+  
+    // Format the next month as a string with leading zeros
+    const nextMonthString = `${nextMonthYear}-${nextMonth.toString().padStart(2, '0')}`;
+  
+    // Update the selected date to the next month
+    setSelectedDate(nextMonthString);
   };
 
 
@@ -227,37 +236,49 @@ const UsageMonthly = ({ navigation }) => {
         </View>
         <View style={styles.MonthBarContainer}>
           <View style={styles.MonthBarLeft}>
-          <TouchableOpacity onPress= {handlePrevPress}>
-            <Text style={styles.MonthBarText}>Previous</Text>
+            <TouchableOpacity onPress={handlePrevPress}>
+              <Icon name="chevron-left" size={20} color="#ffffff" />
             </TouchableOpacity>
           </View>
-          <View style={styles.whiteLine}/>
+          <View style={styles.whiteLine} />
+          <View style={styles.MonthBarCenter}> 
+            <Text style={styles.currentMonthText}>
+                {getMonthName(selectedDate)}
+             </Text>
+          </View>
+          <View style={styles.whiteLine} />
           <View style={styles.MonthBarRight}>
-          <TouchableOpacity onPress= {handleNextPress}>
-            <Text style={styles.MonthBarText}>Next</Text>
+            <TouchableOpacity onPress={handleNextPress}>
+              <Icon name="chevron-right" size={20} color="#ffffff" />
             </TouchableOpacity>
           </View>
+        </View>
+        <View style={styles.MonthBarCenter}>
+           <Text style={styles.currentMonthText}>{currentMonthName}</Text>
         </View>
       <View style={styles.contentContainer}>
         <Text style={styles.selectedDateText}>Your usage for: {selectedDate}</Text>
         <View style={styles.whiteSquare}>
-          <View style={styles.leftLabelContainer}>
+        <View style={styles.leftLabelContainer}>
             <Text style={styles.leftLabel}>Number of washes:</Text>
             <Text style={[styles.leftSubLabel, { color: (numWashes - prevNumWashes) < 0 ? '#00FF00' : '#FF0000' }]}>
-            {(numWashes - prevNumWashes) >= 0 ? '+' : '-'}{Math.abs(numWashes - prevNumWashes)} compared to previous month</Text>
+              {(numWashes - prevNumWashes) >= 0 ? '+' : '-'}{Math.abs(numWashes - prevNumWashes)} compared to previous month
+            </Text>
             <Text style={styles.leftLabel}>Average price:</Text>
             <Text style={[styles.leftSub2Label, { color: (avgPrice - prevAvgPrice) < 0 ? '#00FF00' : '#FF0000' }]}>
-             {(avgPrice - prevAvgPrice) < 0 ? '-' : '+'}
-              {Math.abs(avgPrice - prevAvgPrice).toFixed(2)} kr/kWh compared to previous month</Text>
+              {(avgPrice - prevAvgPrice) < 0 ? '-' : '+'}
+              {Math.abs(avgPrice - prevAvgPrice).toFixed(2)} kr/kWh compared to previous month
+            </Text>
             <Text style={styles.leftLabel}>Electric cost:</Text>
             <Text style={[styles.leftSub3Label,{ color: parseFloat(electricCost) - parseFloat(prevElectricCost) < 0 ? '#00FF00' : '#FF0000' }]}>
-               {(parseFloat(electricCost) - parseFloat(prevElectricCost)) < 0 ? '-' : '+'}
-                {Math.abs(parseFloat(electricCost) - parseFloat(prevElectricCost))} kr compared to last month</Text>
+              {(parseFloat(electricCost) - parseFloat(prevElectricCost)) < 0 ? '-' : '+'}
+              {Math.abs(parseFloat(electricCost) - parseFloat(prevElectricCost))} kr compared to last month
+            </Text>
             <Text style={styles.leftLabel}>Water usage:</Text>
             <Text style={[styles.leftSub4Label,{ color: parseFloat(waterUsage) - parseFloat(prevWaterUsage) < 0 ? '#00FF00' : '#FF0000' }]}>
-                {(parseFloat(waterUsage) - parseFloat(prevWaterUsage)) < 0 ? '-' : '+'}
-                {Math.abs(parseFloat(waterUsage) - parseFloat(prevWaterUsage))} litres compared to last month</Text>
-
+              {(parseFloat(waterUsage) - parseFloat(prevWaterUsage)) < 0 ? '-' : '+'}
+              {Math.abs(parseFloat(waterUsage) - parseFloat(prevWaterUsage))} litres compared to last month
+            </Text>
           </View>
           <View style={styles.rightLabelContainer}>
             <Text style={styles.rightLabel} >{numWashes}</Text>
@@ -283,6 +304,12 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     
+  },
+  
+  currentMonthText: {
+    fontWeight: 'bold',
+    color: '#ffffff',
+    fontSize: 20,
   },
   whiteSquare: {
     backgroundColor: '#ffffff',
@@ -386,30 +413,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     height: 50,
     paddingHorizontal: 20,
-    backgroundColor: '#ffffff',
-    marginTop: 15,
+    backgroundColor: '#3452A2',
+    marginTop: 10, // Add margin top to create space between the blue bar and the month bar
   },
   MonthBarLeft: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRightColor: '#ffffff',
-    borderRightWidth: 2,
-    borderLeftColor: '#ffffff',
-    borderLeftWidth: 2,
-    height: 30,
-    backgroundColor: '#D6EAF8',
-    borderRadius: 30,
+    alignItems: 'flex-start', // Align arrow to the left
   },
   MonthBarRight: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRightColor: '#ffffff',
-    borderRightWidth: 2,
-    height: 30,
-    backgroundColor: '#D6EAF8',
-    borderRadius: 30,
+    alignItems: 'flex-end', // Align arrow to the right
   },
   MonthBarText: {
     color: '#000000',
