@@ -143,16 +143,13 @@ const Overview = () => {
               />
               </View>
             ))}
-          </ScrollView>
-        </View>
-        <View style={styles.header}>
+                    <View style={styles.header}>
           <Text style={[styles.title, { textAlign: "left" }]}>
             Past Bookings
           </Text>
         </View>
 
         <View style={styles.splitContainer}>
-          <ScrollView contentContainerStyle={styles.scrollContainer}>
             {pastBookings.map((time) => (
               <View style={styles.list} key={time.id}>
                 <Text style={[styles.item, { textAlign: "left" }]}>
@@ -161,9 +158,12 @@ const Overview = () => {
                 <Text
                   style={[styles.item, { textAlign: "left" }]}
                 >{`${time.startTime}-${time.endTime}`}</Text>
-                <Remove_bottom onPress={() => handleSelectTime(time.id)} />
+                <Remove_bottom 
+                onPress={() => handleNotFilled} 
+                />
               </View>
             ))}
+        </View>
           </ScrollView>
         </View>
       </View>

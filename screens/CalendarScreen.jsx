@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import React, { useState } from "react";
-import { useEffect } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
-=======
+
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Text, ScrollView } from "react-native";
 import Calendar from "../components/CalendarComponent";
@@ -13,21 +9,6 @@ import axios from "axios";
 import AddButton from "../components/AddButton";
 import ConfirmBooking from "../components/ConfirmBooking";
 
-<<<<<<< HEAD
-
-
-
-//The available timeSLots which are displayed in the application. 
-/*const timeSlots = [
-  { start: 8, end: 11 },
-  { start: 11, end: 14 },
-  { start: 14, end: 17 },
-  { start: 17, end: 19 },
-];*/
-
-//This function returns the UI for the calendar and handles the selection of date
-=======
->>>>>>> 55185851fbd2a5c7876f0e2fe89eb48ec42125b0
 const CalendarScreen = () => {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
