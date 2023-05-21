@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text, Image } from 'react-native';
+import { View, StyleSheet, Text, Image, StatusBar } from 'react-native';
 import Electricprice from '../components/Electricprice';
 import Add_laundry from '../components/Add_laundry';
 import Remove_laundry from '../components/Remove_laundry';
@@ -37,6 +37,8 @@ export default class Home extends React.Component {
   }
 
   render() {
+    <StatusBar backgroundColor="blue" barStyle="dark-content" />
+
     if (!this.state.fontLoaded) {
       return <View />;
     }
@@ -76,13 +78,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 100,
+    //marginTop: 80,
     backgroundColor: 'white'
   },
   contentContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+   // marginTop: 80,
   },
   buttonContainer: {
     marginTop: 10,
@@ -98,6 +101,7 @@ const styles = StyleSheet.create({
     top: 20,
     alignItems: 'center',
     width: '100%',
+    marginTop: 80,
   },
   title: {
     fontFamily: 'Arial',
@@ -106,7 +110,7 @@ const styles = StyleSheet.create({
     fontSize: 48,
   },
   picture: {
-    marginTop: 90,
+    marginTop: 160,
     left: 30,
   },
 });
