@@ -139,7 +139,7 @@ const Overview = () => {
                 >{`${time.startTime}-${time.endTime}`}</Text>
               <Remove_bottom
                   onPress={() => handleSelectTime(time.id)}
-                  onCancel={handleNotFilled}
+                  onNotFilled={() => setTimeToRemove(null)}
               />
               </View>
             ))}
@@ -161,7 +161,8 @@ const Overview = () => {
                   style={[styles.item, { textAlign: "left" }]}
                 >{`${time.startTime}-${time.endTime}`}</Text>
                 <Remove_bottom 
-                onPress={() => handleNotFilled} 
+                onPress={() => handleSelectTime(time.id)}
+                onNotFilled={() => setTimeToRemove(null)}
                 />
               </View>
             ))}

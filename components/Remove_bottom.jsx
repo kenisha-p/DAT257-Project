@@ -13,6 +13,7 @@ const MyButton = ({ onPress, onNotFilled }) => {
       if (isFilled) {
         setIsFilled(false);
         setCount(count - 1);
+        onNotFilled();
       } else {
         setIsFilled(true);
         setCount(count + 1);
