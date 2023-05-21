@@ -264,7 +264,7 @@ const UsageMonthly = ({ navigation }) => {
             <Text style={[styles.leftSubLabel, { color: (numWashes - prevNumWashes) < 0 ? '#00FF00' : '#FF0000' }]}>
               {(numWashes - prevNumWashes) >= 0 ? '+' : '-'}{Math.abs(numWashes - prevNumWashes).toFixed(0)} compared to previous month
             </Text>
-            <Text style={styles.leftLabel}>Average price:</Text>
+            <Text style={styles.leftLabel}>Average price/kWh:</Text>
             <Text style={[styles.leftSub2Label, { color: (avgPrice - prevAvgPrice) < 0 ? '#00FF00' : '#FF0000' }]}>
               {(avgPrice - prevAvgPrice) < 0 ? '-' : '+'}
               {Math.abs(avgPrice - prevAvgPrice).toFixed(2)} kr/kWh compared to previous month
