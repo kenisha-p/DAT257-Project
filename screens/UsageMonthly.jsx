@@ -136,8 +136,8 @@ const UsageMonthly = ({ navigation }) => {
       const docRef = doc(db, 'Settings', 'settings');
       const docSnap = await getDoc(docRef);
       const waterValue = docSnap.data().Water; // Accessing the 'Water' field from the 'Settings' document
-      setNumWashes(numBookings);
-      setWaterUsage(numBookings * waterValue + ' litres');
+      setNumWashes(numBookings*docSnap.data().Wash);
+      setWaterUsage(numBookings * waterValue * docSnap.data().Wash + ' litres');
     } else {
       setNumWashes(0);
       setWaterUsage(0);
@@ -161,9 +161,9 @@ const UsageMonthly = ({ navigation }) => {
       const waterValue = docSnap.data().Water; // Accessing the 'Water' field from the 'Settings' document
   
       setPrevAvgPrice(prevAvgPrice.toFixed(2));
-      setPrevNumWashes(prevNumBookings);
+      setPrevNumWashes(prevNumBookings*docSnap.data().Wash);
       setPrevElectricCost(prevTotalPrice.toFixed(2) + 'kr');
-      setPrevWaterUsage(prevNumBookings * waterValue + ' litres');
+      setPrevWaterUsage(prevNumBookings * waterValue * docSnap.data().Wash + ' litres');
     } else {
       setPrevAvgPrice(0);
       setPrevNumWashes(0);
@@ -262,7 +262,7 @@ const UsageMonthly = ({ navigation }) => {
         <View style={styles.leftLabelContainer}>
             <Text style={styles.leftLabel}>Number of washes:</Text>
             <Text style={[styles.leftSubLabel, { color: (numWashes - prevNumWashes) < 0 ? '#00FF00' : '#FF0000' }]}>
-              {(numWashes - prevNumWashes) >= 0 ? '+' : '-'}{Math.abs(numWashes - prevNumWashes)} compared to previous month
+              {(numWashes - prevNumWashes) >= 0 ? '+' : '-'}{Math.abs(numWashes - prevNumWashes).toFixed(2)} compared to previous month
             </Text>
             <Text style={styles.leftLabel}>Average price:</Text>
             <Text style={[styles.leftSub2Label, { color: (avgPrice - prevAvgPrice) < 0 ? '#00FF00' : '#FF0000' }]}>
@@ -272,12 +272,12 @@ const UsageMonthly = ({ navigation }) => {
             <Text style={styles.leftLabel}>Electric cost:</Text>
             <Text style={[styles.leftSub3Label,{ color: parseFloat(electricCost) - parseFloat(prevElectricCost) < 0 ? '#00FF00' : '#FF0000' }]}>
               {(parseFloat(electricCost) - parseFloat(prevElectricCost)) < 0 ? '-' : '+'}
-              {Math.abs(parseFloat(electricCost) - parseFloat(prevElectricCost))} kr compared to last month
+              {Math.abs(parseFloat(electricCost) - parseFloat(prevElectricCost)).toFixed(2)} kr compared to last month
             </Text>
             <Text style={styles.leftLabel}>Water usage:</Text>
             <Text style={[styles.leftSub4Label,{ color: parseFloat(waterUsage) - parseFloat(prevWaterUsage) < 0 ? '#00FF00' : '#FF0000' }]}>
               {(parseFloat(waterUsage) - parseFloat(prevWaterUsage)) < 0 ? '-' : '+'}
-              {Math.abs(parseFloat(waterUsage) - parseFloat(prevWaterUsage))} litres compared to last month
+              {Math.abs(parseFloat(waterUsage) - parseFloat(prevWaterUsage)).toFixed(2)} litres compared to last month
             </Text>
           </View>
           <View style={styles.rightLabelContainer}>
