@@ -262,7 +262,7 @@ const UsageMonthly = ({ navigation }) => {
         <View style={styles.leftLabelContainer}>
             <Text style={styles.leftLabel}>Number of washes:</Text>
             <Text style={[styles.leftSubLabel, { color: (numWashes - prevNumWashes) < 0 ? '#00FF00' : '#FF0000' }]}>
-              {(numWashes - prevNumWashes) >= 0 ? '+' : '-'}{Math.abs(numWashes - prevNumWashes).toFixed(2)} compared to previous month
+              {(numWashes - prevNumWashes) >= 0 ? '+' : '-'}{Math.abs(numWashes - prevNumWashes).toFixed(0)} compared to previous month
             </Text>
             <Text style={styles.leftLabel}>Average price:</Text>
             <Text style={[styles.leftSub2Label, { color: (avgPrice - prevAvgPrice) < 0 ? '#00FF00' : '#FF0000' }]}>
@@ -277,7 +277,7 @@ const UsageMonthly = ({ navigation }) => {
             <Text style={styles.leftLabel}>Water usage:</Text>
             <Text style={[styles.leftSub4Label,{ color: parseFloat(waterUsage) - parseFloat(prevWaterUsage) < 0 ? '#00FF00' : '#FF0000' }]}>
               {(parseFloat(waterUsage) - parseFloat(prevWaterUsage)) < 0 ? '-' : '+'}
-              {Math.abs(parseFloat(waterUsage) - parseFloat(prevWaterUsage)).toFixed(2)} litres compared to last month
+              {Math.abs(parseFloat(waterUsage) - parseFloat(prevWaterUsage)).toFixed(0)} litres compared to last month
             </Text>
           </View>
           <View style={styles.rightLabelContainer}>
