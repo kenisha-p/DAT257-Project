@@ -169,6 +169,7 @@ const Overview = () => {
         </View>
           </ScrollView>
         </View>
+        <View style={styles.extraSpace} />
       </View>
       {timeToRemove && (
         <View
@@ -256,6 +257,11 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 10,
   },
+
+  extraSpace: {
+    height: 125, // Höjden på det vita utrymmet under containern
+  },
+
   Remove_Rectangle: {
     alignItems: "center",
     justifyContent: "center",

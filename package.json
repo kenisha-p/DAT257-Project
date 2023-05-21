@@ -26,8 +26,8 @@
     "react-native-month-year-picker": "^1.9.0",
     "react-native-web": "~0.18.10",
     "react-navigation": "^4.4.4",
-    "react-navigation-stack": "^2.10.4"
-
+    "react-navigation-stack": "^2.10.4",
+    "expo-updates": "~0.16.4"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
