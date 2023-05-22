@@ -76,38 +76,20 @@ const Overview = () => {
   };
 
   const currentDate = new Date();
-  const hours = currentDate.getHours().toString().padStart(2, "0");
-  const minutes = currentDate.getMinutes().toString().padStart(2, "0");
-  const currentTime = `${hours}:${minutes}`;
-  // var dd = String(currentDate.getDate()).padStart(2, "0");
-  // var mm = String(currentDate.getMonth() + 1).padStart(2, "0"); //January is 0!
-  // var yyyy = currentDate.getFullYear();
-  // today = yyyy + "-" + mm + "-" + dd;
-
-  console.log("Current Date & Time:", currentDate, currentTime);
-
+  currentDate.setHours(0, 0, 0, 0);
   const pastBookings = [];
   const upcomingBookings = [];
 
   times.forEach((time) => {
     const bookingDate = new Date(time.date);
-    console.log("booking date:", bookingDate);
-    const bookingTime = time.endTime;
-    if (bookingDate < currentDate) {
+
+    console.log (currentDate)
+    console.log (bookingDate)
+    
+    if (bookingDate <= currentDate) {
       pastBookings.push(time);
     } else {
-      const bookingDay = bookingDate.getDate();
-      const currentDay = currentDate.getDate();
-
-      if (bookingDay === currentDay) {
-        if (bookingTime > currentTime) {
-          upcomingBookings.push(time);
-        } else {
-          pastBookings.push(time);
-        }
-      } else if (bookingDate > currentDate) {
-        upcomingBookings.push(time);
-      }
+      upcomingBookings.push(time);
     }
   });
 
