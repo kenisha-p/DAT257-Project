@@ -74,28 +74,24 @@ const Overview = () => {
     setShowRemoveAlert(false);
     setTimeToRemove(null);
   };
-
+  
   const currentDate = new Date();
-  currentDate.setHours(0, 0, 0, 0);
+  const currentDateTime = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), currentDate.getHours(), currentDate.getMinutes(), currentDate.getSeconds());
   const pastBookings = [];
   const upcomingBookings = [];
-
+  
   times.forEach((time) => {
     const bookingDate = new Date(time.date);
-
-    console.log (currentDate)
-    console.log (bookingDate)
+    const bookingTimeParts = time.startTime.split(":");
+    const bookingTime = new Date(bookingDate.getFullYear(), bookingDate.getMonth(), bookingDate.getDate(), parseInt(bookingTimeParts[0]), parseInt(bookingTimeParts[1]));
     
-    if (bookingDate <= currentDate) {
+    if (bookingTime <= currentDateTime) {
       pastBookings.push(time);
     } else {
       upcomingBookings.push(time);
     }
   });
-
-  console.log("Past Bookings:", pastBookings);
-  console.log("Upcoming Bookings:", upcomingBookings);
-
+  
   return (
     <View style={styles.container}>
       <View style={styles.header}>
