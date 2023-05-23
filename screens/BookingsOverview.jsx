@@ -3,13 +3,7 @@ import { View, Text, StyleSheet, ScrollView } from "react-native";
 import Remove_bottom from "../components/Remove_bottom";
 import Remove_Rectangle from "../components/Remove_Rectangle";
 import RemoveAlert from "../components/RemoveAlert";
-import {
-  collection,
-  getDocs,
-  deleteDoc,
-  doc,
-  getDoc,
-} from "firebase/firestore";
+import {collection, getDocs, deleteDoc, doc,} from "firebase/firestore";
 import db from "../config";
 
 const Overview = () => {
@@ -68,11 +62,6 @@ const Overview = () => {
 
   const confirmRemoveTime = () => {
     setShowRemoveAlert(true);
-  };
-
-  const handleBlur = () => {
-    setShowRemoveAlert(false);
-    setTimeToRemove(null);
   };
   
   const currentDate = new Date();

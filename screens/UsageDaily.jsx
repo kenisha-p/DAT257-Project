@@ -7,8 +7,6 @@ import axios from "axios";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Home from "./Home";
 
-
-
 const UsageDaily = ({ navigation }) => {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
   const [numWashes, setNumWashes] = useState(0);
@@ -16,8 +14,6 @@ const UsageDaily = ({ navigation }) => {
   const [electricCost, setElectricCost] = useState(0);
   const [waterUsage, setWaterUsage] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-
-
 
   const BLUE_BAR_HEIGHT = 50;
 
